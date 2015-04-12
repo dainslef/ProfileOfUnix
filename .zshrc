@@ -107,7 +107,7 @@ elif [[ $UID -eq 0 ]]; then # root
 #	local mid3_status="%{$fg_bold[cyan]%}⚡"
 fi
 
-PROMPT='%{$fg_bold[green]%}➜ ${ret_status} %{$fg[magenta]%}%~ %{$fg_bold[blue]%}$(git_prompt_info)${mid_status} '
+PROMPT='%{$fg_bold[green]%}➜ ${ret_status} %{$fg[magenta]%}%2~ %{$fg_bold[blue]%}$(git_prompt_info)${mid_status} '
 RPROMPT='${mid2_status} ${end_status}%{$reset_color%}'
 
 ZSH_THEME_GIT_PROMPT_PREFIX="|"

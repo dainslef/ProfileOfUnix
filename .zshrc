@@ -79,7 +79,7 @@ export PATH=$HOME/bin:/usr/local/bin:$PATH
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-# ------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # -- theme --
 
 # Cheak if you are root user
@@ -91,34 +91,66 @@ then
 	echo "--- 一日は貴い一生である。これを空費してはならない。 ---\n"
 fi
 
-#local ret_status="%(?:%{$fg_bold[green]%}➜:%{$fg_bold[red]%}➜%s)"
-local end_status="%(?:%{$fg_bold[green]%}✓:%{$fg_bold[red]%}✗)"
+# Show the Command Execute Result with Different Color and Icon
+local end_status="%(?:%{$fg_bold[green]%}☀:%{$fg_bold[red]%}⚡)"
 
 # Check the UID
 if [[ $UID -ge 1000 ]]; then # normal user
-	local ret_status="%{$fg_bold[yellow]%}%n"
-	local mid_status="%{$fg_bold[cyan]%}▶"
-	local mid2_status="%{$fg_bold[blue]%}%*"
-#	local mid3_status="%{$fg_bold[yellow]%}☀"
+	local start_status="%{$fg_bold[green]%}▶"
+	local mid1_status="%{$fg_bold[yellow]%}%n"	
+	local mid2_status="%{$fg_bold[cyan]%}➜"
+	local end2_status="%{$fg_bold[blue]%}%T"
+	
 elif [[ $UID -eq 0 ]]; then # root
-  	local ret_status="%{$fg_bold[red]%}%n"
-	local mid_status="%{$fg_bold[blue]%}▶"
-	local mid2_status="%{$fg_bold[yellow]%}%*"
-#	local mid3_status="%{$fg_bold[cyan]%}⚡"
+	local start_status="%{$fg_bold[blue]%}▶"
+	local mid1_status="%{$fg_bold[red]%}%n"
+	local mid2_status="%{$fg_bold[yellow]%}➜"	
+	local end2_status="%{$fg_bold[cyan]%}%T"
 fi
 
-PROMPT='%{$fg_bold[green]%}➜ ${ret_status} %{$fg[magenta]%}%2~ %{$fg_bold[blue]%}$(git_prompt_info)${mid_status} '
-RPROMPT='${mid2_status} ${end_status}%{$reset_color%}'
+PROMPT='${start_status} ${mid1_status} %{$fg[magenta]%}%2~%{$fg_bold[blue]%}$(git_prompt_info) ${mid2_status} '
+RPROMPT='${end_status} ${end2_status}%{$reset_color%}'
 
 ZSH_THEME_GIT_PROMPT_PREFIX="|"
 ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%}"
-ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg_bold[red]%}⚡ %{$reset_color%}"
-ZSH_THEME_GIT_PROMPT_AHEAD="%{$fg_bold[red]%}! %{$reset_color%}"
-ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg_bold[green]%}⚑ %{$reset_color%}"
+ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg_bold[red]%}⚡%{$reset_color%}"
+ZSH_THEME_GIT_PROMPT_AHEAD="%{$fg_bold[red]%}𝝙%{$reset_color%}"
+ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg_bold[green]%}⚑%{$reset_color%}"
 
-ZSH_THEME_GIT_PROMPT_ADDED="%{$fg[green]%} ✚"
-ZSH_THEME_GIT_PROMPT_MODIFIED="%{$fg[blue]%} ✹"
-ZSH_THEME_GIT_PROMPT_DELETED="%{$fg[red]%} ✖"
-ZSH_THEME_GIT_PROMPT_RENAMED="%{$fg[magenta]%} ➜"
-ZSH_THEME_GIT_PROMPT_UNMERGED="%{$fg[yellow]%} ═"
-ZSH_THEME_GIT_PROMPT_UNTRACKED="%{$fg[cyan]%} ✭"
+ZSH_THEME_GIT_PROMPT_ADDED="%{$fg[green]%}✚"
+ZSH_THEME_GIT_PROMPT_MODIFIED="%{$fg[blue]%}✹"
+ZSH_THEME_GIT_PROMPT_DELETED="%{$fg[red]%}✖"
+ZSH_THEME_GIT_PROMPT_RENAMED="%{$fg[magenta]%}⬆"
+ZSH_THEME_GIT_PROMPT_UNMERGED="%{$fg[yellow]%}♒"
+ZSH_THEME_GIT_PROMPT_UNTRACKED="%{$fg[cyan]%}✭"
+
+# ------------------------------------------------------------------------------
+#
+# List of vcs_info format strings:
+#
+# %b => current branch
+# %a => current action (rebase/merge)
+# %s => current version control system
+# %r => name of the root directory of the repository
+# %S => current path relative to the repository root directory
+# %m => in case of Git, show information about stashes
+# %u => show unstaged changes in the repository
+# %c => show staged changes in the repository
+#
+# List of prompt format strings:
+#
+# prompt:
+# %F => color dict
+# %f => reset color
+# %~ => current path
+# %* => time
+# %n => username
+# %m => shortname host
+# %(?..) => prompt conditional - %(condition.true.false)
+#
+# ------------------------------------------------------------------------------
+
+# More symbols to choose from:
+# ☀ ✹ ☄ ♆ ♀ ♁ ♐ ♇ ♈ ♉ ♚ ♛ ♜ ♝ ♞ ♟ ♠ ♣ ⚢ ⚲ ⚳ ⚴ ⚥ ⚤ ⚦ ⚒ ⚑ ⚐ ♺ ♻ ♼ ☰ ☱ ☲ ☳ ☴ ☵ ☶ ☷
+# ✡ ✔ ✖ ✚ ✱ ✤ ✦ ❤ ➜ ➟ ➼ ✂ ✎ ✐ ⨀ ⨁ ⨂ ⨍ ⨎ ⨏ ⨷ ⩚ ⩛ ⩡ ⩱ ⩲ ⩵  ⩶ ⨠ 
+# ⬅ ⬆ ⬇ ⬈ ⬉ ⬊ ⬋ ⬒ ⬓ ⬔ ⬕ ⬖ ⬗ ⬘ ⬙ ⬟  ⬤ 〒 ǀ ǁ ǂ ĭ Ť Ŧ

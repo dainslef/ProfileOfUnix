@@ -98,21 +98,6 @@ set fileencodings=utf-8,gbk,gb2312,gb18030
 
 
 "--------------------------------------------------------------------------------------
-"--- Taglist 配置 ---
-nmap tl :TlistToggle<cr>	" 设置taglist的快捷键为tl。
-" let Tlist_Use_Horiz_Window = 1	" 设置tag窗口横向显示
-" let Tlist_Show_One_File = 1	" 不同时显示多个文件的tag，只显示当前文件的
-" let Tlist_Auto_Open = 1	" 打开vim时自动打开tag窗口
-let Tlist_Exit_OnlyWindow = 1	" 关闭vim时关闭tag窗口
-let Tlist_Auto_Update = 1	" 默认更新taglist
-" let Tlist_File_Fold_Auto_Close = 1	" 只显示当前文件的taglist，其它的taglist都被折叠
-let Tlist_Show_Menu = 1		" 显示taglist菜单
-" let Tlist_Use_SingleClick = 0	" 设置点击跳转tag的方式，0为双击跳转，1为单击跳转
-" let Tlist_Use_Right_Window = 1	" 设置tag窗口靠右显示（默认窗口靠左）
-" let Tlist_Process_File_Always = 1	" taglist始终解析文件中的tag，不管taglist窗口有没有打开
-
-
-"--------------------------------------------------------------------------------------
 "--- Vundle插件管理器 ---
 filetype off
 set rtp+=~/.vim/bundle/Vundle.vim	" 设置Vundle插件的路径
@@ -131,6 +116,7 @@ Plugin 'terryma/vim-multiple-cursors' 	" 多点编辑插件，选中目标后可
 Plugin 'Shougo/neocomplcache.vim'		" 补全插件
 " Plugin 'Valloric/YouCompleteMe'			" 高级补全插件，支持语法补全
 Plugin 'taglist.vim'			" 来自github中vim-scripts收集的插件直接写名字,不过很可能获得的是旧版本
+Plugin 'winmanager--Fox'		" 窗口管理插件
 call vundle#end()            	" required
 filetype plugin indent on " 开启插件
 
@@ -140,6 +126,29 @@ filetype plugin indent on " 开启插件
 " :PluginSearch foo - searches for foo; append `!` to refresh local cache
 " :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
 " :PluginUpdate		- update all the plugins which you have installed
+
+
+"--------------------------------------------------------------------------------------
+"--- WinManager配置 ---
+let g:winManagerWindowLayout = "TagList|FileExplorer"		" 设置WinManager管理的插件
+let g:winManagerWidth = 35									" 设置WinManager侧边栏的大小
+let g:persistentBehaviour = 0								" 设置关闭所有文件时自动关闭WinManager
+nmap wm :WMToggle<cr>										" 定义打开关闭WinManager快捷键为wm
+
+
+"--------------------------------------------------------------------------------------
+"--- Taglist 配置 ---
+" nmap tl :TlistToggle<cr>	" 设置taglist的快捷键为tl。
+" let Tlist_Use_Horiz_Window = 1	" 设置tag窗口横向显示
+" let Tlist_Show_One_File = 1	" 不同时显示多个文件的tag，只显示当前文件的
+" let Tlist_Auto_Open = 1	" 打开vim时自动打开tag窗口
+let Tlist_Exit_OnlyWindow = 1	" 关闭vim时关闭tag窗口
+let Tlist_Auto_Update = 1	" 默认更新taglist
+" let Tlist_File_Fold_Auto_Close = 1	" 只显示当前文件的taglist，其它的taglist都被折叠
+let Tlist_Show_Menu = 1		" 显示taglist菜单
+" let Tlist_Use_SingleClick = 0	" 设置点击跳转tag的方式，0为双击跳转，1为单击跳转
+" let Tlist_Use_Right_Window = 1	" 设置tag窗口靠右显示（默认窗口靠左）
+" let Tlist_Process_File_Always = 1	" taglist始终解析文件中的tag，不管taglist窗口有没有打开
 
 
 "--------------------------------------------------------------------------------------

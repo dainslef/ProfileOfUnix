@@ -32,7 +32,7 @@ set backspace=indent,eol,start	" 不设定在插入状态无法用退格键和 D
 set cmdheight=1 " 设定命令行的行数为 1
 set laststatus=2 " 显示状态栏 (默认值为 1, 无法显示状态栏)
 set wildmenu " 使用命令行补全
-set mouse=a " 在任意模式下支持鼠标点击定位
+set mouse=i " 在插入模式下支持鼠标点击定位，值为 a 时为任意模式支持鼠标定位
 set completeopt=longest,menu " 支持自动补全
 set scrolloff=4 " 光标移到buffer顶部或底部时保持4行距离(文本到达顶端或末尾时除外)
 set iskeyword+=_,$,@,%,#,- " 带有这些字符的内容不被自动换行分割

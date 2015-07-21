@@ -87,21 +87,25 @@ if [ $(whoami) != "root" ]
 then
 	echo $(uname -nrom)
 	echo $(date)
-	echo --- Hello $(whoami)! Try your best everyday! ---
-	echo "--- 一日は貴い一生である。これを空費してはならない。 ---\n"
+	echo --- Welcome, $(whoami). Try your best everyday! ---
+	case $[$RANDOM%3] in
+		0) echo "--- 夢に描けることなら、実現できる。 ---\n" ;;
+		1) echo "--- 一日は貴い一生である。これを空費してはならない。 ---\n" ;;
+		2) echo "--- 完璧などはありえない。この世界は不完全だ。だから、美しい。 ---\n" ;;
+	esac
 fi
 
 # Show the Command Execute Result with Different Color and Icon
 local end_status="%(?:%{$fg_bold[green]%}☀:%{$fg_bold[red]%}⚡)"
 
 # Check the UID
-if [[ $UID -ge 1000 ]]; then # normal user
+if [ $UID -ge 1000 ]; then # normal user
 	local start_status="%{$fg_bold[green]%}▶"
 	local mid1_status="%{$fg_bold[yellow]%}%n"	
 	local mid2_status="%{$fg_bold[cyan]%}➜"
 	local end2_status="%{$fg_bold[blue]%}%T"
 	
-elif [[ $UID -eq 0 ]]; then # root
+elif [ $UID -eq 0 ]; then # root
 	local start_status="%{$fg_bold[blue]%}▶"
 	local mid1_status="%{$fg_bold[red]%}%n"
 	local mid2_status="%{$fg_bold[yellow]%}➜"	

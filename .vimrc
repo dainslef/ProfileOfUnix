@@ -47,12 +47,12 @@ set linebreak " 使用整词换行
 
 "--------------------------------------------------------------------------------------
 "--- 设置语法折叠 ---
-set foldenable " 开始折叠
-set foldmethod=syntax " 设置语法折叠
-set foldcolumn=0 " 设置折叠区域的宽度
-setlocal foldlevel=99999999999999 " 设置折叠层数，设置为较大值则可默认关闭折叠
+" set foldenable " 开始折叠
+" set foldmethod=syntax " 设置语法折叠
+" set foldcolumn=0 " 设置折叠区域的宽度
+" setlocal foldlevel=99999999999999 " 设置折叠层数，设置为较大值则可默认关闭折叠
 " set foldclose=all " 设置为自动关闭折叠
-nnoremap <space> @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR> " 用空格键来开关折叠
+" nnoremap <space> @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR> " 用空格键来开关折叠
 
 
 "--------------------------------------------------------------------------------------

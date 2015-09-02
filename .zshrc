@@ -88,10 +88,11 @@ then
 	echo $(uname -nrom)
 	echo $(date)
 	echo --- Welcome, $(whoami). Try your best everyday! ---
-	case $[$RANDOM%3] in
+	case $[$RANDOM%4] in
 		0) echo "--- 夢に描けることなら、実現できる。 ---\n" ;;
 		1) echo "--- 一日は貴い一生である。これを空費してはならない。 ---\n" ;;
 		2) echo "--- 完璧などはありえない。この世界は不完全だ。だから、美しい。 ---\n" ;;
+		3) echo "--- 春は夜桜、夏には星、秋に満月、冬には雪。 ---\n" ;;
 	esac
 fi
 

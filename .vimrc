@@ -117,6 +117,7 @@ Plugin 'Shougo/neocomplcache.vim'		" 补全插件
 " Plugin 'Valloric/YouCompleteMe'			" 高级补全插件，支持语法补全
 Plugin 'taglist.vim'			" 来自github中vim-scripts收集的插件直接写名字,不过很可能获得的是旧版本
 Plugin 'winmanager--Fox'		" 窗口管理插件
+Plugin 'derekwyatt/vim-scala'	" vim默认没有提供scala语言的支持，使用插件添加对scala语言支持
 call vundle#end()            	" required
 filetype plugin indent on " 开启插件
 

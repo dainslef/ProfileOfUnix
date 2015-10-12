@@ -1,5 +1,15 @@
-# Path to your oh-my-zsh installation.
-export ZSH=/home/dainslef/.oh-my-zsh
+# Check OS type and set the different enviorment variables.
+if [ $(uname) = "Darwin" ]; then # Darwin kernel means in OS X
+	export ZSH=/Users/dainslef/.oh-my-zsh # Path to your oh-my-zsh installation.
+	local show_os_version="$(uname -srnm)"
+	local normal_uid=500 # In OS X, the base normal user's uid is 500.
+	plugins=(sudo osx brew)
+elif [ $(uname) = "Linux" ]; then
+	export ZSH=/home/dainslef/.oh-my-zsh
+	local show_os_version="$(uname -ornm)"
+	local normal_uid=1000 # In Linux, the base normal user's uid is 1000.
+	plugins=(sudo systemd)
+fi
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
@@ -45,7 +55,7 @@ export ZSH=/home/dainslef/.oh-my-zsh
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(sudo systemd)
+# plugins=(sudo systemd) # load plugins at first
 
 source $ZSH/oh-my-zsh.sh
 
@@ -85,10 +95,10 @@ export PATH=$HOME/bin:/usr/local/bin:$PATH
 # Cheak if you are root user
 if [ $(whoami) != "root" ]
 then
-	echo $(uname -nrom)
+	echo $show_os_version
 	echo $(date)
 	echo --- Welcome, $(whoami). Try your best everyday! ---
-	case $[$RANDOM%4] in
+	case $[$RANDOM % 4] in
 		0) echo "--- 夢に描けることなら、実現できる。 ---\n" ;;
 		1) echo "--- 一日は貴い一生である。これを空費してはならない。 ---\n" ;;
 		2) echo "--- 完璧などはありえない。この世界は不完全だ。だから、美しい。 ---\n" ;;
@@ -100,12 +110,11 @@ fi
 local end_status="%(?:%{$fg_bold[green]%}☀:%{$fg_bold[red]%}⚡)"
 
 # Check the UID
-if [ $UID -ge 1000 ]; then # normal user
+if [ $UID -ge $normal_uid ]; then # normal_user
 	local start_status="%{$fg_bold[green]%}▶"
 	local mid1_status="%{$fg_bold[yellow]%}%n"	
 	local mid2_status="%{$fg_bold[cyan]%}➜"
 	local end2_status="%{$fg_bold[blue]%}%T"
-	
 elif [ $UID -eq 0 ]; then # root
 	local start_status="%{$fg_bold[blue]%}▶"
 	local mid1_status="%{$fg_bold[red]%}%n"

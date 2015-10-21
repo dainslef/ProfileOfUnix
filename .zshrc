@@ -2,12 +2,12 @@
 if [ $(uname) = "Darwin" ]; then # Darwin kernel means in OS X
 	export ZSH=/Users/dainslef/.oh-my-zsh # Path to your oh-my-zsh installation.
 	local show_os_version="$(uname -srnm)"
-	local normal_uid=500 # In OS X, the base normal user's uid is 500.
+	local normal_uid=500 # In OS X, the normal user's uid start with 500.
 	plugins=(sudo osx brew)
 elif [ $(uname) = "Linux" ]; then
 	export ZSH=/home/dainslef/.oh-my-zsh
 	local show_os_version="$(uname -ornm)"
-	local normal_uid=1000 # In Linux, the base normal user's uid is 1000.
+	local normal_uid=1000 # In Linux, the normal user's uid start with 1000.
 	plugins=(sudo systemd)
 fi
 
@@ -106,21 +106,21 @@ then
 	esac
 fi
 
-# Show the Command Execute Result with Different Color and Icon
-local end_status="%(?:%{$fg_bold[green]%}☀:%{$fg_bold[red]%}⚡)"
-
 # Check the UID
 if [ $UID -ge $normal_uid ]; then # normal_user
 	local start_status="%{$fg_bold[green]%}▶"
-	local mid1_status="%{$fg_bold[yellow]%}%n"	
+	local mid1_status="%{$fg_bold[yellow]%}%n"
 	local mid2_status="%{$fg_bold[cyan]%}➜"
 	local end2_status="%{$fg_bold[blue]%}%T"
 elif [ $UID -eq 0 ]; then # root
 	local start_status="%{$fg_bold[blue]%}▶"
 	local mid1_status="%{$fg_bold[red]%}%n"
-	local mid2_status="%{$fg_bold[yellow]%}➜"	
+	local mid2_status="%{$fg_bold[yellow]%}➜"
 	local end2_status="%{$fg_bold[cyan]%}%T"
 fi
+
+# Show the Command Execute Result with Different Color and Icon
+local end_status="%(?:%{$fg_bold[green]%}☀:%{$fg_bold[red]%}⚡)"
 
 PROMPT='${start_status} ${mid1_status} %{$fg[magenta]%}%2~%{$fg_bold[blue]%}$(git_prompt_info) ${mid2_status} '
 RPROMPT='${end_status} ${end2_status}%{$reset_color%}'

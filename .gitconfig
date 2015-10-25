@@ -4,3 +4,4 @@
 
 [core]
 	editor = nano
+	autocrlf = input

@@ -100,25 +100,25 @@ set fileencodings=utf-8,gbk,gb2312,gb18030
 "--------------------------------------------------------------------------------------
 "--- Vundle插件管理器 ---
 filetype off
-set rtp+=~/.vim/bundle/Vundle.vim	" 设置Vundle插件的路径
+set rtp+=~/.vim/bundle/Vundle.vim " 设置Vundle插件的路径
 call vundle#begin()
 
 "->安装插件列表
-Plugin 'gmarik/Vundle.vim' 		" let Vundle manage Vundle, required
-Plugin 'Lokaltog/vim-powerline' 	" 来自github的vim插件，写成这样的格式
-Plugin 'scrooloose/syntastic'		" 语法检测插件
-Plugin 'fholgado/minibufexpl.vim'	
-Plugin 'ervandew/supertab'
-Plugin 'flazz/vim-colorschemes'		" vim主题配色集
-" Plugin 'altercation/vim-colors-solarized'	" solarized主题配色插件
-" Plugin 'ervandew/eclim'			" 类似eclipse的java插件
-Plugin 'terryma/vim-multiple-cursors' 	" 多点编辑插件，选中目标后可以用ctrl+n键批量重构同名变量
-Plugin 'Shougo/neocomplcache.vim'		" 补全插件
-" Plugin 'Valloric/YouCompleteMe'			" 高级补全插件，支持语法补全
-Plugin 'taglist.vim'			" 来自github中vim-scripts收集的插件直接写名字,不过很可能获得的是旧版本
-Plugin 'winmanager--Fox'		" 窗口管理插件
-Plugin 'derekwyatt/vim-scala'	" vim默认没有提供scala语言的支持，使用插件添加对scala语言支持
-call vundle#end()            	" required
+Plugin 'gmarik/Vundle.vim' " let Vundle manage Vundle, required
+Plugin 'Lokaltog/vim-powerline' " 来自github的vim插件，写成这样的格式
+Plugin 'scrooloose/syntastic' " 语法检测插件
+Plugin 'fholgado/minibufexpl.vim'
+Plugin 'flazz/vim-colorschemes' " vim主题配色集
+Plugin 'terryma/vim-multiple-cursors' " 多点编辑插件，选中目标后可以用ctrl+n键批量重构同名变量
+Plugin 'Shougo/neocomplcache.vim' " 轻量级的代码补全插件
+Plugin 'taglist.vim' " 来自github中vim-scripts收集的插件直接写名字,不过很可能获得的是旧版本
+Plugin 'winmanager--Fox' " 窗口管理插件
+Plugin 'derekwyatt/vim-scala' " vim默认没有提供scala语言的支持，使用插件添加对scala语言支持
+Plugin 'fatih/vim-go' " golang插件
+" Plugin 'Valloric/YouCompleteMe' " 高级补全插件，支持语法补全
+" Plugin 'ervandew/eclim' " 类似eclipse的java插件
+" Plugin 'altercation/vim-colors-solarized' " solarized主题配色插件
+call vundle#end() " required
 filetype plugin indent on " 开启插件
 
 "->Vundle常用指令
@@ -131,44 +131,44 @@ filetype plugin indent on " 开启插件
 
 "--------------------------------------------------------------------------------------
 "--- WinManager配置 ---
-let g:winManagerWindowLayout = "TagList|FileExplorer"		" 设置WinManager管理的插件
-let g:winManagerWidth = 35									" 设置WinManager侧边栏的大小
-let g:persistentBehaviour = 0								" 设置关闭所有文件时自动关闭WinManager
-nmap wm :WMToggle<cr>										" 定义打开关闭WinManager快捷键为wm
+let g:winManagerWindowLayout = "TagList|FileExplorer" " 设置WinManager管理的插件
+let g:winManagerWidth = 35 " 设置WinManager侧边栏的大小
+let g:persistentBehaviour = 0 " 设置关闭所有文件时自动关闭WinManager
+nmap wm :WMToggle<cr> " 定义打开关闭WinManager快捷键为wm
 
 
 "--------------------------------------------------------------------------------------
 "--- Taglist 配置 ---
-" nmap tl :TlistToggle<cr>	" 设置taglist的快捷键为tl。
-" let Tlist_Use_Horiz_Window = 1	" 设置tag窗口横向显示
-" let Tlist_Show_One_File = 1	" 不同时显示多个文件的tag，只显示当前文件的
-" let Tlist_Auto_Open = 1	" 打开vim时自动打开tag窗口
-let Tlist_Exit_OnlyWindow = 1	" 关闭vim时关闭tag窗口
-let Tlist_Auto_Update = 1	" 默认更新taglist
-" let Tlist_File_Fold_Auto_Close = 1	" 只显示当前文件的taglist，其它的taglist都被折叠
-let Tlist_Show_Menu = 1		" 显示taglist菜单
-" let Tlist_Use_SingleClick = 0	" 设置点击跳转tag的方式，0为双击跳转，1为单击跳转
-" let Tlist_Use_Right_Window = 1	" 设置tag窗口靠右显示（默认窗口靠左）
-" let Tlist_Process_File_Always = 1	" taglist始终解析文件中的tag，不管taglist窗口有没有打开
+let Tlist_Show_Menu = 1 " 显示taglist菜单
+let Tlist_Auto_Update = 1 " 默认更新taglist
+let Tlist_Exit_OnlyWindow = 1 " 关闭vim时关闭tag窗口
+" nmap tl :TlistToggle<cr> " 设置taglist的快捷键为tl。
+" let Tlist_Use_Horiz_Window = 1 " 设置tag窗口横向显示
+" let Tlist_Show_One_File = 1 " 不同时显示多个文件的tag，只显示当前文件的
+" let Tlist_Auto_Open = 1 " 打开vim时自动打开tag窗口
+" let Tlist_File_Fold_Auto_Close = 1 " 只显示当前文件的taglist，其它的taglist都被折叠
+" let Tlist_Use_SingleClick = 0 " 设置点击跳转tag的方式，0为双击跳转，1为单击跳转
+" let Tlist_Use_Right_Window = 1 " 设置tag窗口靠右显示（默认窗口靠左）
+" let Tlist_Process_File_Always = 1 " taglist始终解析文件中的tag，不管taglist窗口有没有打开
 
 
 "--------------------------------------------------------------------------------------
 "--- PowerLine配置 ---
-let g:Powerline_symbols = 'unicode' 	" 指定powerline插件采用的特殊字符类型，共有三种，分别为compatible(无特殊字符)，unicode(简单特殊字符)，fancy(完整字符集，需要patch字体，包含图标样式)，建议采用unicode字符类型
-let g:Powerline_stl_path_style = 'short' 	" 制定文件路径的显示方式
-set t_Co=256	" 告知终端支持256色显示
+let g:Powerline_symbols = 'unicode' " 指定powerline插件采用的特殊字符类型，共有三种，分别为compatible(无特殊字符)，unicode(简单特殊字符)，fancy(完整字符集，需要patch字体，包含图标样式)，建议采用unicode字符类型
+let g:Powerline_stl_path_style = 'short' " 制定文件路径的显示方式
+set t_Co=256 " 告知终端支持256色显示
 
 
 "--------------------------------------------------------------------------------------
 "--- neocomplcache配置 ---
-let g:neocomplcache_enable_at_startup = 1  		" 在系统启动的时候启动neo  
-let g:neocomplcache_enable_auto_select = 1 		" 提示的时候默认选择地一个，否则需要手动选取
-let g:neocomplcache_enable_smart_case = 1		" 开启只能匹配
-let g:neocomplcache_min_syntax_length = 3		" 设置最小匹配长度
+let g:neocomplcache_enable_at_startup = 1 " 在vim打开的时候启动
+let g:neocomplcache_enable_auto_select = 1 " 提示的时候默认选择地一个，否则需要手动选取
+let g:neocomplcache_enable_smart_case = 1 " 开启智能匹配
+let g:neocomplcache_min_syntax_length = 3 " 设置最小匹配长度
 let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
-let g:neocomplcache_enable_cursor_hold_i = 1		" 在输入模式下，移动光标时不会触发补全菜单
-let g:neocomplcache_enable_insert_char_pre = 1		" 快速匹配先前输入的内容，加快匹配速度
-let g:neocomplcache_enable_auto_select = 1		" 默认补全光标自动开启
+let g:neocomplcache_enable_cursor_hold_i = 1 " 在输入模式下，移动光标时不会触发补全菜单
+let g:neocomplcache_enable_insert_char_pre = 1 " 快速匹配先前输入的内容，加快匹配速度
+let g:neocomplcache_enable_auto_select = 1 " 默认补全光标自动开启
 
 "->定义补全字典
 let g:neocomplcache_dictionary_filetype_lists = {
@@ -206,11 +206,11 @@ let g:neocomplcache_force_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\
 
 "--------------------------------------------------------------------------------------
 "--- syntastic配置 ---
-let g:syntastic_check_on_open = 1		" 首次打开文件时即开始检测语法错误
-let g:syntastic_error_symbol = "✗"		" 设置语法错误的提示
-let g:syntastic_warning_symbol = "⚠"	" 设置语法警告的提示
-let g:syntastic_cpp_compiler_options = "-std=c++1y"		" 检测c++语法时支持c++1y的新特性
-let g:syntastic_ignore_files = [".*\.m$"]	" 忽略Objective-C语言的语法检测(objc的检测体验很差)
+let g:syntastic_check_on_open = 1 " 首次打开文件时即开始检测语法错误
+let g:syntastic_error_symbol = "✗" " 设置语法错误的提示
+let g:syntastic_warning_symbol = "⚠" " 设置语法警告的提示
+let g:syntastic_cpp_compiler_options = "-std=c++1y" " 检测c++语法时支持c++1y的新特性
+let g:syntastic_ignore_files = [".*\.m$"] " 忽略Objective-C语言的语法检测(objc的检测体验很差)
 
 
 "--------------------------------------------------------------------------------------

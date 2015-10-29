@@ -39,8 +39,9 @@ set smarttab " 在行和段开始处使用制表符
 set confirm " 处理只读或未保存文件时，弹出确认
 set showcmd " 在命令栏右侧显示输入的命令
 set linebreak " 使用整词换行
-set nobackup " 不生成以'~'结尾的备份文件
 set noswapfile " 打开文件时不生成以'swp'后缀的临时交换文件
+set lbr " 不在单词中间拆行
+set t_Co=256 " 告知终端支持256色显示
 " set t_vb= " 置空错误铃声的终端代码
 " set guioptions-=T " 隐藏工具栏
 " set guioptions-=m " 隐藏菜单栏
@@ -159,18 +160,19 @@ let Tlist_Exit_OnlyWindow = 1 " 关闭vim时关闭tag窗口
 "--- PowerLine配置 ---
 " let g:Powerline_symbols = 'compatible' " 指定powerline插件采用的特殊字符类型，共有三种，分别为compatible(无特殊字符)，unicode(简单特殊字符)，fancy(完整字符集，需要patch字体，包含图标样式)，建议采用unicode字符类型
 " let g:Powerline_stl_path_style = 'short' " 制定文件路径的显示方式
-" set t_Co=256 " 告知终端支持256色显示
 
 
 "--------------------------------------------------------------------------------------
 "--- vim-arline配置 ---
 let g:airline_theme = 'powerlineish' " 设置主题
-let g:airline_left_sep = '' " 设置下标签栏左分隔符
-let g:airline_right_sep = '' " 设置下标签栏右分隔符
+let g:airline_left_sep = '▶' " 设置下标签栏左分隔符
+let g:airline_right_sep = '◀' " 设置下标签栏右分隔符
 let g:airline#extensions#tabline#enabled = 1 " 显示标签栏
-let g:airline#extensions#tabline#left_sep = '▶' " 设置上标签栏左前分隔符
+let g:airline#extensions#tabline#left_sep = '✎' " 设置上标签栏左前分隔符
 let g:airline#extensions#tabline#left_alt_sep = '◀' " 设置上标签栏左后分隔符
-let g:airline#extensions#tabline#right_sep = '«' " 设置上标签栏右分隔符
+let g:airline#extensions#tabline#right_sep = '☰' " 设置上标签栏右分隔符
+" let g:airline_powerline_fonts = 1 " 使用powerline字体
+" let g:airline_symbols = {'crypt':'1', 'inenr':'¶', 'branch':'⎇', 'paste':'∥', 'whitespace':'Ξ'} " 定义特殊符号集
 
 
 "--------------------------------------------------------------------------------------
@@ -186,19 +188,19 @@ let g:neocomplcache_enable_auto_select = 1 " 默认补全光标自动开启
 
 "->定义补全字典
 let g:neocomplcache_dictionary_filetype_lists = {
-    \ 'default' : '',
-    \ 'vimshell' : $HOME.'/.vimshell_hist',
-    \ 'scheme' : $HOME.'/.gosh_completions'
-    \ }
+	\ 'default' : '',
+	\ 'vimshell' : $HOME.'/.vimshell_hist',
+	\ 'scheme' : $HOME.'/.gosh_completions'
+	\ }
 
 "->定义补全关键字
 if !exists('g:neocomplcache_keyword_patterns')
-    let g:neocomplcache_keyword_patterns = {}
+	let g:neocomplcache_keyword_patterns = {}
 endif
 let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 
 "->ctrl+z撤销已补全的内容再次匹配，ctrl+j主动弹出补全菜单
-inoremap <expr><C-z>     neocomplcache#undo_completion()		
+inoremap <expr><C-z>     neocomplcache#undo_completion()
 inoremap <expr><C-j>     neocomplcache#complete_common_string()
 
 "->启动vim自带的omni补全
@@ -210,7 +212,7 @@ autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 
 "->使用重度omni补全特性
 if !exists('g:neocomplcache_force_omni_patterns')
-  let g:neocomplcache_force_omni_patterns = {}
+	let g:neocomplcache_force_omni_patterns = {}
 endif
 let g:neocomplcache_force_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
 let g:neocomplcache_force_omni_patterns.perl = '\h\w*->\h\w*\|\h\w*::'

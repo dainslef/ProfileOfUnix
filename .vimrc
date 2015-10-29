@@ -105,9 +105,8 @@ call vundle#begin()
 
 "->安装插件列表
 Plugin 'gmarik/Vundle.vim' " let Vundle manage Vundle, required
-Plugin 'Lokaltog/vim-powerline' " 来自github的vim插件，写成这样的格式
+Plugin 'bling/vim-airline' " 相比vim-powerline而言功能更加强大
 Plugin 'scrooloose/syntastic' " 语法检测插件
-Plugin 'fholgado/minibufexpl.vim'
 Plugin 'flazz/vim-colorschemes' " vim主题配色集
 Plugin 'terryma/vim-multiple-cursors' " 多点编辑插件，选中目标后可以用ctrl+n键批量重构同名变量
 Plugin 'Shougo/neocomplcache.vim' " 轻量级的代码补全插件
@@ -115,6 +114,8 @@ Plugin 'taglist.vim' " 来自github中vim-scripts收集的插件直接写名字,
 Plugin 'winmanager--Fox' " 窗口管理插件
 Plugin 'derekwyatt/vim-scala' " vim默认没有提供scala语言的支持，使用插件添加对scala语言支持
 Plugin 'fatih/vim-go' " golang插件
+" Plugin 'fholgado/minibufexpl.vim' " 窗口标签插件，功能已由vim-airline提供
+" Plugin 'Lokaltog/vim-powerline' " 来自github的vim插件，写成这样的格式
 " Plugin 'Valloric/YouCompleteMe' " 高级补全插件，支持语法补全
 " Plugin 'ervandew/eclim' " 类似eclipse的java插件
 " Plugin 'altercation/vim-colors-solarized' " solarized主题配色插件
@@ -154,9 +155,20 @@ let Tlist_Exit_OnlyWindow = 1 " 关闭vim时关闭tag窗口
 
 "--------------------------------------------------------------------------------------
 "--- PowerLine配置 ---
-let g:Powerline_symbols = 'unicode' " 指定powerline插件采用的特殊字符类型，共有三种，分别为compatible(无特殊字符)，unicode(简单特殊字符)，fancy(完整字符集，需要patch字体，包含图标样式)，建议采用unicode字符类型
-let g:Powerline_stl_path_style = 'short' " 制定文件路径的显示方式
-set t_Co=256 " 告知终端支持256色显示
+" let g:Powerline_symbols = 'compatible' " 指定powerline插件采用的特殊字符类型，共有三种，分别为compatible(无特殊字符)，unicode(简单特殊字符)，fancy(完整字符集，需要patch字体，包含图标样式)，建议采用unicode字符类型
+" let g:Powerline_stl_path_style = 'short' " 制定文件路径的显示方式
+" set t_Co=256 " 告知终端支持256色显示
+
+
+"--------------------------------------------------------------------------------------
+"--- vim-arline配置 ---
+let g:airline_theme = 'powerlineish' " 设置主题
+let g:airline_left_sep = '' " 设置下标签栏左分隔符
+let g:airline_right_sep = '' " 设置下标签栏右分隔符
+let g:airline#extensions#tabline#enabled = 1 " 显示标签栏
+let g:airline#extensions#tabline#left_sep = '▶' " 设置上标签栏左前分隔符
+let g:airline#extensions#tabline#left_alt_sep = '◀' " 设置上标签栏左后分隔符
+let g:airline#extensions#tabline#right_sep = '«' " 设置上标签栏右分隔符
 
 
 "--------------------------------------------------------------------------------------

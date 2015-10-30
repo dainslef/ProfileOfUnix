@@ -165,14 +165,14 @@ let Tlist_Exit_OnlyWindow = 1 " 关闭vim时关闭tag窗口
 "--------------------------------------------------------------------------------------
 "--- vim-arline配置 ---
 let g:airline_theme = 'powerlineish' " 设置主题
-let g:airline_left_sep = '▶' " 设置下标签栏左分隔符
-let g:airline_right_sep = '◀' " 设置下标签栏右分隔符
+let g:airline_left_sep = '' " 设置下标签栏左分隔符
+let g:airline_right_sep = '' " 设置下标签栏右分隔符
 let g:airline#extensions#tabline#enabled = 1 " 显示标签栏
 let g:airline#extensions#tabline#left_sep = '✎' " 设置上标签栏左前分隔符
 let g:airline#extensions#tabline#left_alt_sep = '◀' " 设置上标签栏左后分隔符
 let g:airline#extensions#tabline#right_sep = '☰' " 设置上标签栏右分隔符
-" let g:airline_powerline_fonts = 1 " 使用powerline字体
-" let g:airline_symbols = {'crypt':'1', 'inenr':'¶', 'branch':'⎇', 'paste':'∥', 'whitespace':'Ξ'} " 定义特殊符号集
+let g:airline_powerline_fonts = 1 " 使用powerline字体
+" let g:airline_symbols = {'crypt':'1', 'inenr':'¶', 'branch':'⎇', 'paste':'∥', 'whitespace':'Ξ'} " 自定义特殊符号集
 
 
 "--------------------------------------------------------------------------------------

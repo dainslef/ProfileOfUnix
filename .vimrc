@@ -49,6 +49,12 @@ set t_Co=256 " 告知终端支持256色显示
 
 
 "--------------------------------------------------------------------------------------
+"--- 设置快捷键 ---
+map <S-Left> :bp<CR> " shift + 左方向键 切换到前一个文件
+map <S-Right> :bn<CR> " shift + 右方向键 切换到后一个文件
+
+
+"--------------------------------------------------------------------------------------
 "--- 设置语法折叠 ---
 " set foldenable " 开始折叠
 " set foldmethod=syntax " 设置语法折叠
@@ -200,8 +206,8 @@ endif
 let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 
 "->ctrl+z撤销已补全的内容再次匹配，ctrl+j主动弹出补全菜单
-inoremap <expr><C-z>     neocomplcache#undo_completion()
-inoremap <expr><C-j>     neocomplcache#complete_common_string()
+inoremap <expr><C-z> neocomplcache#undo_completion()
+inoremap <expr><C-j> neocomplcache#complete_common_string()
 
 "->启动vim自带的omni补全
 autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
@@ -227,6 +233,7 @@ let g:syntastic_error_symbol = "✗" " 设置语法错误的提示
 let g:syntastic_warning_symbol = "⚠" " 设置语法警告的提示
 let g:syntastic_cpp_compiler_options = "-std=c++1y" " 检测c++语法时支持c++1y的新特性
 let g:syntastic_ignore_files = [".*\.m$"] " 忽略objective-C语言的语法检测(objc的检测体验很差)
+let g:syntastic_python_python_exe = "python3" " 检查python语法时使用python3语法
 
 
 "--------------------------------------------------------------------------------------

@@ -55,6 +55,14 @@ map <S-Right> :bn<CR> " shift + 右方向键 切换到后一个文件
 
 
 "--------------------------------------------------------------------------------------
+"--- 设置文件类型检测 ---
+autocmd BufNewFile,BufReadPost *.md set filetype=markdown
+autocmd BufNewFile,BufReadPost *.MD set filetype=markdown " 将*.md/MD格式的文件作为markdown文件进行语法解析
+autocmd BufNewFile,BufReadPost *.m set filetype=objc " 将*.m格式的文件作为Objective-C源码进行解析
+autocmd BufNewFile,BufReadPost *.mm set filetype=objcpp " 将*.mm格式的文件作为Objective-CPP源码进行解析
+
+
+"--------------------------------------------------------------------------------------
 "--- 设置语法折叠 ---
 " set foldenable " 开始折叠
 " set foldmethod=syntax " 设置语法折叠

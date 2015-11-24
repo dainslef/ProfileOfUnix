@@ -24,7 +24,7 @@ set matchtime=2 " 短暂跳转到匹配括号的时间
 set magic " 设置魔术
 set hidden " 允许在有未保存的修改时切换缓冲区，此时的修改由 vim 负责保存
 set smartindent " 开启新行时使用智能自动缩进
-set backspace=indent,eol,start	" 不设定在插入状态无法用退格键和 Delete 键删除回车符
+set backspace=indent,eol,start " 不设定在插入状态无法用退格键和 Delete 键删除回车符
 set cmdheight=1 " 设定命令行的行数为 1
 set laststatus=2 " 显示状态栏 (默认值为 1, 无法显示状态栏)
 set wildmenu " 使用命令行补全
@@ -42,6 +42,8 @@ set linebreak " 使用整词换行
 set noswapfile " 打开文件时不生成以'swp'后缀的临时交换文件
 set lbr " 不在单词中间拆行
 set t_Co=256 " 告知终端支持256色显示
+set list " 显示特殊符号
+set listchars=tab:›\ ,trail:•,extends:#,nbsp:.,eol:¬ " 设置tab、行尾等位置的特殊符号的显示
 " set t_vb= " 置空错误铃声的终端代码
 " set guioptions-=T " 隐藏工具栏
 " set guioptions-=m " 隐藏菜单栏
@@ -55,7 +57,7 @@ map <S-Right> :bn<CR> " shift + 右方向键 切换到后一个文件
 
 
 "--------------------------------------------------------------------------------------
-"--- 设置文件类型检测 ---
+"--- 设置文件读取 ---
 autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 autocmd BufNewFile,BufReadPost *.MD set filetype=markdown " 将*.md/MD格式的文件作为markdown文件进行语法解析
 autocmd BufNewFile,BufReadPost *.m set filetype=objc " 将*.m格式的文件作为Objective-C源码进行解析
@@ -131,6 +133,7 @@ Plugin 'taglist.vim' " 来自github中vim-scripts收集的插件直接写名字,
 Plugin 'winmanager--Fox' " 窗口管理插件
 Plugin 'derekwyatt/vim-scala' " vim默认没有提供scala语言的支持，使用插件添加对scala语言支持
 Plugin 'fatih/vim-go' " golang插件
+Plugin 'plasticboy/vim-markdown' " markdown语法高亮插件
 " Plugin 'fholgado/minibufexpl.vim' " 窗口标签插件，功能已由vim-airline提供
 " Plugin 'Lokaltog/vim-powerline' " 来自github的vim插件，写成这样的格式
 " Plugin 'Valloric/YouCompleteMe' " 高级补全插件，支持语法补全
@@ -144,7 +147,7 @@ filetype plugin indent on " 开启插件
 " :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
 " :PluginSearch foo - searches for foo; append `!` to refresh local cache
 " :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
-" :PluginUpdate		- update all the plugins which you have installed
+" :PluginUpdate     - update all the plugins which you have installed
 
 
 "--------------------------------------------------------------------------------------
@@ -187,6 +190,12 @@ let g:airline#extensions#tabline#left_alt_sep = '◀' " 设置上标签栏左后
 let g:airline#extensions#tabline#right_sep = '☰' " 设置上标签栏右分隔符
 let g:airline_powerline_fonts = 1 " 使用powerline字体
 " let g:airline_symbols = {'crypt':'1', 'inenr':'¶', 'branch':'⎇', 'paste':'∥', 'whitespace':'Ξ'} " 自定义特殊符号集
+
+
+"--------------------------------------------------------------------------------------
+"--- vim-markdown 配置 ---
+let g:vim_markdown_folding_disabled = 1 " 关闭插件默认的语法折叠
+let g:vim_markdown_math = 1 " 开启LaTex数学公式解析
 
 
 "--------------------------------------------------------------------------------------

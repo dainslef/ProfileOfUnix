@@ -255,8 +255,7 @@ let g:syntastic_python_python_exe = "python3" " 检查python语法时使用pytho
 
 "--------------------------------------------------------------------------------------
 "--- 常用的几个主题 ---
-" colorscheme darkzen
-" colorschem matrix
+colorschem molokai
 " colorschem zenburn
 " colorscheme muon
-colorscheme koehler
+" colorscheme grb256

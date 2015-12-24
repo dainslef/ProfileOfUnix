@@ -3,12 +3,12 @@ if [ $(uname) = "Darwin" ]; then # Darwin kernel means in OS X
 	export ZSH=/Users/dainslef/.oh-my-zsh # Path to your oh-my-zsh installation.
 	local show_os_version="$(uname -srnm)"
 	local normal_uid=500 # In OS X, the normal user's uid start with 500.
-	plugins=(sudo osx brew sublime)
+	plugins=(sudo osx brew sublime scala)
 elif [ $(uname) = "Linux" ]; then
 	export ZSH=/home/dainslef/.oh-my-zsh
 	local show_os_version="$(uname -ornm)"
 	local normal_uid=1000 # In Linux, the normal user's uid start with 1000.
-	plugins=(sudo systemd)
+	plugins=(sudo systemd scala)
 fi
 
 # Set name of the theme to load.
@@ -21,7 +21,7 @@ fi
 # CASE_SENSITIVE="true"
 
 # Uncomment the following line to disable bi-weekly auto-update checks.
-# DISABLE_AUTO_UPDATE="true"
+DISABLE_AUTO_UPDATE="true"
 
 # Uncomment the following line to change how often to auto-update (in days).
 # export UPDATE_ZSH_DAYS=13
@@ -33,7 +33,7 @@ fi
 # DISABLE_AUTO_TITLE="true"
 
 # Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
+ENABLE_CORRECTION="true"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
 # COMPLETION_WAITING_DOTS="true"

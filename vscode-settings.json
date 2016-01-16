@@ -1,0 +1,14 @@
+// Config for Visual Studio Code
+{
+	"editor.fontFamily": "",
+	"editor.fontSize": 13,
+	"editor.tabSize": 4,
+	"editor.wrappingColumn": 0,
+	"editor.quickSuggestionsDelay": 5,
+	"editor.insertSpaces": false,
+	"editor.glyphMargin": true,
+	"editor.formatOnType": true,
+	"editor.renderWhitespace": true,
+	"files.trimTrailingWhitespace": true,
+	"diffEditor.ignoreTrimWhitespace": false
+}

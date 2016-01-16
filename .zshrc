@@ -46,7 +46,7 @@ ENABLE_CORRECTION="true"
 # Uncomment the following line if you want to change the command execution time
 # stamp shown in the history command output.
 # The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# HIST_STAMPS="mm/dd/yyyy"
+HIST_STAMPS="yyyy-mm-dd"
 
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
@@ -59,23 +59,25 @@ ENABLE_CORRECTION="true"
 
 source $ZSH/oh-my-zsh.sh
 
-# User configuration
+# ------------------------------------------------------------------------------
+# -- User configuration --
 
+# Set the custom enviorment variables
 export PATH=$HOME/bin:/usr/local/bin:$PATH
-# export MANPATH="/usr/local/man:$MANPATH"
+export GOPATH=~/Downloads/Golang/
 
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
+# Set language environment
+export LANG=en_US.UTF-8
 
 # Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
+if [[ -n $SSH_CONNECTION ]]; then
+	export EDITOR='vim'
+else
+	export EDITOR='nano'
+fi
 
 # Compilation flags
-# export ARCHFLAGS="-arch x86_64"
+export ARCHFLAGS="-arch x86_64"
 
 # ssh
 # export SSH_KEY_PATH="~/.ssh/dsa_id"
@@ -90,7 +92,7 @@ export PATH=$HOME/bin:/usr/local/bin:$PATH
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 # ------------------------------------------------------------------------------
-# -- theme --
+# -- Theme --
 
 # Cheak if you are root user
 if [ $(whoami) != "root" ]
@@ -98,11 +100,12 @@ then
 	echo $show_os_version
 	echo $(date)
 	echo --- Welcome, $(whoami). Try your best everyday! ---
-	case $[$RANDOM % 4] in
+	case $[$RANDOM % 5] in
 		0) echo "--- 夢に描けることなら、実現できる。 ---\n" ;;
 		1) echo "--- 一日は貴い一生である。これを空費してはならない。 ---\n" ;;
-		2) echo "--- 完璧などはありえない。この世界は不完全だ。だから、美しい。 ---\n" ;;
+		2) echo "--- 世界は美しくなんかない。そしてそれ故に、美しい。 ---\n" ;;
 		3) echo "--- 春は夜桜、夏には星、秋に満月、冬には雪。 ---\n" ;;
+		4) echo "--- あなたもきっと、誰かの奇跡。 ---\n" ;;
 	esac
 fi
 

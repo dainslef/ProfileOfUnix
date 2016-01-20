@@ -132,7 +132,10 @@ Plugin 'Shougo/neocomplcache.vim' " 轻量级的代码补全插件
 Plugin 'taglist.vim' " 来自github中vim-scripts收集的插件直接写名字,不过很可能获得的是旧版本
 Plugin 'winmanager--Fox' " 窗口管理插件
 Plugin 'derekwyatt/vim-scala' " vim默认没有提供scala语言的支持，使用插件添加对scala语言支持
+Plugin 'klen/python-mode' " python插件
 Plugin 'fatih/vim-go' " golang插件
+Plugin 'vim-ruby/vim-ruby' " ruby插件
+Plugin 'tpope/vim-rails' " ROR插件
 Plugin 'plasticboy/vim-markdown' " markdown语法高亮插件
 " Plugin 'fholgado/minibufexpl.vim' " 窗口标签插件，功能已由vim-airline提供
 " Plugin 'Lokaltog/vim-powerline' " 来自github的vim插件，写成这样的格式
@@ -251,6 +254,15 @@ let g:syntastic_warning_symbol = "⚠" " 设置语法警告的提示
 let g:syntastic_cpp_compiler_options = "-std=c++1y" " 检测c++语法时支持c++1y的新特性
 let g:syntastic_ignore_files = [".*\.m$"] " 忽略objective-C语言的语法检测(objc的检测体验很差)
 let g:syntastic_python_python_exe = "python3" " 检查python语法时使用python3语法
+
+
+"--------------------------------------------------------------------------------------
+"--- pymode配置 ---
+let g:pymode_quickfix_minheight = 3 " 设置快速提示栏最小高度
+let g:pymode_quickfix_maxheight = 5 " 设置快速提示栏最大高度
+let g:pymode_lint_cwindow = 0 " 关闭快速提示栏的默认显示
+let g:pymode_folding = 0 " 关闭默认的代码折叠
+let g:pymode_options = 0 " 关闭pymode下的一些默认选项
 
 
 "--------------------------------------------------------------------------------------

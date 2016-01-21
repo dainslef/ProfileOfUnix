@@ -1,9 +1,10 @@
-set nocompatible " 关闭 vi 兼容模式
 filetype on " 开启文件类型插件
 filetype plugin on " 载入文件类型相关插件
 filetype indent on " 为特定文件类型载入相关缩进文件
 syntax enable " 显示语法高亮
 syntax on " 开启文件类型语法检测
+set lines=40 columns=120 "设置gvim模式下的默认窗口大小
+set nocompatible " 关闭 vi 兼容模式
 set number " 显示行号
 set cursorline " 突出显示当前行
 set ruler " 打开状态栏标尺

@@ -3,7 +3,6 @@ filetype plugin on " 载入文件类型相关插件
 filetype indent on " 为特定文件类型载入相关缩进文件
 syntax enable " 显示语法高亮
 syntax on " 开启文件类型语法检测
-set lines=40 columns=120 "设置gvim模式下的默认窗口大小
 set nocompatible " 关闭 vi 兼容模式
 set number " 显示行号
 set cursorline " 突出显示当前行
@@ -49,6 +48,7 @@ set listchars=tab:›\ ,trail:•,extends:#,nbsp:.,eol:¬ " 设置tab、行尾�
 " set guioptions-=T " 隐藏工具栏
 " set guioptions-=m " 隐藏菜单栏
 " set cursorcolumn " 打开纵向高亮对齐
+" set lines=40 columns=120 "设置gvim模式下的默认窗口大小
 
 
 "--------------------------------------------------------------------------------------
@@ -133,11 +133,11 @@ Plugin 'Shougo/neocomplcache.vim' " 轻量级的代码补全插件
 Plugin 'taglist.vim' " 来自github中vim-scripts收集的插件直接写名字,不过很可能获得的是旧版本
 Plugin 'winmanager--Fox' " 窗口管理插件
 Plugin 'derekwyatt/vim-scala' " vim默认没有提供scala语言的支持，使用插件添加对scala语言支持
-Plugin 'klen/python-mode' " python插件
 Plugin 'fatih/vim-go' " golang插件
 Plugin 'vim-ruby/vim-ruby' " ruby插件
 Plugin 'tpope/vim-rails' " ROR插件
 Plugin 'plasticboy/vim-markdown' " markdown语法高亮插件
+" Plugin 'klen/python-mode' " python插件
 " Plugin 'fholgado/minibufexpl.vim' " 窗口标签插件，功能已由vim-airline提供
 " Plugin 'Lokaltog/vim-powerline' " 来自github的vim插件，写成这样的格式
 " Plugin 'Valloric/YouCompleteMe' " 高级补全插件，支持语法补全
@@ -175,12 +175,6 @@ let Tlist_Exit_OnlyWindow = 1 " 关闭vim时关闭tag窗口
 " let Tlist_Use_SingleClick = 0 " 设置点击跳转tag的方式，0为双击跳转，1为单击跳转
 " let Tlist_Use_Right_Window = 1 " 设置tag窗口靠右显示（默认窗口靠左）
 " let Tlist_Process_File_Always = 1 " taglist始终解析文件中的tag，不管taglist窗口有没有打开
-
-
-"--------------------------------------------------------------------------------------
-"--- PowerLine配置 ---
-" let g:Powerline_symbols = 'compatible' " 指定powerline插件采用的特殊字符类型，共有三种，分别为compatible(无特殊字符)，unicode(简单特殊字符)，fancy(完整字符集，需要patch字体，包含图标样式)，建议采用unicode字符类型
-" let g:Powerline_stl_path_style = 'short' " 制定文件路径的显示方式
 
 
 "--------------------------------------------------------------------------------------
@@ -259,11 +253,17 @@ let g:syntastic_python_python_exe = "python3" " 检查python语法时使用pytho
 
 "--------------------------------------------------------------------------------------
 "--- pymode配置 ---
-let g:pymode_quickfix_minheight = 3 " 设置快速提示栏最小高度
-let g:pymode_quickfix_maxheight = 5 " 设置快速提示栏最大高度
-let g:pymode_lint_cwindow = 0 " 关闭快速提示栏的默认显示
-let g:pymode_folding = 0 " 关闭默认的代码折叠
-let g:pymode_options = 0 " 关闭pymode下的一些默认选项
+" let g:pymode_quickfix_minheight = 3 " 设置快速提示栏最小高度
+" let g:pymode_quickfix_maxheight = 5 " 设置快速提示栏最大高度
+" let g:pymode_lint_cwindow = 0 " 关闭快速提示栏的默认显示
+" let g:pymode_folding = 0 " 关闭默认的代码折叠
+" let g:pymode_options = 0 " 关闭pymode下的一些默认选项
+
+
+"--------------------------------------------------------------------------------------
+"--- PowerLine配置 ---
+" let g:Powerline_symbols = 'compatible' " 指定powerline插件采用的特殊字符类型，共有三种，分别为compatible(无特殊字符)，unicode(简单特殊字符)，fancy(完整字符集，需要patch字体，包含图标样式)，建议采用unicode字符类型
+" let g:Powerline_stl_path_style = 'short' " 制定文件路径的显示方式
 
 
 "--------------------------------------------------------------------------------------

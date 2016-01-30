@@ -57,14 +57,14 @@ HIST_STAMPS="yyyy-mm-dd"
 # Add wisely, as too many plugins slow down shell startup.
 # plugins=(sudo systemd) # load plugins at first
 
-source $ZSH/oh-my-zsh.sh
-
 # ------------------------------------------------------------------------------
 # -- User configuration --
 
+source $ZSH/oh-my-zsh.sh
+
 # Set the custom enviorment variables
-export PATH=$HOME/bin:/usr/local/bin:$PATH
 export GOPATH=~/Downloads/Golang/
+export PATH=~/Public/activator-dist-1.3.7/:/usr/local/bin:$PATH
 
 # Set language environment
 export LANG=en_US.UTF-8
@@ -111,19 +111,19 @@ fi
 
 # Check the UID
 if [ $UID -ge $normal_uid ]; then # normal_user
-	local start_status="%{$fg_bold[green]%}▶"
+	local start_status="%{$fg_bold[green]%}➜"
 	local mid1_status="%{$fg_bold[yellow]%}%n"
-	local mid2_status="%{$fg_bold[cyan]%}➜"
+	local mid2_status="%{$fg_bold[cyan]%}⇒"
 	local end2_status="%{$fg_bold[blue]%}%T"
 elif [ $UID -eq 0 ]; then # root
-	local start_status="%{$fg_bold[blue]%}▶"
+	local start_status="%{$fg_bold[blue]%}➜"
 	local mid1_status="%{$fg_bold[red]%}%n"
-	local mid2_status="%{$fg_bold[yellow]%}➜"
+	local mid2_status="%{$fg_bold[yellow]%}⇒"
 	local end2_status="%{$fg_bold[cyan]%}%T"
 fi
 
 # Show the Command Execute Result with Different Color and Icon
-local end_status="%(?:%{$fg_bold[green]%}☀:%{$fg_bold[red]%}⚡)"
+local end_status="%(?:%{$fg_bold[green]%}✔:%{$fg_bold[red]%}✘)"
 
 PROMPT='${start_status} ${mid1_status} %{$fg[magenta]%}%2~%{$fg_bold[blue]%}$(git_prompt_info) ${mid2_status} '
 RPROMPT='${end_status} ${end2_status}%{$reset_color%}'
@@ -138,7 +138,7 @@ ZSH_THEME_GIT_PROMPT_ADDED="%{$fg[green]%}✚"
 ZSH_THEME_GIT_PROMPT_MODIFIED="%{$fg[blue]%}✹"
 ZSH_THEME_GIT_PROMPT_DELETED="%{$fg[red]%}✖"
 ZSH_THEME_GIT_PROMPT_RENAMED="%{$fg[magenta]%}❤"
-ZSH_THEME_GIT_PROMPT_UNMERGED="%{$fg[yellow]%}♒"
+ZSH_THEME_GIT_PROMPT_UNMERGED="%{$fg[yellow]%}↹"
 ZSH_THEME_GIT_PROMPT_UNTRACKED="%{$fg[cyan]%}✭"
 
 # ------------------------------------------------------------------------------
@@ -169,5 +169,7 @@ ZSH_THEME_GIT_PROMPT_UNTRACKED="%{$fg[cyan]%}✭"
 
 # More symbols to choose from:
 # ☀ ✹ ☄ ♆ ♀ ♁ ♐ ♇ ♈ ♉ ♚ ♛ ♜ ♝ ♞ ♟ ♠ ♣ ⚢ ⚲ ⚳ ⚴ ⚥ ⚤ ⚦ ⚒ ⚑ ⚐ ♺ ♻ ♼ ☰ ☱ ☲ ☳ ☴ ☵ ☶ ☷
-# ✡ ✔ ✖ ✚ ✱ ✤ ✦ ❤ ➜ ➟ ➼ ✂ ✎ ✐ ⨀ ⨁ ⨂ ⨍ ⨎ ⨏ ⨷ ⩚ ⩛ ⩡ ⩱ ⩲ ⩵  ⩶ ⨠ 
-# ➦ ⬅ ⬆ ⬇ ⬈ ⬉ ⬊ ⬋ ⬒ ⬓ ⬔ ⬕ ⬖ ⬗ ⬘ ⬙ ⬟  ⬤ 〒 ǀ ǁ ǂ ĭ Ť Ŧ  
+# ✡ ✔ ✘ ✖ ✚ ✱ ✤ ✦ ❤ ➼ ✂ ✎ ✐ ⨀ ⨁ ⨂ ⨍ ⨎ ⨏ ⨷ ⩚ ⩛ ⩡ ⩱ ⩲ ⩵  ⩶ ⨠
+# ➦ ⬅ ⬆ ⬇ ⬈ ⬉ ⬊ ⬋ ⬒ ⬓ ⬔ ⬕ ⬖ ⬗ ⬘ ⬙ ⬟ ⬤ 〒 ǀ ǁ ǂ ĭ Ť Ŧ  
+# ➢ ➣ ➤ ⇒ ⇓ ⇔ ⇖ ⇗ ⇘ ⇙ ⇐ ⇑ ➩ ⇦ ⇧ ⇨ ⇩ ⇪ ➪ ➫ ➬ ➭ ➮ ➯ ➱ ➲ ➾ ➔ ➘ ➙ ➚ ➛ ➜ ➝ ➞ ➟ ➠ ➡
+# ↭ ↮ ↯ ↰↱ ↲ ↳ ↴ ↵ ↶ ↷ ↸ ↹ ↺ ↻ ↼ ↽ ↾ ↿ ⇀ ⇁ ⇂ ⇃ ⇚ ⇛ ⇜ ⇝ ⇞ ⇟ ⇠ ⇡ ⇢ ⇣ ⇤ ⇥ ⇇ ⇈ ⇉ ⇊

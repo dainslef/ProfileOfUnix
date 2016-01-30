@@ -43,7 +43,7 @@ set noswapfile " 打开文件时不生成以'swp'后缀的临时交换文件
 set lbr " 不在单词中间拆行
 set t_Co=256 " 告知终端支持256色显示
 set list " 显示特殊符号
-set listchars=tab:›\ ,trail:•,extends:#,nbsp:.,eol:¬ " 设置tab、行尾等位置的特殊符号的显示
+set listchars=tab:⇥\ ,trail:•,extends:#,nbsp:.,eol:↵ " 设置tab、行尾等位置的特殊符号的显示
 " set t_vb= " 置空错误铃声的终端代码
 " set guioptions-=T " 隐藏工具栏
 " set guioptions-=m " 隐藏菜单栏

@@ -116,9 +116,9 @@ if [ $UID -ge $normal_uid ]; then # normal_user
 	local mid2_status="%{$fg_bold[cyan]%}⇒"
 	local end2_status="%{$fg_bold[blue]%}%T"
 elif [ $UID -eq 0 ]; then # root
-	local start_status="%{$fg_bold[blue]%}➜"
+	local start_status="%{$fg_bold[yellow]%}➜"
 	local mid1_status="%{$fg_bold[red]%}%n"
-	local mid2_status="%{$fg_bold[yellow]%}⇒"
+	local mid2_status="%{$fg_bold[blue]%}⇒"
 	local end2_status="%{$fg_bold[cyan]%}%T"
 fi
 

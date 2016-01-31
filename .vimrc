@@ -125,7 +125,8 @@ call vundle#begin()
 
 "->安装插件列表
 Plugin 'gmarik/Vundle.vim' " let Vundle manage Vundle, required
-Plugin 'bling/vim-airline' " 相比vim-powerline而言功能更加强大
+Plugin 'vim-airline/vim-airline' " 相比vim-powerline而言功能更加强大
+Plugin 'vim-airline/vim-airline-themes' " vim-airline的主题插件
 Plugin 'scrooloose/syntastic' " 语法检测插件
 Plugin 'flazz/vim-colorschemes' " vim主题配色集
 Plugin 'terryma/vim-multiple-cursors' " 多点编辑插件，选中目标后可以用ctrl+n键批量重构同名变量

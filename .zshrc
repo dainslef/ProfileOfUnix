@@ -3,13 +3,16 @@ if [ $(uname) = "Darwin" ]; then # Darwin kernel means in OS X
 	export ZSH=/Users/dainslef/.oh-my-zsh # Path to your oh-my-zsh installation.
 	local show_os_version="$(uname -srnm)"
 	local normal_uid=500 # In OS X, the normal user's uid start with 500.
-	plugins=(sudo osx brew sublime scala)
+	plugins=(osx brew sublime)
 elif [ $(uname) = "Linux" ]; then
 	export ZSH=/home/dainslef/.oh-my-zsh
 	local show_os_version="$(uname -ornm)"
 	local normal_uid=1000 # In Linux, the normal user's uid start with 1000.
-	plugins=(sudo systemd scala)
+	plugins=(systemd)
 fi
+
+# Add common widgets.
+plugins+=(sudo scala pip gem)
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/

@@ -247,6 +247,7 @@ let g:neocomplcache_force_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\
 let g:syntastic_check_on_open = 1 " 首次打开文件时即开始检测语法错误
 let g:syntastic_error_symbol = "✗" " 设置语法错误的提示
 let g:syntastic_warning_symbol = "⚠" " 设置语法警告的提示
+let g:syntastic_c_compiler_options = "-std=c11" " 检测c语法时使用c11语法
 let g:syntastic_cpp_compiler_options = "-std=c++1y" " 检测c++语法时支持c++1y的新特性
 let g:syntastic_ignore_files = [".*\.m$"] " 忽略objective-C语言的语法检测(objc的检测体验很差)
 let g:syntastic_python_python_exe = "python3" " 检查python语法时使用python3语法

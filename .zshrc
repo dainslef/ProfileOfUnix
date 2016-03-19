@@ -1,14 +1,29 @@
+# Set the custom enviorment variables
+if [ $(whoami) = "dainslef" ]; then
+
+	export GOPATH=~/Downloads/WorkSpace/Golang
+	export PATH=~/Public/activator-dist-1.3.7:/usr/local/bin:$PATH
+
+	if [ $(uname -o) = "GNU/Linux" ]; then
+		PATH+=:~/Public/VSCode-linux-x64
+	elif [ $(uname) = "Darwin" ]; then
+	fi
+
+else
+	export ZSH=~/.oh-my-zsh
+fi
+
 # Check OS type and set the different enviorment variables.
 if [ $(uname) = "Darwin" ]; then # Darwin kernel means in OS X
 	export ZSH=/Users/dainslef/.oh-my-zsh # Path to your oh-my-zsh installation.
 	local show_os_version="$(uname -srnm)"
 	local normal_uid=500 # In OS X, the normal user's uid start with 500.
-	plugins=(osx brew sublime)
+	local plugins=(osx brew sublime)
 elif [ $(uname) = "Linux" ]; then
 	export ZSH=/home/dainslef/.oh-my-zsh
 	local show_os_version="$(uname -ornm)"
 	local normal_uid=1000 # In Linux, the normal user's uid start with 1000.
-	plugins=(systemd)
+	local plugins=(systemd)
 fi
 
 # Add common widgets.
@@ -60,23 +75,20 @@ HIST_STAMPS="yyyy-mm-dd"
 # Add wisely, as too many plugins slow down shell startup.
 # plugins=(sudo systemd) # load plugins at first
 
-# ------------------------------------------------------------------------------
-# -- User configuration --
-
+# Load plugins and themes
 source $ZSH/oh-my-zsh.sh
 
-# Set the custom enviorment variables
-export GOPATH=~/Downloads/Golang/
-export PATH=~/Public/activator-dist-1.3.7/:/usr/local/bin:$PATH
+# ------------------------------------------------------------------------------
+# -- User configuration --
 
 # Set language environment
 export LANG=en_US.UTF-8
 
 # Preferred editor for local and remote sessions
 if [[ -n $SSH_CONNECTION ]]; then
-	export EDITOR='vim'
+	export EDITOR="nano"
 else
-	export EDITOR='nano'
+	export EDITOR="vim"
 fi
 
 # Compilation flags
@@ -143,6 +155,10 @@ ZSH_THEME_GIT_PROMPT_DELETED="%{$fg[red]%}✖"
 ZSH_THEME_GIT_PROMPT_RENAMED="%{$fg[magenta]%}❤"
 ZSH_THEME_GIT_PROMPT_UNMERGED="%{$fg[yellow]%}↹"
 ZSH_THEME_GIT_PROMPT_UNTRACKED="%{$fg[cyan]%}✭"
+
+unset show_os_version
+unset normal_uid
+unset plugins
 
 # ------------------------------------------------------------------------------
 #

@@ -6,6 +6,7 @@
 	"editor.wrappingColumn": 0,
 	"editor.quickSuggestionsDelay": 5,
 	"editor.insertSpaces": false,
+	"editor.folding": false,
 	"editor.glyphMargin": true,
 	"editor.formatOnType": true,
 	"editor.renderWhitespace": true,

@@ -1,0 +1,17 @@
+set tabsize 4
+set const
+set boldtext
+set brackets ""')>]}"
+set mouse
+set smarthome
+set multibuffer
+set nohelp
+set smooth
+set softwrap
+
+set titlecolor brightwhite,blue
+set statuscolor brightwhite,green
+set keycolor green
+set functioncolor yellow
+
+include "/usr/share/nano/*.nanorc"

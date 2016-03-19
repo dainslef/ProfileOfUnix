@@ -48,7 +48,13 @@ set listchars=tab:⇥\ ,trail:•,extends:#,nbsp:.,eol:↵ " 设置tab、行尾�
 " set guioptions-=T " 隐藏工具栏
 " set guioptions-=m " 隐藏菜单栏
 " set cursorcolumn " 打开纵向高亮对齐
-" set lines=40 columns=120 "设置gvim模式下的默认窗口大小
+
+
+"--------------------------------------------------------------------------------------
+"--- 设置GUI模式下的额外配置 ---
+if has("gui_running")
+	set lines=50 columns=130 " 设置GUI模式下的宽高
+endif
 
 
 "--------------------------------------------------------------------------------------
@@ -121,9 +127,9 @@ set fileencodings=utf-8,gbk,gb2312,gb18030
 "--- Vundle插件管理器 ---
 filetype off
 set rtp+=~/.vim/bundle/Vundle.vim " 设置Vundle插件的路径
-call vundle#begin()
+call vundle#begin() " 开始插件列表
 
-"->安装插件列表
+"->插件列表
 Plugin 'gmarik/Vundle.vim' " let Vundle manage Vundle, required
 Plugin 'vim-airline/vim-airline' " 相比vim-powerline而言功能更加强大
 Plugin 'vim-airline/vim-airline-themes' " vim-airline的主题插件
@@ -144,7 +150,8 @@ Plugin 'plasticboy/vim-markdown' " markdown语法高亮插件
 " Plugin 'Valloric/YouCompleteMe' " 高级补全插件，支持语法补全
 " Plugin 'ervandew/eclim' " 类似eclipse的java插件
 " Plugin 'altercation/vim-colors-solarized' " solarized主题配色插件
-call vundle#end() " required
+
+call vundle#end() " 插件列表结束
 filetype plugin indent on " 开启插件
 
 "->Vundle常用指令

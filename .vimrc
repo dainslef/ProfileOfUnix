@@ -48,31 +48,28 @@ set listchars=tab:⇥\ ,trail:•,extends:#,nbsp:.,eol:↵ " 设置tab、行尾�
 " set guioptions-=T " 隐藏工具栏
 " set guioptions-=m " 隐藏菜单栏
 " set cursorcolumn " 打开纵向高亮对齐
+" set lines=40 columns=120 "设置gvim模式下的默认窗口大小
 
 
-"--------------------------------------------------------------------------------------
-"--- 设置GUI模式下的额外配置 ---
-if has("gui_running")
-	set lines=50 columns=130 " 设置GUI模式下的宽高
-endif
+
+" ------------------------------------------------------------------------------
+" --- 设置快捷键 ---
+map <S-Left> :bp<CR> " shift + 左方向键 切换到前一个文件buffer
+map <S-Right> :bn<CR> " shift + 右方向键 切换到后一个文件buffer
 
 
-"--------------------------------------------------------------------------------------
-"--- 设置快捷键 ---
-map <S-Left> :bp<CR> " shift + 左方向键 切换到前一个文件
-map <S-Right> :bn<CR> " shift + 右方向键 切换到后一个文件
 
-
-"--------------------------------------------------------------------------------------
-"--- 设置文件读取 ---
+" ------------------------------------------------------------------------------
+" --- 设置文件读取 ---
 autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 autocmd BufNewFile,BufReadPost *.MD set filetype=markdown " 将*.md/MD格式的文件作为markdown文件进行语法解析
 autocmd BufNewFile,BufReadPost *.m set filetype=objc " 将*.m格式的文件作为Objective-C源码进行解析
-autocmd BufNewFile,BufReadPost *.mm set filetype=objcpp " 将*.mm格式的文件作为Objective-CPP源码进行解析
+autocmd BufNewFile,BufReadPost *.mm set filetype=objcpp " 将*.mm格式的文件作为Objective-C++源码进行解析
 
 
-"--------------------------------------------------------------------------------------
-"--- 设置语法折叠 ---
+
+" ------------------------------------------------------------------------------
+" --- 设置语法折叠 ---
 " set foldenable " 开始折叠
 " set foldmethod=syntax " 设置语法折叠
 " set foldcolumn=0 " 设置折叠区域的宽度
@@ -81,10 +78,11 @@ autocmd BufNewFile,BufReadPost *.mm set filetype=objcpp " 将*.mm格式的文件
 " nnoremap <space> @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR> " 用空格键来开关折叠
 
 
-"--------------------------------------------------------------------------------------
-"--- 括号自动补全 ---
 
-"->定义括号补全函数
+" ------------------------------------------------------------------------------
+" --- 括号自动补全 ---
+
+"->定义补全函数
 function! AutoPair(open, close)
 	let line = getline('.')
 	if col('.') > strlen(line) || line[col('.') - 1] == ' '
@@ -93,43 +91,34 @@ function! AutoPair(open, close)
 		return a:open
 	endif
 endf
-function! ClosePair(char)
-	if getline('.')[col('.') - 1] == a:char
-		return "\<Right>"
-	else
-		return a:char
-	endif
-endf
 
 "->设置补全模式
-" 小括号的补全模式：只在行首与行尾进行补全，行中间不进行补全
+" 小括号、单双引号的补全模式：只在空白处补全，单词内部不进行补全
 " 花括号的补全方式：输入'{'后按快速按下回车键后会按照c语言格式进行括号补全，如果未快速按下回车键则不进行补全操作
-" 其它符号则为简单的任意位置补全
 :inoremap ( <c-r>=AutoPair('(', ')')<CR>
-" :inoremap ) <c-r>=ClosePair(')')<CR>
 :inoremap {<CR> {<CR>}<Esc>O
-" :inoremap } <c-r>=ClosePair('}')<CR>
 :inoremap [ []<ESC>i
-" :inoremap ] <c-r>=ClosePair(']')<CR>
-:inoremap " ""<ESC>i
-:inoremap ' ''<ESC>i
+:inoremap " <c-r>=AutoPair('"', '"')<CR>
+:inoremap ' <c-r>=AutoPair("'", "'")<CR>
 
 
-"--------------------------------------------------------------------------------------
-"--- 解决中文跨平台乱码问题 ---
+
+" ------------------------------------------------------------------------------
+" --- 设置编码以及备选编码 ---
 set termencoding=utf-8
 set encoding=utf-8
 let &termencoding=&encoding
 set fileencodings=utf-8,gbk,gb2312,gb18030
 
 
-"--------------------------------------------------------------------------------------
-"--- Vundle插件管理器 ---
+
+" ------------------------------------------------------------------------------
+" --- Vundle插件管理器 ---
 filetype off
 set rtp+=~/.vim/bundle/Vundle.vim " 设置Vundle插件的路径
-call vundle#begin() " 开始插件列表
+call vundle#begin()
 
-"->插件列表
+"->安装插件列表
 Plugin 'gmarik/Vundle.vim' " let Vundle manage Vundle, required
 Plugin 'vim-airline/vim-airline' " 相比vim-powerline而言功能更加强大
 Plugin 'vim-airline/vim-airline-themes' " vim-airline的主题插件
@@ -150,8 +139,7 @@ Plugin 'plasticboy/vim-markdown' " markdown语法高亮插件
 " Plugin 'Valloric/YouCompleteMe' " 高级补全插件，支持语法补全
 " Plugin 'ervandew/eclim' " 类似eclipse的java插件
 " Plugin 'altercation/vim-colors-solarized' " solarized主题配色插件
-
-call vundle#end() " 插件列表结束
+call vundle#end() " required
 filetype plugin indent on " 开启插件
 
 "->Vundle常用指令
@@ -162,16 +150,18 @@ filetype plugin indent on " 开启插件
 " :PluginUpdate     - update all the plugins which you have installed
 
 
-"--------------------------------------------------------------------------------------
-"--- WinManager配置 ---
+
+" ------------------------------------------------------------------------------
+" --- WinManager配置 ---
 let g:winManagerWindowLayout = "TagList|FileExplorer" " 设置WinManager管理的插件
 let g:winManagerWidth = 35 " 设置WinManager侧边栏的大小
 let g:persistentBehaviour = 0 " 设置关闭所有文件时自动关闭WinManager
 nmap wm :WMToggle<cr> " 定义打开关闭WinManager快捷键为wm
 
 
-"--------------------------------------------------------------------------------------
-"--- Taglist 配置 ---
+
+" ------------------------------------------------------------------------------
+" --- Taglist 配置 ---
 let Tlist_Show_Menu = 1 " 显示taglist菜单
 let Tlist_Auto_Update = 1 " 默认更新taglist
 let Tlist_Exit_OnlyWindow = 1 " 关闭vim时关闭tag窗口
@@ -185,8 +175,9 @@ let Tlist_Exit_OnlyWindow = 1 " 关闭vim时关闭tag窗口
 " let Tlist_Process_File_Always = 1 " taglist始终解析文件中的tag，不管taglist窗口有没有打开
 
 
-"--------------------------------------------------------------------------------------
-"--- vim-arline配置 ---
+
+" ------------------------------------------------------------------------------
+" --- vim-arline配置 ---
 let g:airline_theme = 'powerlineish' " 设置主题
 let g:airline_left_sep = '' " 设置下标签栏左分隔符
 let g:airline_right_sep = '' " 设置下标签栏右分隔符
@@ -198,14 +189,16 @@ let g:airline_powerline_fonts = 1 " 使用powerline字体
 " let g:airline_symbols = {'crypt':'1', 'inenr':'¶', 'branch':'⎇', 'paste':'∥', 'whitespace':'Ξ'} " 自定义特殊符号集
 
 
-"--------------------------------------------------------------------------------------
-"--- vim-markdown 配置 ---
+
+" ------------------------------------------------------------------------------
+" --- vim-markdown 配置 ---
 let g:vim_markdown_folding_disabled = 1 " 关闭插件默认的语法折叠
 let g:vim_markdown_math = 1 " 开启LaTex数学公式解析
 
 
-"--------------------------------------------------------------------------------------
-"--- neocomplcache配置 ---
+
+" ------------------------------------------------------------------------------
+" --- neocomplcache配置 ---
 let g:neocomplcache_enable_at_startup = 1 " 在vim打开的时候启动
 let g:neocomplcache_enable_auto_select = 1 " 提示的时候默认选择地一个，否则需要手动选取
 let g:neocomplcache_enable_smart_case = 1 " 开启智能匹配
@@ -249,8 +242,9 @@ let g:neocomplcache_force_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
 let g:neocomplcache_force_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 
 
-"--------------------------------------------------------------------------------------
-"--- syntastic配置 ---
+
+" ------------------------------------------------------------------------------
+" --- syntastic配置 ---
 let g:syntastic_check_on_open = 1 " 首次打开文件时即开始检测语法错误
 let g:syntastic_error_symbol = "✗" " 设置语法错误的提示
 let g:syntastic_warning_symbol = "⚠" " 设置语法警告的提示
@@ -260,8 +254,9 @@ let g:syntastic_ignore_files = [".*\.m$"] " 忽略objective-C语言的语法检�
 let g:syntastic_python_python_exe = "python3" " 检查python语法时使用python3语法
 
 
-"--------------------------------------------------------------------------------------
-"--- pymode配置 ---
+
+" ------------------------------------------------------------------------------
+" --- pymode配置 ---
 " let g:pymode_quickfix_minheight = 3 " 设置快速提示栏最小高度
 " let g:pymode_quickfix_maxheight = 5 " 设置快速提示栏最大高度
 " let g:pymode_lint_cwindow = 0 " 关闭快速提示栏的默认显示
@@ -269,14 +264,16 @@ let g:syntastic_python_python_exe = "python3" " 检查python语法时使用pytho
 " let g:pymode_options = 0 " 关闭pymode下的一些默认选项
 
 
-"--------------------------------------------------------------------------------------
-"--- PowerLine配置 ---
+
+" ------------------------------------------------------------------------------
+" --- PowerLine配置 ---
 " let g:Powerline_symbols = 'compatible' " 指定powerline插件采用的特殊字符类型，共有三种，分别为compatible(无特殊字符)，unicode(简单特殊字符)，fancy(完整字符集，需要patch字体，包含图标样式)，建议采用unicode字符类型
 " let g:Powerline_stl_path_style = 'short' " 制定文件路径的显示方式
 
 
-"--------------------------------------------------------------------------------------
-"--- 常用的几个主题 ---
+
+" ------------------------------------------------------------------------------
+" --- 常用的几个主题 ---
 colorschem molokai
 " colorschem zenburn
 " colorscheme muon

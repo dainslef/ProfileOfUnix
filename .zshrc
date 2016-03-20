@@ -1,24 +1,29 @@
+# ------------------------------------------------------------------------------
+# --- User configuration ---
+
 # Set the custom enviorment variables
 if [ $(whoami) = "dainslef" ]; then
 
 	export GOPATH=~/Downloads/WorkSpace/Golang
-	export PATH=~/Public/activator-dist-1.3.7:/usr/local/bin:$PATH
+	export PATH=~/Public/activator-dist-1.3.7:$PATH
 
-	if [ $(uname -o) = "GNU/Linux" ]; then
+	if [ $(uname) = "Darwin" ]; then
+		PATH+=:~/Applications/Develop/Visual\ Studio\ Code.app/Contents/MacOS
+		alias code=Electron # Set alias command for VS Code in OS X
+	elif [ $(uname -o) = "GNU/Linux" ]; then
 		PATH+=:~/Public/VSCode-linux-x64
-	elif [ $(uname) = "Darwin" ]; then
 	fi
 
 else
 	export ZSH=~/.oh-my-zsh
 fi
 
-# Check OS type and set the different enviorment variables.
+# Check OS type and set the different enviorment variables
 if [ $(uname) = "Darwin" ]; then # Darwin kernel means in OS X
 	export ZSH=/Users/dainslef/.oh-my-zsh # Path to your oh-my-zsh installation.
 	local show_os_version="$(uname -srnm)"
 	local normal_uid=500 # In OS X, the normal user's uid start with 500.
-	local plugins=(osx brew sublime)
+	local plugins="(osx brew sublime)"
 elif [ $(uname) = "Linux" ]; then
 	export ZSH=/home/dainslef/.oh-my-zsh
 	local show_os_version="$(uname -ornm)"
@@ -26,60 +31,15 @@ elif [ $(uname) = "Linux" ]; then
 	local plugins=(systemd)
 fi
 
-# Add common widgets.
+# Add common widgets
 plugins+=(sudo scala pip gem)
 
-# Set name of the theme to load.
-# Look in ~/.oh-my-zsh/themes/
-# Optionally, if you set this to "random", it'll load a random theme each
-# time that oh-my-zsh is loaded.
-# ZSH_THEME="robbyrussell"
-
-# Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
-
-# Uncomment the following line to disable bi-weekly auto-update checks.
+# Uncomment the following line to disable bi-weekly auto-update checks
 DISABLE_AUTO_UPDATE="true"
 
-# Uncomment the following line to change how often to auto-update (in days).
-# export UPDATE_ZSH_DAYS=13
-
-# Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
-
-# Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
-
-# Uncomment the following line to enable command auto-correction.
-ENABLE_CORRECTION="true"
-
-# Uncomment the following line to display red dots whilst waiting for completion.
-# COMPLETION_WAITING_DOTS="true"
-
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
+# Stamp shown in the history command output
 # The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
 HIST_STAMPS="yyyy-mm-dd"
-
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
-
-# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-# plugins=(sudo systemd) # load plugins at first
-
-# Load plugins and themes
-source $ZSH/oh-my-zsh.sh
-
-# ------------------------------------------------------------------------------
-# -- User configuration --
 
 # Set language environment
 export LANG=en_US.UTF-8
@@ -94,20 +54,13 @@ fi
 # Compilation flags
 export ARCHFLAGS="-arch x86_64"
 
-# ssh
-# export SSH_KEY_PATH="~/.ssh/dsa_id"
+# Load plugins and themes
+source $ZSH/oh-my-zsh.sh
 
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
+
 
 # ------------------------------------------------------------------------------
-# -- Theme --
+# --- Theme ---
 
 # Cheak if you are root user
 if [ $(whoami) != "root" ]
@@ -156,14 +109,21 @@ ZSH_THEME_GIT_PROMPT_RENAMED="%{$fg[magenta]%}❤"
 ZSH_THEME_GIT_PROMPT_UNMERGED="%{$fg[yellow]%}↹"
 ZSH_THEME_GIT_PROMPT_UNTRACKED="%{$fg[cyan]%}✭"
 
+
+
+# ------------------------------------------------------------------------------
+# --- Clean custom variables ---
+
 unset show_os_version
 unset normal_uid
 unset plugins
 
+
+
 # ------------------------------------------------------------------------------
-#
+# --- Format string ---
+
 # List of vcs_info format strings:
-#
 # %b => current branch
 # %a => current action (rebase/merge)
 # %s => current version control system
@@ -172,10 +132,8 @@ unset plugins
 # %m => in case of Git, show information about stashes
 # %u => show unstaged changes in the repository
 # %c => show staged changes in the repository
-#
+
 # List of prompt format strings:
-#
-# prompt:
 # %F => color dict
 # %f => reset color
 # %~ => current path
@@ -183,10 +141,12 @@ unset plugins
 # %n => username
 # %m => shortname host
 # %(?..) => prompt conditional - %(condition.true.false)
-#
-# ------------------------------------------------------------------------------
 
-# More symbols to choose from:
+
+
+# ------------------------------------------------------------------------------
+# --- Symbols ---
+
 # ☀ ✹ ☄ ♆ ♀ ♁ ♐ ♇ ♈ ♉ ♚ ♛ ♜ ♝ ♞ ♟ ♠ ♣ ⚢ ⚲ ⚳ ⚴ ⚥ ⚤ ⚦ ⚒ ⚑ ⚐ ♺ ♻ ♼ ☰ ☱ ☲ ☳ ☴ ☵ ☶ ☷
 # ✡ ✔ ✘ ✖ ✚ ✱ ✤ ✦ ❤ ➼ ✂ ✎ ✐ ⨀ ⨁ ⨂ ⨍ ⨎ ⨏ ⨷ ⩚ ⩛ ⩡ ⩱ ⩲ ⩵  ⩶ ⨠
 # ➦ ⬅ ⬆ ⬇ ⬈ ⬉ ⬊ ⬋ ⬒ ⬓ ⬔ ⬕ ⬖ ⬗ ⬘ ⬙ ⬟ ⬤ 〒 ǀ ǁ ǂ ĭ Ť Ŧ  

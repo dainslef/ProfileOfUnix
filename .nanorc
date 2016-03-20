@@ -7,11 +7,11 @@ set smarthome
 set multibuffer
 set nohelp
 set smooth
-set softwrap
 
+# In OS X, these options are not be supported
+set softwrap
 set titlecolor brightwhite,blue
 set statuscolor brightwhite,green
 set keycolor green
 set functioncolor yellow
-
 include "/usr/share/nano/*.nanorc"

@@ -2,19 +2,16 @@
 # --- User configuration ---
 
 # Set the custom enviorment variables
-if [ $(whoami) = "dainslef" ]; then
-
-	export GOPATH=~/Downloads/WorkSpace/Golang
-	alias activator=~/Public/activator-dist-1.3.7/activator
-
-	if [ $(uname) = "Darwin" ]; then
-		alias code="~/Applications/Develop/Visual\ Studio\ Code.app/Contents/MacOS/Electron" # Set alias command for VS Code in OS X
-		export ZSH=/Users/dainslef/.oh-my-zsh # Path to your oh-my-zsh installation
-	elif [ $(uname -o) = "GNU/Linux" ]; then
-		alias code=~/Public/VSCode-linux-x64/code
-		export ZSH=/home/dainslef/.oh-my-zsh
-	fi
-
+if [ -e "/home/dainslef" ]; then
+	export ZSH=/home/dainslef/.oh-my-zsh
+	export GOPATH=/home/dainslef/Downloads/WorkSpace/Golang
+	alias activator=/home/dainslef/Public/activator-dist-1.3.7/activator
+	alias code=/home/dainslef/Public/VSCode-linux-x64/code
+elif [ -e "/Users/dainslef" ]; then
+	export ZSH=/Users/dainslef/.oh-my-zsh
+	export GOPATH=/Users/dainslef/Downloads/WorkSpace/Golang
+	alias activator=/Users/dainslef/Public/activator-dist-1.3.7/activator
+	alias code="/Users/dainslef/Applications/Develop/Visual\ Studio\ Code.app/Contents/MacOS/Electron"
 else
 	export ZSH=~/.oh-my-zsh
 fi

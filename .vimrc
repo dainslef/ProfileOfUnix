@@ -48,7 +48,14 @@ set listchars=tab:⇥\ ,trail:•,extends:#,nbsp:.,eol:↵ " 设置tab、行尾�
 " set guioptions-=T " 隐藏工具栏
 " set guioptions-=m " 隐藏菜单栏
 " set cursorcolumn " 打开纵向高亮对齐
-" set lines=40 columns=120 "设置gvim模式下的默认窗口大小
+
+
+
+" ------------------------------------------------------------------------------
+" --- 设置GUI模式下的额外配置 ---
+if has("gui_running")
+	set lines=50 columns=130 " 设置GUI模式下的宽高
+endif
 
 
 

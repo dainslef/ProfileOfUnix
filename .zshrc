@@ -1,30 +1,50 @@
 # ------------------------------------------------------------------------------
 # --- User configuration ---
 
-# Set the custom enviorment variables
+# Set the ZSH path
 if [ -e "/home/dainslef" ]; then
 	export ZSH=/home/dainslef/.oh-my-zsh
-	export GOPATH=/home/dainslef/Downloads/WorkSpace/Golang
-	alias activator=/home/dainslef/Public/activator-dist-1.3.7/activator
-	alias code=/home/dainslef/Public/VSCode-linux-x64/code
 elif [ -e "/Users/dainslef" ]; then
 	export ZSH=/Users/dainslef/.oh-my-zsh
-	export GOPATH=/Users/dainslef/Downloads/WorkSpace/Golang
-	alias activator=/Users/dainslef/Public/activator-dist-1.3.7/activator
-	alias code="/Users/dainslef/Applications/Develop/Visual\ Studio\ Code.app/Contents/MacOS/Electron"
 else
 	export ZSH=~/.oh-my-zsh
 fi
 
-# Check OS type and set the different enviorment variables
+# Check OS type and set the different enviornment variables
 if [ $(uname) = "Darwin" ]; then # Darwin kernel means in OS X
 	local show_os_version="$(uname -srnm)"
 	local normal_uid=500 # In OS X, the normal user's uid start with 500.
-	local plugins="(osx brew sublime)"
+	local vscode="/Users/dainslef/Applications/Develop/Visual\ Studio\ Code.app/Contents/MacOS/Electron"
+	plugins=(osx brew sublime)
 elif [ $(uname) = "Linux" ]; then
 	local show_os_version="$(uname -ornm)"
 	local normal_uid=1000 # In Linux, the normal user's uid start with 1000.
-	local plugins=(systemd)
+	local vscode=/home/dainslef/Public/VSCode-linux-x64/code
+	plugins=(systemd)
+fi
+
+# Check user, show login info and load custom environment variables
+if [ $(whoami) != "root" ]
+then
+
+	echo $show_os_version
+	echo $(date)
+	echo --- Welcome, $(whoami). Try your best everyday! ---
+	case $[$RANDOM % 5] in
+		0) echo "--- 夢に描けることなら、実現できる。 ---\n" ;;
+		1) echo "--- 一日は貴い一生である。これを空費してはならない。 ---\n" ;;
+		2) echo "--- 世界は美しくなんかない。そしてそれ故に、美しい。 ---\n" ;;
+		3) echo "--- 春は夜桜、夏には星、秋に満月、冬には雪。 ---\n" ;;
+		4) echo "--- あなたもきっと、誰かの奇跡。 ---\n" ;;
+	esac
+
+	if [ $(whoami) = "dainslef" ]; then
+		export ZSH=~/.oh-my-zsh
+		export GOPATH=~/Downloads/WorkSpace/Golang
+		alias activator=~/Public/activator-dist-1.3.7/activator
+		alias code=$vscode
+	fi
+
 fi
 
 # Add common widgets
@@ -58,21 +78,6 @@ source $ZSH/oh-my-zsh.sh
 # ------------------------------------------------------------------------------
 # --- Theme ---
 
-# Cheak if you are root user
-if [ $(whoami) != "root" ]
-then
-	echo $show_os_version
-	echo $(date)
-	echo --- Welcome, $(whoami). Try your best everyday! ---
-	case $[$RANDOM % 5] in
-		0) echo "--- 夢に描けることなら、実現できる。 ---\n" ;;
-		1) echo "--- 一日は貴い一生である。これを空費してはならない。 ---\n" ;;
-		2) echo "--- 世界は美しくなんかない。そしてそれ故に、美しい。 ---\n" ;;
-		3) echo "--- 春は夜桜、夏には星、秋に満月、冬には雪。 ---\n" ;;
-		4) echo "--- あなたもきっと、誰かの奇跡。 ---\n" ;;
-	esac
-fi
-
 # Check the UID
 if [ $UID -ge $normal_uid ]; then # normal_user
 	local start_status="%{$fg_bold[green]%}➜"
@@ -86,7 +91,7 @@ elif [ $UID -eq 0 ]; then # root
 	local end2_status="%{$fg_bold[cyan]%}%T"
 fi
 
-# Show the Command Execute Result with Different Color and Icon
+# Show the command execute result with different color and icon
 local end_status="%(?:%{$fg_bold[green]%}✔:%{$fg_bold[red]%}✘)"
 
 PROMPT='${start_status} ${mid1_status} %{$fg[magenta]%}%2~%{$fg_bold[blue]%}$(git_prompt_info) ${mid2_status} '
@@ -113,6 +118,7 @@ ZSH_THEME_GIT_PROMPT_UNTRACKED="%{$fg[cyan]%}✭"
 unset show_os_version
 unset normal_uid
 unset plugins
+unset vscode
 
 
 

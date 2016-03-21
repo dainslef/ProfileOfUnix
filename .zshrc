@@ -5,13 +5,14 @@
 if [ $(whoami) = "dainslef" ]; then
 
 	export GOPATH=~/Downloads/WorkSpace/Golang
-	export PATH=~/Public/activator-dist-1.3.7:$PATH
+	alias activator=~/Public/activator-dist-1.3.7/activator
 
 	if [ $(uname) = "Darwin" ]; then
-		PATH+=:~/Applications/Develop/Visual\ Studio\ Code.app/Contents/MacOS
-		alias code=Electron # Set alias command for VS Code in OS X
+		alias code="~/Applications/Develop/Visual\ Studio\ Code.app/Contents/MacOS/Electron" # Set alias command for VS Code in OS X
+		export ZSH=/Users/dainslef/.oh-my-zsh # Path to your oh-my-zsh installation
 	elif [ $(uname -o) = "GNU/Linux" ]; then
-		PATH+=:~/Public/VSCode-linux-x64
+		alias code=~/Public/VSCode-linux-x64/code
+		export ZSH=/home/dainslef/.oh-my-zsh
 	fi
 
 else
@@ -20,12 +21,10 @@ fi
 
 # Check OS type and set the different enviorment variables
 if [ $(uname) = "Darwin" ]; then # Darwin kernel means in OS X
-	export ZSH=/Users/dainslef/.oh-my-zsh # Path to your oh-my-zsh installation.
 	local show_os_version="$(uname -srnm)"
 	local normal_uid=500 # In OS X, the normal user's uid start with 500.
 	local plugins="(osx brew sublime)"
 elif [ $(uname) = "Linux" ]; then
-	export ZSH=/home/dainslef/.oh-my-zsh
 	local show_os_version="$(uname -ornm)"
 	local normal_uid=1000 # In Linux, the normal user's uid start with 1000.
 	local plugins=(systemd)

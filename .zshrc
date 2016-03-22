@@ -39,10 +39,23 @@ then
 	esac
 
 	if [ $(whoami) = "dainslef" ]; then
-		export ZSH=~/.oh-my-zsh
+
+		# For golang
 		export GOPATH=~/Downloads/WorkSpace/Golang
+
+		# For scala activator
 		alias activator=~/Public/activator-dist-1.3.7/activator
+
+		# For visual studio code
 		alias code=$vscode
+
+		# For python pip
+		local python_version=`echo $(python -V) | awk -F' ' '{ print $2 }' | awk -F'.' '{ print "python" $1 "." $2 }'`
+		local pip_path=~/.local/lib/$python_version/site-packages/pip
+		if [ -e $pip_path ]; then
+			alias pip="python $pip_path"
+		fi
+
 	fi
 
 fi
@@ -116,7 +129,9 @@ ZSH_THEME_GIT_PROMPT_UNTRACKED="%{$fg[cyan]%}✭"
 # --- Clean custom variables ---
 
 unset show_os_version
+unset python_version
 unset normal_uid
+unset pip_path
 unset plugins
 unset vscode
 

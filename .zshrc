@@ -15,11 +15,14 @@ if [ $(uname) = "Darwin" ]; then # Darwin kernel means in OS X
 	local show_os_version="$(uname -srnm)"
 	local normal_uid=500 # In OS X, the normal user's uid start with 500.
 	local vscode="/Users/dainslef/Applications/Develop/Visual\ Studio\ Code.app/Contents/MacOS/Electron"
+	local python_version=`echo $(python3 -V) | awk -F' ' '{ print $2 }' | awk -F'.' '{ print $1 "." $2 }'`
+	local pip_bin=~/Library/Python/$python_version/bin
 	plugins=(osx brew sublime)
 elif [ $(uname) = "Linux" ]; then
 	local show_os_version="$(uname -ornm)"
 	local normal_uid=1000 # In Linux, the normal user's uid start with 1000.
 	local vscode=/home/dainslef/Public/VSCode-linux-x64/code
+	local pip_bin=~/.local/bin
 	plugins=(systemd)
 fi
 
@@ -50,10 +53,8 @@ then
 		alias code=$vscode
 
 		# For python pip
-		local python_version=`echo $(python -V) | awk -F' ' '{ print $2 }' | awk -F'.' '{ print "python" $1 "." $2 }'`
-		local pip_path=~/.local/lib/$python_version/site-packages/pip
-		if [ -e $pip_path ]; then
-			alias pip="python $pip_path"
+		if [ -e $pip_bin ]; then
+			PATH+=:$pip_bin
 		fi
 
 	fi
@@ -131,7 +132,7 @@ ZSH_THEME_GIT_PROMPT_UNTRACKED="%{$fg[cyan]%}✭"
 unset show_os_version
 unset python_version
 unset normal_uid
-unset pip_path
+unset pip_bin
 unset plugins
 unset vscode
 

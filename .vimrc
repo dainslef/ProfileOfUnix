@@ -89,24 +89,10 @@ autocmd BufNewFile,BufReadPost *.mm set filetype=objcpp " 将*.mm格式的文件
 " ------------------------------------------------------------------------------
 " --- 括号自动补全 ---
 
-"->定义补全函数
-function! AutoPair(open, close)
-	let line = getline('.')
-	if col('.') > strlen(line) || line[col('.') - 1] == ' '
-		return a:open.a:close."\<ESC>i"
-	else
-		return a:open
-	endif
-endf
-
 "->设置补全模式
-" 小括号、单双引号的补全模式：只在空白处补全，单词内部不进行补全
 " 花括号的补全方式：输入'{'后按快速按下回车键后会按照c语言格式进行括号补全，如果未快速按下回车键则不进行补全操作
-:inoremap ( <c-r>=AutoPair('(', ')')<CR>
+" 其余符号补全功能由插件提供
 :inoremap {<CR> {<CR>}<Esc>O
-:inoremap [ []<ESC>i
-:inoremap " <c-r>=AutoPair('"', '"')<CR>
-:inoremap ' <c-r>=AutoPair("'", "'")<CR>
 
 
 
@@ -140,6 +126,7 @@ Plugin 'fatih/vim-go' " golang插件
 Plugin 'vim-ruby/vim-ruby' " ruby插件
 Plugin 'tpope/vim-rails' " ROR插件
 Plugin 'plasticboy/vim-markdown' " markdown语法高亮插件
+Plugin 'Raimondi/delimitMate' " 符号智能补全插件
 " Plugin 'klen/python-mode' " python插件
 " Plugin 'fholgado/minibufexpl.vim' " 窗口标签插件，功能已由vim-airline提供
 " Plugin 'Lokaltog/vim-powerline' " 来自github的vim插件，写成这样的格式
@@ -282,6 +269,8 @@ let g:syntastic_python_python_exe = "python3" " 检查python语法时使用pytho
 " ------------------------------------------------------------------------------
 " --- 常用的几个主题 ---
 colorschem molokai
-" colorschem zenburn
-" colorscheme muon
+" colorschem materialbox
+" colorschem xterm16
 " colorscheme grb256
+
+highlight Normal ctermbg=None " 强制设置主题背景透明

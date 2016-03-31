@@ -3,6 +3,13 @@
 explicit=""
 packages=$(pacman -Qeq)
 
+# In windows, pacman can use directly
+if [ $(uname -o) == "Msys" ]; then
+	sudo=""
+else
+	sudo="sudo"
+fi
+
 echo -e Start calculate the depends..."\n"
 
 for package in $packages
@@ -28,7 +35,7 @@ if [ -n "$explicit" ]; then
 	select ch in "YES" "NO"
 	do
 		if [ "$ch" = "YES" ]; then
-			sudo pacman -S --asdeps $explicit
+			$sudo pacman -S --asdeps $explicit
 		fi
 		echo
 		break
@@ -43,7 +50,7 @@ echo -e Start calculate the packages which are no longer needed..."\n"
 remove=$(pacman -Qdqtt)
 if [ -n "$remove" ]; then
 	echo -e Find package can be removed:"\n"$remove"\n"
-	sudo pacman -Rsnc $remove
+	$sudo pacman -Rsnc $remove
 else
 	echo -e No package can be removed.'\n'Your system is clean.
 fi

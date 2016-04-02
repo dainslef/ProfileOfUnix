@@ -1,12 +1,12 @@
 -- Load library
-local gears = require("gears")
-local awful = require("awful")
-awful.rules = require("awful.rules")
 require("awful.autofocus")
+local gears = require("gears")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
 local naughty = require("naughty")
 local menubar = require("menubar")
+local awful = require("awful")
+awful.rules = require("awful.rules")
 
 
 
@@ -87,8 +87,8 @@ beautiful.init("/usr/share/awesome/themes/zenburn/theme.lua")
 
 ---- Custom theme settings
 -- theme.border_width = 4
-theme.font = "Dejavu Sans 9"
-theme.bg_normal = "#3F3F3FAA" 
+theme.font = "Dejavu Sans 10"
+theme.bg_normal = "#3F3F3FAA"
 theme.bg_focus = "#1E2320AA"
 theme.taglist_bg_focus = "#666666AA"
 
@@ -229,7 +229,8 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 
 -- {{{ Wibox
 -- Create a textclock widget
-mytextclock = awful.widget.textclock(" %a %b %d ☪ %H : %M ")
+mytextclock = awful.widget.textclock(" <span font='Dejavu Sans 10'>[ %b %d -<span color='green'>%a</span>-"
+	.. " ☪ <span color='yellow'>%H:%M</span> ]</span> ")
 
 -- Create a wibox for each screen and add it
 mywibox = {}
@@ -303,13 +304,14 @@ for s = 1, screen.count() do
 	local left_layout = wibox.layout.fixed.horizontal()
 	-- left_layout:add(mylauncher)
 	left_layout:add(mylayoutbox[s])
+	left_layout:add(mytextclock)
 	left_layout:add(mytaglist[s])
 	left_layout:add(mypromptbox[s])
 
 	-- Widgets that are aligned to the right
 	local right_layout = wibox.layout.fixed.horizontal()
 	if s == 1 then right_layout:add(wibox.widget.systray()) end
-	right_layout:add(mytextclock)
+	-- right_layout:add(mytextclock)
 	-- right_layout:add(mylayoutbox[s])
 
 	-- Now bring it all together (with the tasklist in the middle)
@@ -379,7 +381,7 @@ globalkeys = awful.util.table.join(
 			awful.layout.inc(layouts, 1)
 			naughty.notify({
 				title = 'Layout Change',
-				text = "The current layout is "..awful.layout.getname()..". ",
+				text = "The current layout is " .. awful.layout.getname() .. ".",
 				timeout = 1
 			})
 		end),
@@ -387,7 +389,7 @@ globalkeys = awful.util.table.join(
 			awful.layout.inc(layouts, -1)
 			naughty.notify({
 				title = 'Layout Change',
-				text = "The current layout is "..awful.layout.getname()..". ",
+				text = "The current layout is " .. awful.layout.getname() .. ".",
 				timeout = 1
 			})
 		end),
@@ -423,16 +425,16 @@ globalkeys = awful.util.table.join(
 			awful.util.spawn("import -window root ~/Pictures/$(date -Iseconds).png") -- Use imagemagick tools
 			naughty.notify({
 				title = "Screen Shot",
-				text = "Take the fullscreen screenshot success!\n"..
-					"Screenshot saved in ~/Pictures."
+				text = "Take the fullscreen screenshot success!\n"
+					.. "Screenshot saved in ~/Pictures."
 			})
 		end),
 	awful.key({ modkey }, "Print", function()
 			awful.util.spawn("import ~/Pictures/$(date -Iseconds).png")
 			naughty.notify({
 				title = "Screen Shot",
-				text = "Please select window to take the screenshot...\n"..
-					"Screenshot will be saved in ~/Pictures."
+				text = "Please select window to take the screenshot...\n"
+					.. "Screenshot will be saved in ~/Pictures."
 			})
 		end)
 )
@@ -512,21 +514,27 @@ root.keys(globalkeys)
 
 -- {{{ Rules
 -- Rules to apply to new clients (through the "manage" signal)
-awful.rules.rules = {
+awful.rules.rules = {{
 	-- All clients will match this rule
-	{ rule = { },
-	  properties = { border_width = beautiful.border_width,
-					 border_color = beautiful.border_normal,
-					 focus = awful.client.focus.filter,
-					 raise = true,
-					 keys = clientkeys,
-					 buttons = clientbuttons } },
-	{ rule = { class = "MPlayer" },
-	  properties = { floating = true } },
-	{ rule = { class = "pinentry" },
-	  properties = { floating = true } },
-	{ rule = { class = "gimp" },
-	  properties = { floating = true } },
+		rule = { },
+		properties = {
+			border_width = beautiful.border_width,
+			border_color = beautiful.border_normal,
+			focus = awful.client.focus.filter,
+			raise = true,
+			keys = clientkeys,
+			buttons = clientbuttons
+		}
+	}, {
+		rule = { class = "MPlayer" },
+		properties = { floating = true }
+	}, {
+		rule = { class = "pinentry" },
+		properties = { floating = true }
+	}, {
+		rule = { class = "gimp" },
+		properties = { floating = true }
+	}
 	-- Set Firefox to always map on tags number 2 of screen 1.
 	-- { rule = { class = "Firefox" },
 	--	 properties = { tag = tags[1][2] } },

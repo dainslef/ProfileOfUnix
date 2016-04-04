@@ -90,6 +90,7 @@ beautiful.init("/usr/share/awesome/themes/zenburn/theme.lua")
 theme.font = "Dejavu Sans 10"
 theme.bg_normal = "#3F3F3FAA"
 theme.bg_focus = "#1E2320AA"
+theme.bg_systray = "#2D2D2DAA"
 theme.taglist_bg_focus = "#666666AA"
 
 ---- This is used later as the default terminal and editor to run
@@ -242,8 +243,8 @@ mytaglist.buttons = awful.util.table.join(
 	awful.button({ modkey }, 1, awful.client.movetotag),
 	awful.button({ }, 3, awful.tag.viewtoggle),
 	awful.button({ modkey }, 3, awful.client.toggletag),
-	awful.button({ }, 4, function(t) awful.tag.viewnext(awful.tag.getscreen(t)) end),
-	awful.button({ }, 5, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end)
+	awful.button({ }, 4, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end),
+	awful.button({ }, 5, function(t) awful.tag.viewnext(awful.tag.getscreen(t)) end)
 )
 mytasklist = {}
 mytasklist.buttons = awful.util.table.join(
@@ -330,8 +331,8 @@ end
 root.buttons(
 	awful.util.table.join(
 		awful.button({ }, 3, function() mymainmenu:toggle() end),
-		awful.button({ }, 4, awful.tag.viewnext),
-		awful.button({ }, 5, awful.tag.viewprev)
+		awful.button({ }, 4, awful.tag.viewprev),
+		awful.button({ }, 5, awful.tag.viewnext)
 	)
 )
 -- }}}
@@ -557,7 +558,7 @@ client.connect_signal("manage", function(c, startup)
 	if not startup then
 		-- Set the windows at the slave,
 		-- i.e. put it at the end of others instead of setting it master.
-		-- awful.client.setslave(c)
+		awful.client.setslave(c)
 
 		-- Put windows in a smart way, only if they does not set an initial position.
 		if not c.size_hints.user_position and not c.size_hints.program_position then

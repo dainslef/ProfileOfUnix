@@ -12,40 +12,7 @@ awful.rules = require("awful.rules")
 
 -- {{{ Init
 ---- Custom command
--- awful.util.spawn("synclient VertScrollDelta=-66") -- Mate-settings-daemon offer the touchpad settings
-
----- Function to build the titlebar
-function create_titlebar(c)
-
-	-- Widgets that are aligned to the left
-	local left_layout = wibox.layout.fixed.horizontal()
-	left_layout:add(awful.titlebar.widget.iconwidget(c))
-	left_layout:buttons(buttons)
-
-	-- Widgets that are aligned to the right
-	local right_layout = wibox.layout.fixed.horizontal()
-	right_layout:add(awful.titlebar.widget.floatingbutton(c))
-	right_layout:add(awful.titlebar.widget.maximizedbutton(c))
-	right_layout:add(awful.titlebar.widget.stickybutton(c))
-	right_layout:add(awful.titlebar.widget.ontopbutton(c))
-	right_layout:add(awful.titlebar.widget.closebutton(c))
-
-	-- The title goes in the middle
-	local middle_layout = wibox.layout.flex.horizontal()
-	local title = awful.titlebar.widget.titlewidget(c)
-	title:set_align("center")
-	middle_layout:add(title)
-	middle_layout:buttons(buttons)
-
-	-- Now bring it all together
-	local layout = wibox.layout.align.horizontal()
-	layout:set_left(left_layout)
-	layout:set_right(right_layout)
-	layout:set_middle(middle_layout)
-
-	awful.titlebar(c):set_widget(layout)
-
-end
+-- awful.util.spawn_with_shell("synclient VertScrollDelta=-66") -- Mate-settings-daemon offer the touchpad settings
 -- }}}
 
 
@@ -113,15 +80,15 @@ modkey = "Mod4"
 ---- Table of layouts to cover with awful.layout.inc, order matters.
 local layouts =
 {
-	awful.layout.suit.magnifier,
+	awful.layout.suit.magnifier, -- app in center
 	-- awful.layout.suit.floating,
 	-- awful.layout.suit.tile,
 	-- awful.layout.suit.tile.left,
-	awful.layout.suit.tile.bottom,
+	awful.layout.suit.tile.bottom, -- master in top
 	-- awful.layout.suit.tile.top,
 	-- awful.layout.suit.fair,
 	-- awful.layout.suit.fair.horizontal,
-	awful.layout.suit.spiral,
+	awful.layout.suit.spiral, -- master in left
 	-- awful.layout.suit.spiral.dwindle,
 	-- awful.layout.suit.max,
 	-- awful.layout.suit.max.fullscreen
@@ -184,8 +151,6 @@ end
 -- {{{ Menu
 -- Create a laucher widget and a main menu
 myawesomemenu = {
-	-- { "manual", terminal .. " -e man awesome" },
-	-- { "edit config", editor_cmd .. " " .. awesome.conffile },
 	{ "Restart", awesome.restart },
 	{ "Quit", awesome.quit }
 }
@@ -199,11 +164,16 @@ developmenu = {
 }
 
 toolsmenu = {
-	{ "Terminal", terminal },
 	{ "StarDict", dictionary },
+	{ "VLC", "vlc" },
+	{ "GIMP", "gimp" }
+}
+
+systemmenu = {
+	{ "Terminal", terminal },
+	{ "VirtualBox", "virtualbox" },
 	{ "GParted", "gparted" },
-	{ "Disks", "gnome-disks" },
-	{ "Monitor", "mate-system-monitor" }
+	{ "Disks", "gnome-disks" }
 }
 
 mymainmenu = awful.menu({
@@ -211,6 +181,7 @@ mymainmenu = awful.menu({
 		{ "Awesome", myawesomemenu, beautiful.awesome_icon },
 		{ "Develop", developmenu },
 		{ "Tools", toolsmenu },
+		{ "System", systemmenu },
 		{ "Mail", mail },
 		{ "Files", file_manager },
 		{ "Browser", browser }
@@ -443,17 +414,7 @@ globalkeys = awful.util.table.join(
 clientkeys = awful.util.table.join(
 	awful.key({ modkey }, "f", function(c) c.fullscreen = not c.fullscreen end),
 	awful.key({ modkey, "Shift" }, "c", function(c) c:kill() end),
-	awful.key({ modkey, "Control" }, "space",
-		function(c)
-			awful.client.floating.toggle(c)
-			---- If the window is flating, show the titlebar, else hide titlebar
-			if awful.client.floating.get(c) == true then
-				create_titlebar(c)
-				awful.titlebar.show(c)
-			else
-				awful.titlebar.hide(c)
-			end
-		end),
+	awful.key({ modkey, "Control" }, "space", awful.client.floating.toggle),
 	awful.key({ modkey, "Control" }, "Return", function(c) c:swap(awful.client.getmaster()) end),
 	awful.key({ modkey }, "o", awful.client.movetoscreen),
 	awful.key({ modkey }, "t", function(c) c.ontop = not c.ontop end),
@@ -515,7 +476,8 @@ root.keys(globalkeys)
 
 -- {{{ Rules
 -- Rules to apply to new clients (through the "manage" signal)
-awful.rules.rules = {{
+awful.rules.rules = {
+	{
 	-- All clients will match this rule
 		rule = { },
 		properties = {
@@ -527,13 +489,8 @@ awful.rules.rules = {{
 			buttons = clientbuttons
 		}
 	}, {
-		rule = { class = "MPlayer" },
-		properties = { floating = true }
-	}, {
-		rule = { class = "pinentry" },
-		properties = { floating = true }
-	}, {
-		rule = { class = "gimp" },
+	---- Start up terminal in floating mode
+		rule = { instance = terminal },
 		properties = { floating = true }
 	}
 	-- Set Firefox to always map on tags number 2 of screen 1.
@@ -547,13 +504,6 @@ awful.rules.rules = {{
 -- {{{ Signals
 -- Signal function to execute when a new client appears.
 client.connect_signal("manage", function(c, startup)
-	-- Enable sloppy focus
-	c:connect_signal("mouse::enter", function(c)
-			if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
-				and awful.client.focus.filter(c) then
-				client.focus = c
-			end
-		end)
 
 	if not startup then
 		-- Set the windows at the slave,
@@ -567,26 +517,6 @@ client.connect_signal("manage", function(c, startup)
 		end
 	end
 
-	local titlebars_enabled = true
-	if titlebars_enabled and (c.type == "normal" or c.type == "dialog")
-		and awful.layout.get(c.screen) == awful.layout.suit.floating then
-
-		-- buttons for the titlebar
-		local buttons = awful.util.table.join(
-			awful.button({ }, 1, function()
-					client.focus = c
-					c:raise()
-					awful.mouse.client.move(c)
-				end),
-			awful.button({ }, 3, function()
-					client.focus = c
-					c:raise()
-					awful.mouse.client.resize(c)
-				end)
-		)
-
-		create_titlebar(c)
-	end
 end)
 
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)

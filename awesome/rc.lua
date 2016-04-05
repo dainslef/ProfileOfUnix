@@ -53,7 +53,8 @@ end
 beautiful.init("/usr/share/awesome/themes/zenburn/theme.lua")
 
 ---- Custom theme settings
--- theme.border_width = 4
+theme.border_width = 2
+theme.border_focus = "#666666AA"
 theme.font = "Dejavu Sans 10"
 theme.bg_normal = "#3F3F3FAA"
 theme.bg_focus = "#1E2320AA"
@@ -68,27 +69,20 @@ dictionary = "stardict"
 file_manager = "caja"
 
 editor = os.getenv("EDITOR") or "nano"
-editor_cmd = terminal .. " -e " .. editor
 
--- Default modkey.
--- Usually, Mod4 is the key with a logo between Control and Alt.
--- If you do not like this or do not have such a key,
--- I suggest you to remap Mod4 to another key using xmodmap or other tools.
--- However, you can use another modifier like Mod1, but it may interact with others.
 modkey = "Mod4"
 
 ---- Table of layouts to cover with awful.layout.inc, order matters.
-local layouts =
-{
-	awful.layout.suit.magnifier, -- app in center
+local layouts = {
 	-- awful.layout.suit.floating,
+	awful.layout.suit.magnifier, -- focus in center
 	-- awful.layout.suit.tile,
 	-- awful.layout.suit.tile.left,
-	awful.layout.suit.tile.bottom, -- master in top
+	-- awful.layout.suit.tile.bottom, -- master in top
 	-- awful.layout.suit.tile.top,
-	-- awful.layout.suit.fair,
-	-- awful.layout.suit.fair.horizontal,
 	awful.layout.suit.spiral, -- master in left
+	-- awful.layout.suit.fair,
+	awful.layout.suit.fair.horizontal,
 	-- awful.layout.suit.spiral.dwindle,
 	-- awful.layout.suit.max,
 	-- awful.layout.suit.max.fullscreen
@@ -103,18 +97,17 @@ do
 		awful.util.spawn_with_shell("pgrep -u $USER -x " .. prg .. " || (" .. prg .. ")")
 	end
 
-	local auto_run_list =
-	{
+	local auto_run_list = {
 		"fcitx", -- Use input method
 		"nm-applet", -- Show network status
 		"xcompmgr", -- For transparent support
+		"light-locker", -- Lock screen need to load it first
 		"blueman-applet", -- Use bluetooth
 		"mate-power-manager", -- Show power and set backlights
+		"mate-volume-control-applet",
 		-- "mate-screensaver", -- Lock screen need to load it first
-		"light-locker", -- Lock screen need to load it first
 		"/usr/lib/mate-settings-daemon/mate-settings-daemon", -- For keyboard binding support
-		"/usr/lib/mate-polkit/polkit-mate-authentication-agent-1",
-		"mate-volume-control-applet"
+		"/usr/lib/mate-polkit/polkit-mate-authentication-agent-1"
 	}
 
 	for _, cmd in pairs(auto_run_list) do
@@ -137,8 +130,9 @@ end
 -- {{{ Tags
 -- Define a tag table which hold all screen tags.
 tags = {
-	names = { "Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ" },
-	layouts = { layouts[1], layouts[1], layouts[3], layouts[2] }
+	names = { "❶", "❷", "❸", "❹" },
+	-- names = { "①", "②", "③", "④" },
+	layouts = { layouts[1], layouts[2], layouts[2], layouts[3] }
 }
 for s = 1, screen.count() do
 	-- Each screen has its own tag table.
@@ -252,8 +246,10 @@ mytasklist.buttons = awful.util.table.join(
 )
 
 for s = 1, screen.count() do
+
 	-- Create a promptbox for each screen
 	mypromptbox[s] = awful.widget.prompt()
+
 	-- Create an imagebox widget which will contains an icon indicating which layout we're using.
 	-- We need one layoutbox per screen.
 	mylayoutbox[s] = awful.widget.layoutbox(s)
@@ -263,6 +259,7 @@ for s = 1, screen.count() do
 		awful.button({ }, 4, function() awful.layout.inc(layouts, 1) end),
 		awful.button({ }, 5, function() awful.layout.inc(layouts, -1) end)
 	))
+
 	-- Create a taglist widget
 	mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, mytaglist.buttons)
 
@@ -274,17 +271,15 @@ for s = 1, screen.count() do
 
 	-- Widgets that are aligned to the left
 	local left_layout = wibox.layout.fixed.horizontal()
-	-- left_layout:add(mylauncher)
 	left_layout:add(mylayoutbox[s])
 	left_layout:add(mytextclock)
 	left_layout:add(mytaglist[s])
 	left_layout:add(mypromptbox[s])
+	-- left_layout:add(mylauncher)
 
 	-- Widgets that are aligned to the right
 	local right_layout = wibox.layout.fixed.horizontal()
 	if s == 1 then right_layout:add(wibox.widget.systray()) end
-	-- right_layout:add(mytextclock)
-	-- right_layout:add(mylayoutbox[s])
 
 	-- Now bring it all together (with the tasklist in the middle)
 	local layout = wibox.layout.align.horizontal()
@@ -312,6 +307,7 @@ root.buttons(
 
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
+
 	awful.key({ modkey }, "Left", awful.tag.viewprev),
 	awful.key({ modkey }, "Right", awful.tag.viewnext),
 	awful.key({ modkey }, "Escape", awful.tag.history.restore),
@@ -390,8 +386,11 @@ globalkeys = awful.util.table.join(
 		end),
 	]]
 	awful.key({ modkey, "Control" }, "n", function()
-			c_restore = awful.client.restore() -- Restore the minimize window and focus it
-			if c_restore then awful.client.jumpto(c_restore) end
+			local c_restore = awful.client.restore() -- Restore the minimize window and focus it
+			if c_restore then
+				client.focus = c_restore
+				client.focus:raise()
+			end
 		end),
 	awful.key({ }, "Print", function()
 			awful.util.spawn("import -window root ~/Pictures/$(date -Iseconds).png") -- Use imagemagick tools
@@ -418,11 +417,7 @@ clientkeys = awful.util.table.join(
 	awful.key({ modkey, "Control" }, "Return", function(c) c:swap(awful.client.getmaster()) end),
 	awful.key({ modkey }, "o", awful.client.movetoscreen),
 	awful.key({ modkey }, "t", function(c) c.ontop = not c.ontop end),
-	awful.key({ modkey }, "n", function(c)
-			-- The client currently has the input focus, so it cannot be
-			-- minimized, since minimized clients can't have the focus.
-			c.minimized = true
-		end),
+	awful.key({ modkey }, "n", function(c) c.minimized = true end),
 	awful.key({ modkey }, "m", function(c)
 			c.maximized_horizontal = not c.maximized_horizontal
 			c.maximized_vertical   = not c.maximized_vertical
@@ -462,10 +457,19 @@ for i = 1, 4 do
 			end))
 end
 
+-- Use modkey with mouse key to move/resize the window
 clientbuttons = awful.util.table.join(
 	awful.button({ }, 1, function(c) client.focus = c; c:raise() end),
-	awful.button({ modkey }, 1, awful.mouse.client.move),
-	awful.button({ modkey }, 3, awful.mouse.client.resize)
+	awful.button({ modkey }, 1, function(c)
+		c:raise()
+		client.focus = c
+		awful.mouse.client.move()
+	end),
+	awful.button({ modkey }, 3, function(c)
+		c:raise()
+		client.focus = c
+		awful.mouse.client.resize()
+	end)
 )
 
 -- Set keys

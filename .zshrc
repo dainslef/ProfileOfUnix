@@ -44,7 +44,8 @@ then
 	if [ $(whoami) = "dainslef" ]; then
 
 		# For golang
-		export GOPATH=~/Downloads/WorkSpace/Golang
+		export GOPATH=~/Public/Go
+		PATH+=:$GOPATH/bin
 
 		# For scala activator
 		alias activator=~/Public/activator-dist-1.3.7/activator
@@ -62,7 +63,7 @@ then
 fi
 
 # Add common widgets
-plugins+=(sudo scala pip gem)
+plugins+=(sudo scala pip gem golang)
 
 # Uncomment the following line to disable bi-weekly auto-update checks
 DISABLE_AUTO_UPDATE="true"

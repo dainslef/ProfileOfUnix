@@ -50,15 +50,15 @@ end
 
 -- {{{ Variable definitions
 ---- Use theme
-beautiful.init("/usr/share/awesome/themes/zenburn/theme.lua")
+beautiful.init("/usr/share/awesome/themes/default/theme.lua")
 
 ---- Custom theme settings
 theme.border_width = 2
-theme.border_focus = "#666666AA"
+theme.border_focus = "#888888AA"
 theme.font = "Dejavu Sans 10"
 theme.bg_normal = "#3F3F3FAA"
 theme.bg_focus = "#1E2320AA"
-theme.bg_systray = "#2D2D2DAA"
+theme.bg_systray = "#333333FF"
 theme.taglist_bg_focus = "#666666AA"
 
 ---- This is used later as the default terminal and editor to run
@@ -76,13 +76,13 @@ modkey = "Mod4"
 local layouts = {
 	-- awful.layout.suit.floating,
 	awful.layout.suit.magnifier, -- focus in center
+	awful.layout.suit.spiral, -- master in left
 	-- awful.layout.suit.tile,
 	-- awful.layout.suit.tile.left,
-	-- awful.layout.suit.tile.bottom, -- master in top
+	awful.layout.suit.tile.bottom, -- master in top
 	-- awful.layout.suit.tile.top,
-	awful.layout.suit.spiral, -- master in left
 	-- awful.layout.suit.fair,
-	awful.layout.suit.fair.horizontal,
+	-- awful.layout.suit.fair.horizontal,
 	-- awful.layout.suit.spiral.dwindle,
 	-- awful.layout.suit.max,
 	-- awful.layout.suit.max.fullscreen
@@ -154,7 +154,11 @@ developmenu = {
 	{ "QtAssistant", "assistant-qt5" },
 	{ "QtDesigner", "designer-qt5" },
 	{ "Emacs", "emacs" },
-	{ "GVIM", "gvim" }
+	{ "GVIM", "gvim" },
+	{ "VSCode", "/home/dainslef/Public/VSCode-linux-x64/code" },
+	{ "NetBeans", "/home/dainslef/Public/netbeans/bin/netbeans" },
+	{ "Eclipse", "/home/dainslef/Public/eclipse/eclipse" },
+	{ "IDEA", "/home/dainslef/Public/idea-IU/bin/idea.sh" }
 }
 
 toolsmenu = {

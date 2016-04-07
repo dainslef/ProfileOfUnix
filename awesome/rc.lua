@@ -53,13 +53,23 @@ end
 beautiful.init("/usr/share/awesome/themes/default/theme.lua")
 
 ---- Custom theme settings
+
+-- Border and font
 theme.border_width = 2
-theme.border_focus = "#888888AA"
 theme.font = "Dejavu Sans 10"
-theme.bg_normal = "#3F3F3FAA"
-theme.bg_focus = "#1E2320AA"
-theme.bg_systray = "#333333FF"
-theme.taglist_bg_focus = "#666666AA"
+
+-- Color settings
+-- The last two bits are alpha channels
+
+local color_transparent = "#00000000"
+local color_menu_bg = "#33333399"
+local color_task_tag_focus = "#55667788"
+
+theme.bg_normal = color_transparent -- Set background transparent
+theme.bg_minimize = color_transparent -- Set the minimize color of taskbar
+theme.menu_bg_normal = color_menu_bg
+theme.taglist_bg_focus = color_task_tag_focus -- Set the focus color of taglist
+theme.tasklist_bg_focus = color_task_tag_focus -- Set the focus color of taskbar
 
 ---- This is used later as the default terminal and editor to run
 mail = "thunderbird"
@@ -105,7 +115,6 @@ do
 		"blueman-applet", -- Use bluetooth
 		"mate-power-manager", -- Show power and set backlights
 		"mate-volume-control-applet",
-		-- "mate-screensaver", -- Lock screen need to load it first
 		"/usr/lib/mate-settings-daemon/mate-settings-daemon", -- For keyboard binding support
 		"/usr/lib/mate-polkit/polkit-mate-authentication-agent-1"
 	}
@@ -145,8 +154,10 @@ end
 -- {{{ Menu
 -- Create a laucher widget and a main menu
 myawesomemenu = {
-	{ "Restart", awesome.restart },
-	{ "Quit", awesome.quit }
+	{ "Suspend", "systemctl suspend" },
+	{ "RestartWM", awesome.restart },
+	{ "QuitWM", awesome.quit },
+	{ "PowerOff", "poweroff" }
 }
 
 developmenu = {
@@ -170,8 +181,7 @@ toolsmenu = {
 systemmenu = {
 	{ "Terminal", terminal },
 	{ "VirtualBox", "virtualbox" },
-	{ "GParted", "gparted" },
-	{ "Disks", "gnome-disks" }
+	{ "GParted", "gparted" }
 }
 
 mymainmenu = awful.menu({
@@ -273,21 +283,16 @@ for s = 1, screen.count() do
 	-- Create the wibox
 	mywibox[s] = awful.wibox({ position = "top", screen = s, height = 25 })
 
-	-- Widgets that are aligned to the left
-	local left_layout = wibox.layout.fixed.horizontal()
-	left_layout:add(mylayoutbox[s])
-	left_layout:add(mytextclock)
-	left_layout:add(mytaglist[s])
-	left_layout:add(mypromptbox[s])
-	-- left_layout:add(mylauncher)
-
 	-- Widgets that are aligned to the right
 	local right_layout = wibox.layout.fixed.horizontal()
-	if s == 1 then right_layout:add(wibox.widget.systray()) end
+	right_layout:add(mytaglist[s])
+	right_layout:add(mypromptbox[s])
+	right_layout:add(mytextclock)
+	right_layout:add(mylayoutbox[s])
+	right_layout:add(wibox.widget.systray())
 
 	-- Now bring it all together (with the tasklist in the middle)
 	local layout = wibox.layout.align.horizontal()
-	layout:set_left(left_layout)
 	layout:set_middle(mytasklist[s])
 	layout:set_right(right_layout)
 
@@ -354,7 +359,9 @@ globalkeys = awful.util.table.join(
 			naughty.notify({
 				title = 'Layout Change',
 				text = "The current layout is " .. awful.layout.getname() .. ".",
-				timeout = 1
+				timeout = 1,
+				bg = beautiful.menu_bg_normal,
+				fg = beautiful.fg_focus
 			})
 		end),
 	awful.key({ modkey, "Shift" }, "space", function()
@@ -362,7 +369,9 @@ globalkeys = awful.util.table.join(
 			naughty.notify({
 				title = 'Layout Change',
 				text = "The current layout is " .. awful.layout.getname() .. ".",
-				timeout = 1
+				timeout = 1,
+				bg = beautiful.menu_bg_normal,
+				fg = beautiful.fg_focus
 			})
 		end),
 
@@ -384,11 +393,6 @@ globalkeys = awful.util.table.join(
 	awful.key({ modkey }, "d", function() awful.util.spawn(dictionary) end),
 	-- awful.key({ }, "XF86AudioRaiseVolume", function() end),
 	-- awful.key({ }, "XF86AudioLowerVolume", function() end),
-	--[[
-	awful.key({ }, "Power", function()
-			os.execute("zenity --question --text 'Shut down?' && systemctl poweroff")
-		end),
-	]]
 	awful.key({ modkey, "Control" }, "n", function()
 			local c_restore = awful.client.restore() -- Restore the minimize window and focus it
 			if c_restore then
@@ -397,19 +401,23 @@ globalkeys = awful.util.table.join(
 			end
 		end),
 	awful.key({ }, "Print", function()
-			awful.util.spawn("import -window root ~/Pictures/$(date -Iseconds).png") -- Use imagemagick tools
+			awful.util.spawn_with_shell("import -window root ~/Pictures/$(date -Iseconds).png") -- Use imagemagick tools
 			naughty.notify({
 				title = "Screen Shot",
 				text = "Take the fullscreen screenshot success!\n"
-					.. "Screenshot saved in ~/Pictures."
+					.. "Screenshot saved in ~/Pictures.",
+				bg = beautiful.menu_bg_normal,
+				fg = beautiful.fg_focus
 			})
 		end),
 	awful.key({ modkey }, "Print", function()
-			awful.util.spawn("import ~/Pictures/$(date -Iseconds).png")
+			awful.util.spawn_with_shell("import ~/Pictures/$(date -Iseconds).png")
 			naughty.notify({
 				title = "Screen Shot",
 				text = "Please select window to take the screenshot...\n"
-					.. "Screenshot will be saved in ~/Pictures."
+					.. "Screenshot will be saved in ~/Pictures.",
+				bg = beautiful.menu_bg_normal,
+				fg = beautiful.fg_focus
 			})
 		end)
 )

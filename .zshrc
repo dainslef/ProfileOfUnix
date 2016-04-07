@@ -17,7 +17,7 @@ if [ $(uname) = "Darwin" ]; then # Darwin kernel means in OS X
 	local vscode="/Users/dainslef/Applications/Develop/Visual\ Studio\ Code.app/Contents/MacOS/Electron"
 	local python_version=`echo $(python3 -V) | awk -F' ' '{ print $2 }' | awk -F'.' '{ print $1 "." $2 }'`
 	local pip_bin=~/Library/Python/$python_version/bin
-	plugins=(osx brew sublime)
+	plugins=(osx sublime)
 elif [ $(uname) = "Linux" ]; then
 	local show_os_version="$(uname -ornm)"
 	local normal_uid=1000 # In Linux, the normal user's uid start with 1000.
@@ -63,7 +63,7 @@ then
 fi
 
 # Add common widgets
-plugins+=(sudo scala pip gem golang)
+plugins+=(sudo scala golang mvn)
 
 # Uncomment the following line to disable bi-weekly auto-update checks
 DISABLE_AUTO_UPDATE="true"

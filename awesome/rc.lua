@@ -11,8 +11,9 @@ awful.rules = require("awful.rules")
 
 
 -- {{{ Init
----- Custom command
--- awful.util.spawn_with_shell("synclient VertScrollDelta=-66") -- Mate-settings-daemon offer the touchpad settings
+---- Custom init command
+-- awful.util.spawn_with_shell("synclient VertScrollDelta=-66") -- Mate-settings-daemon offer touchpad setting, it's not necessary.
+awful.util.spawn_with_shell("xset s 1800") -- Set screensaver timeout to 30 mintues
 -- }}}
 
 
@@ -535,6 +536,18 @@ client.connect_signal("manage", function(c, startup)
 
 end)
 
-client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
+client.connect_signal("focus", function(c)
+		-- Minimize all floating windows when change the focus to other normal window in tiles layout
+		if awful.layout.get() ~= awful.layout.suit.magnifier
+				and not awful.client.floating.get(c.focus) then
+			for _, window in pairs(awful.client.visible(c.screen)) do
+				if awful.client.floating.get(window)
+					and not window.ontop then  -- Ingnore when floating window is ontop
+					window.minimized = true
+				end
+			end
+		end
+		c.border_color = beautiful.border_focus
+	end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}

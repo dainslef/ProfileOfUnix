@@ -63,18 +63,19 @@ theme.font = "Dejavu Sans 10"
 -- The last two bits are alpha channels
 
 local color_transparent = "#00000000"
-local color_menu_bg = "#33333399"
+local color_menu_bg = "#33445566"
 local color_task_tag_focus = "#55667788"
 
 theme.bg_normal = color_transparent -- Set background transparent
 theme.bg_minimize = color_transparent -- Set the minimize color of taskbar
 theme.menu_bg_normal = color_menu_bg
+theme.menu_fg_normal = theme.fg_focus
 theme.taglist_bg_focus = color_task_tag_focus -- Set the focus color of taglist
 theme.tasklist_bg_focus = color_task_tag_focus -- Set the focus color of taskbar
 
 ---- This is used later as the default terminal and editor to run
 mail = "thunderbird"
-terminal = "mate-terminal"
+terminal = "gnome-terminal"
 browser = "google-chrome-stable"
 dictionary = "stardict"
 file_manager = "caja"
@@ -111,7 +112,7 @@ do
 	local auto_run_list = {
 		"fcitx", -- Use input method
 		"nm-applet", -- Show network status
-		"xcompmgr", -- For transparent support
+		-- "xcompmgr", -- For transparent support
 		"light-locker", -- Lock screen need to load it first
 		"blueman-applet", -- Use bluetooth
 		"mate-power-manager", -- Show power and set backlights
@@ -287,13 +288,13 @@ for s = 1, screen.count() do
 	-- Widgets that are aligned to the right
 	local right_layout = wibox.layout.fixed.horizontal()
 	right_layout:add(mytaglist[s])
-	right_layout:add(mypromptbox[s])
 	right_layout:add(mytextclock)
 	right_layout:add(mylayoutbox[s])
 	right_layout:add(wibox.widget.systray())
 
 	-- Now bring it all together (with the tasklist in the middle)
 	local layout = wibox.layout.align.horizontal()
+	layout:set_left(mypromptbox[s])
 	layout:set_middle(mytasklist[s])
 	layout:set_right(right_layout)
 
@@ -348,11 +349,11 @@ globalkeys = awful.util.table.join(
 	awful.key({ modkey, "Control" }, "r", awesome.restart),
 	awful.key({ modkey, "Shift"   }, "q", awesome.quit),
 
-	awful.key({ modkey }, "l", function() awful.tag.incmwfact( 0.05) end),
+	awful.key({ modkey }, "l", function() awful.tag.incmwfact(0.05) end),
 	awful.key({ modkey }, "h", function() awful.tag.incmwfact(-0.05) end),
-	awful.key({ modkey, "Shift" }, "h", function() awful.tag.incnmaster( 1) end),
+	awful.key({ modkey, "Shift" }, "h", function() awful.tag.incnmaster(1) end),
 	awful.key({ modkey, "Shift" }, "l", function() awful.tag.incnmaster(-1) end),
-	awful.key({ modkey, "Control" }, "h", function() awful.tag.incncol( 1) end),
+	awful.key({ modkey, "Control" }, "h", function() awful.tag.incncol(1) end),
 	awful.key({ modkey, "Control" }, "l", function() awful.tag.incncol(-1) end),
 
 	awful.key({ modkey }, "space", function()
@@ -396,13 +397,10 @@ globalkeys = awful.util.table.join(
 	-- awful.key({ }, "XF86AudioLowerVolume", function() end),
 	awful.key({ modkey, "Control" }, "n", function()
 			local c_restore = awful.client.restore() -- Restore the minimize window and focus it
-			if c_restore then
-				client.focus = c_restore
-				client.focus:raise()
-			end
+			if c_restore then client.focus = c_restore; c_restore:raise() end
 		end),
 	awful.key({ }, "Print", function()
-			awful.util.spawn_with_shell("import -window root ~/Pictures/$(date -Iseconds).png") -- Use imagemagick tools
+			os.execute("import -window root ~/Pictures/$(date -Iseconds).png") -- Use imagemagick tools
 			naughty.notify({
 				title = "Screen Shot",
 				text = "Take the fullscreen screenshot success!\n"
@@ -507,7 +505,7 @@ awful.rules.rules = {
 		}
 	}, {
 	---- Start up terminal in floating mode
-		rule = { instance = terminal },
+		rule = { instance = "gnome-terminal-server" },
 		properties = { floating = true }
 	}
 	-- Set Firefox to always map on tags number 2 of screen 1.

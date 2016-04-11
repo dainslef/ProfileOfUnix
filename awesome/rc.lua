@@ -75,7 +75,7 @@ theme.tasklist_bg_focus = color_task_tag_focus -- Set the focus color of taskbar
 
 ---- This is used later as the default terminal and editor to run
 mail = "thunderbird"
-terminal = "gnome-terminal"
+terminal = "mate-terminal"
 browser = "google-chrome-stable"
 dictionary = "stardict"
 file_manager = "caja"
@@ -112,7 +112,7 @@ do
 	local auto_run_list = {
 		"fcitx", -- Use input method
 		"nm-applet", -- Show network status
-		-- "xcompmgr", -- For transparent support
+		"xcompmgr", -- For transparent support
 		"light-locker", -- Lock screen need to load it first
 		"blueman-applet", -- Use bluetooth
 		"mate-power-manager", -- Show power and set backlights
@@ -505,7 +505,7 @@ awful.rules.rules = {
 		}
 	}, {
 	---- Start up terminal in floating mode
-		rule = { instance = "gnome-terminal-server" },
+		rule = { instance = terminal },
 		properties = { floating = true }
 	}
 	-- Set Firefox to always map on tags number 2 of screen 1.

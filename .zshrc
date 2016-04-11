@@ -63,7 +63,7 @@ then
 fi
 
 # Add common widgets
-plugins+=(sudo scala golang mvn)
+plugins+=(gem pip sudo scala golang mvn)
 
 # Uncomment the following line to disable bi-weekly auto-update checks
 DISABLE_AUTO_UPDATE="true"

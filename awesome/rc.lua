@@ -11,7 +11,7 @@ awful.rules = require("awful.rules")
 
 
 -- {{{ Init
----- Custom init command
+-- Custom init command
 -- awful.util.spawn_with_shell("synclient VertScrollDelta=-66") -- Mate-settings-daemon offer touchpad setting, it's not necessary.
 awful.util.spawn_with_shell("xset s 1800") -- Set screensaver timeout to 30 mintues
 -- }}}
@@ -50,18 +50,17 @@ end
 
 
 -- {{{ Variable definitions
----- Use theme
+
+-- Use theme
 beautiful.init("/usr/share/awesome/themes/default/theme.lua")
 
----- Custom theme settings
-
+-- Custom theme settings
 -- Border and font
 theme.border_width = 2
 theme.font = "Dejavu Sans 10"
 
 -- Color settings
 -- The last two bits are alpha channels
-
 local color_transparent = "#00000000"
 local color_menu_bg = "#33445566"
 local color_task_tag_focus = "#55667788"
@@ -73,7 +72,7 @@ theme.menu_fg_normal = theme.fg_focus
 theme.taglist_bg_focus = color_task_tag_focus -- Set the focus color of taglist
 theme.tasklist_bg_focus = color_task_tag_focus -- Set the focus color of taskbar
 
----- This is used later as the default terminal and editor to run
+-- This is used later as the default terminal and editor to run
 mail = "thunderbird"
 terminal = "mate-terminal"
 browser = "google-chrome-stable"
@@ -84,7 +83,7 @@ editor = os.getenv("EDITOR") or "nano"
 
 modkey = "Mod4"
 
----- Table of layouts to cover with awful.layout.inc, order matters.
+-- Table of layouts to cover with awful.layout.inc, order matters.
 local layouts = {
 	-- awful.layout.suit.floating,
 	awful.layout.suit.magnifier, -- focus in center
@@ -103,7 +102,7 @@ local layouts = {
 
 
 
----- Load auto run apps.
+-- Load auto run apps.
 do
 	function run_once(prg)
 		awful.util.spawn_with_shell("pgrep -u $USER -x " .. prg .. " || (" .. prg .. ")")
@@ -111,8 +110,8 @@ do
 
 	local auto_run_list = {
 		"fcitx", -- Use input method
-		"nm-applet", -- Show network status
 		"xcompmgr", -- For transparent support
+		"nm-applet", -- Show network status
 		"light-locker", -- Lock screen need to load it first
 		"blueman-applet", -- Use bluetooth
 		"mate-power-manager", -- Show power and set backlights
@@ -389,7 +388,7 @@ globalkeys = awful.util.table.join(
 	-- Menubar
 	awful.key({ modkey }, "p", function() menubar.show() end),
 
-	---- Custom key bindings
+	-- Custom key bindings
 	awful.key({ modkey, "Control" }, "l", function() awful.util.spawn("xdg-screensaver lock") end),
 	awful.key({ modkey }, "b", function() awful.util.spawn(browser) end),
 	awful.key({ modkey }, "d", function() awful.util.spawn(dictionary) end),
@@ -435,9 +434,9 @@ clientkeys = awful.util.table.join(
 		end)
 )
 
--- Bind all key numbers to tags.
--- Be careful: we use keycodes to make it works on any keyboard layout.
--- This should map on the top row of your keyboard, usually 1 to 9.
+-- Bind all key numbers to tags
+-- Be careful: we use keycodes to make it works on any keyboard layout
+-- This should map on the top row of your keyboard, usually 1 to 9
 for i = 1, 4 do
 	globalkeys = awful.util.table.join(globalkeys,
 		-- View tag only
@@ -504,11 +503,11 @@ awful.rules.rules = {
 			buttons = clientbuttons
 		}
 	}, {
-	---- Start up terminal in floating mode
+	-- Start up terminal in floating mode
 		rule = { instance = terminal },
 		properties = { floating = true }
 	}
-	-- Set Firefox to always map on tags number 2 of screen 1.
+	-- Set Firefox to always map on tags number 2 of screen 1
 	-- { rule = { class = "Firefox" },
 	--	 properties = { tag = tags[1][2] } },
 }
@@ -520,19 +519,22 @@ awful.rules.rules = {
 -- Signal function to execute when a new client appears.
 client.connect_signal("manage", function(c, startup)
 
-	if not startup then
-		-- Set the windows at the slave,
-		-- i.e. put it at the end of others instead of setting it master.
-		awful.client.setslave(c)
+		-- Set the dialog always on the top
+		if c.type == "dialog" then c.ontop = true end
 
-		-- Put windows in a smart way, only if they does not set an initial position.
-		if not c.size_hints.user_position and not c.size_hints.program_position then
-			awful.placement.no_overlap(c)
-			awful.placement.no_offscreen(c)
+		if not startup then
+			-- Set the windows at the slave,
+			-- i.e. put it at the end of others instead of setting it master
+			awful.client.setslave(c)
+			-- Put windows in a smart way, only if they does not set an initial position
+			if not c.size_hints.user_position
+					and not c.size_hints.program_position then
+				awful.placement.no_overlap(c)
+				awful.placement.no_offscreen(c)
+			end
 		end
-	end
 
-end)
+	end)
 
 client.connect_signal("focus", function(c)
 		-- Minimize all floating windows when change the focus to other normal window in tiles layout
@@ -540,12 +542,13 @@ client.connect_signal("focus", function(c)
 				and not awful.client.floating.get(c.focus) then
 			for _, window in pairs(awful.client.visible(c.screen)) do
 				if awful.client.floating.get(window)
-					and not window.ontop then  -- Ingnore when floating window is ontop
+						and not window.ontop then  -- Ingnore when floating window is ontop
 					window.minimized = true
 				end
 			end
 		end
 		c.border_color = beautiful.border_focus
 	end)
+
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}

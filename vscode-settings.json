@@ -10,6 +10,7 @@
 	"editor.glyphMargin": true,
 	"editor.formatOnType": true,
 	"editor.renderWhitespace": true,
+	"update.channel": "none",
 	"files.trimTrailingWhitespace": true,
 	"diffEditor.ignoreTrimWhitespace": false
 }

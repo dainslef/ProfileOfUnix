@@ -48,7 +48,7 @@ then
 		PATH+=:$GOPATH/bin
 
 		# For scala activator
-		alias activator=~/Public/activator-dist-1.3.7/activator
+		alias activator=~/Public/activator-dist/activator
 
 		# For visual studio code
 		alias code=$vscode

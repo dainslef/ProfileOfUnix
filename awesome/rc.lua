@@ -113,7 +113,7 @@ do
 		"xcompmgr", -- For transparent support
 		"nm-applet", -- Show network status
 		"light-locker", -- Lock screen need to load it first
-		"blueman-applet", -- Use bluetooth
+		-- "blueman-applet", -- Use bluetooth
 		"mate-power-manager", -- Show power and set backlights
 		"mate-volume-control-applet",
 		"/usr/lib/mate-settings-daemon/mate-settings-daemon", -- For keyboard binding support
@@ -130,7 +130,7 @@ end
 -- {{{ Wallpaper
 if beautiful.wallpaper then
 	for s = 1, screen.count() do
-		gears.wallpaper.maximized("/home/dainslef/Pictures/EVA.png", s, true)
+		gears.wallpaper.maximized("/home/dainslef/Pictures/34844544_p0.png", s, true)
 	end
 end
 -- }}}
@@ -471,15 +471,15 @@ end
 clientbuttons = awful.util.table.join(
 	awful.button({ }, 1, function(c) client.focus = c; c:raise() end),
 	awful.button({ modkey }, 1, function(c)
-		c:raise()
-		client.focus = c
-		awful.mouse.client.move()
-	end),
+			c:raise()
+			client.focus = c
+			awful.mouse.client.move()
+		end),
 	awful.button({ modkey }, 3, function(c)
-		c:raise()
-		client.focus = c
-		awful.mouse.client.resize()
-	end)
+			c:raise()
+			client.focus = c
+			awful.mouse.client.resize()
+		end)
 )
 
 -- Set keys
@@ -537,6 +537,7 @@ client.connect_signal("manage", function(c, startup)
 	end)
 
 client.connect_signal("focus", function(c)
+
 		-- Minimize all floating windows when change the focus to other normal window in tiles layout
 		if awful.layout.get() ~= awful.layout.suit.magnifier
 				and not awful.client.floating.get(c.focus) then
@@ -547,7 +548,9 @@ client.connect_signal("focus", function(c)
 				end
 			end
 		end
+
 		c.border_color = beautiful.border_focus
+
 	end)
 
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)

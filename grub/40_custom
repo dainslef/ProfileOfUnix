@@ -1,0 +1,37 @@
+#!/bin/sh
+exec tail -n +3 $0
+# This file provides an easy way to add custom menu entries.  Simply type the
+# menu entries you want to add after this comment.  Be careful not to change
+# the 'exec tail' line above.
+
+# Windows引导项
+menuentry 'Microsoft Windows 10' {
+    insmod part_gpt
+    insmod fat
+    set root='hd0,gpt1'
+    chainloader /EFI/Microsoft/Boot/bootmgfw.efi
+}
+
+# ArchLinux引导项，不同Linux发行版可能略有不同
+menuentry 'Arch Linux' {
+    load_video
+    set gfxpayload=keep
+    insmod gzio
+    insmod part_gpt
+    insmod ext2
+    set root='hd0,gpt3'
+    echo 'Loading Linux linux ...'
+    linux /boot/vmlinuz-linux-zen root=/dev/sda3 rw quiet
+    echo 'Loading initial ramdisk ...'
+    initrd /boot/initramfs-linux-zen.img
+}
+
+# 关机和重启选项
+menuentry 'System shutdown' {
+    echo "System shutting down..."
+    halt
+}
+menuentry 'System restart' {
+    echo "System rebooting..."
+    reboot
+}

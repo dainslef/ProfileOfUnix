@@ -41,13 +41,22 @@ set showcmd " 在命令栏右侧显示输入的命令
 set linebreak " 使用整词换行
 set noswapfile " 打开文件时不生成以'swp'后缀的临时交换文件
 set lbr " 不在单词中间拆行
-set t_Co=256 " 告知终端支持256色显示
 set list " 显示特殊符号
-set listchars=tab:⇥\ ,trail:•,extends:#,nbsp:.,eol:↵ " 设置tab、行尾等位置的特殊符号的显示
 " set t_vb= " 置空错误铃声的终端代码
 " set guioptions-=T " 隐藏工具栏
 " set guioptions-=m " 隐藏菜单栏
 " set cursorcolumn " 打开纵向高亮对齐
+
+
+
+" ------------------------------------------------------------------------------
+" --- 根据OS环境加载设置 ---
+if has("win32unix")
+	set listchars=tab:➜\ ,trail:•,extends:#,nbsp:.,eol:¬ " 设置Windows环境下vim的tab、行尾等位置的特殊符号的显示
+else
+	set t_Co=256 " 告知终端支持256色显示
+	set listchars=tab:⇥\ ,trail:•,extends:#,nbsp:.,eol:↵ " 设置Unix环境下vim的tab、行尾等位置的特殊符号的显示
+endif
 
 
 
@@ -72,17 +81,6 @@ autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 autocmd BufNewFile,BufReadPost *.MD set filetype=markdown " 将*.md/MD格式的文件作为markdown文件进行语法解析
 autocmd BufNewFile,BufReadPost *.m set filetype=objc " 将*.m格式的文件作为Objective-C源码进行解析
 autocmd BufNewFile,BufReadPost *.mm set filetype=objcpp " 将*.mm格式的文件作为Objective-C++源码进行解析
-
-
-
-" ------------------------------------------------------------------------------
-" --- 设置语法折叠 ---
-" set foldenable " 开始折叠
-" set foldmethod=syntax " 设置语法折叠
-" set foldcolumn=0 " 设置折叠区域的宽度
-" setlocal foldlevel=99999999999999 " 设置折叠层数，设置为较大值则可默认关闭折叠
-" set foldclose=all " 设置为自动关闭折叠
-" nnoremap <space> @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR> " 用空格键来开关折叠
 
 
 
@@ -122,7 +120,7 @@ Plugin 'Shougo/neocomplcache.vim' " 轻量级的代码补全插件
 Plugin 'taglist.vim' " 来自github中vim-scripts收集的插件直接写名字,不过很可能获得的是旧版本
 Plugin 'winmanager--Fox' " 窗口管理插件
 Plugin 'derekwyatt/vim-scala' " vim默认没有提供scala语言的支持，使用插件添加对scala语言支持
-Plugin 'fatih/vim-go' " golang插件
+Plugin 'fatih/vim-go' " golang插件，使用指令:GoInstallBinaries安装补全工具
 Plugin 'vim-ruby/vim-ruby' " ruby插件
 Plugin 'tpope/vim-rails' " ROR插件
 Plugin 'plasticboy/vim-markdown' " markdown语法高亮插件
@@ -246,23 +244,6 @@ let g:syntastic_c_compiler_options = "-std=c11" " 检测c语法时使用c11语�
 let g:syntastic_cpp_compiler_options = "-std=c++1y" " 检测c++语法时支持c++1y的新特性
 let g:syntastic_ignore_files = [".*\.m$"] " 忽略objective-C语言的语法检测(objc的检测体验很差)
 let g:syntastic_python_python_exe = "python3" " 检查python语法时使用python3语法
-
-
-
-" ------------------------------------------------------------------------------
-" --- pymode配置 ---
-" let g:pymode_quickfix_minheight = 3 " 设置快速提示栏最小高度
-" let g:pymode_quickfix_maxheight = 5 " 设置快速提示栏最大高度
-" let g:pymode_lint_cwindow = 0 " 关闭快速提示栏的默认显示
-" let g:pymode_folding = 0 " 关闭默认的代码折叠
-" let g:pymode_options = 0 " 关闭pymode下的一些默认选项
-
-
-
-" ------------------------------------------------------------------------------
-" --- PowerLine配置 ---
-" let g:Powerline_symbols = 'compatible' " 指定powerline插件采用的特殊字符类型，共有三种，分别为compatible(无特殊字符)，unicode(简单特殊字符)，fancy(完整字符集，需要patch字体，包含图标样式)，建议采用unicode字符类型
-" let g:Powerline_stl_path_style = 'short' " 制定文件路径的显示方式
 
 
 

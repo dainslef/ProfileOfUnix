@@ -47,9 +47,9 @@ desktop-image: "../34844544_p0.png"
 	width = 80%
 	top = 20%
 	height = 50%	
-	item_font = "DejaVu Sans Bold 18"
-	item_color = "#444"
-	selected_item_font = "DejaVu Sans Bold 18"
+	item_font = "DejaVu Sans Regular 16"
+	item_color = "#333"
+	selected_item_font = "DejaVu Sans Bold 16"
 	selected_item_color = "#000"
 	selected_item_pixmap_style = "blob_*.png"
 	icon_height = 25

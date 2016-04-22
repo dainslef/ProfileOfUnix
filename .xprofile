@@ -1,6 +1,14 @@
-export GTK_IM_MODULE=fcitx
-export QT_IM_MODULE=fcitx
-export XMODIFIERS="@im=fcitx"
+if [ $DESKTOP_SESSION == "gnome" ] || [ $DESKTOP_SESSION == "ubuntu" ]; then
+	input_method=ibus
+else
+	input_method=fcitx
+fi
+
+if [ $DESKTOP_SESSION != "kde" ]; then
+	export QT_STYLE_OVERRIDE=GTK+
+fi
+
+export GTK_IM_MODULE=$input_method
+export QT_IM_MODULE=$input_method
+export XMODIFIERS="@im=$input_method"
 export CLASSPATH=$CLASSPATH:.
-export QT_STYLE_OVERRIDE=GTK+
-export EDITOR=vim

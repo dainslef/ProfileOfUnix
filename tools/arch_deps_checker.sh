@@ -1,28 +1,56 @@
-#! /usr/bin/bash
+#! /bin/bash
 
-explicit=""
-packages=$(pacman -Qeq)
-
-# In windows, pacman can use directly
-if [ $(uname -o) == "Msys" ]; then
-	sudo=""
-else
+if [ -e /etc/os-release ]; then
 	sudo="sudo"
+	eval `cat /etc/os-release | sed -n '1, 1p'` # Read the first line of the os-release file
+elif [ `uname -o` == "Msys" ]; then # MYSY not needed root permission and use PACMAN package mamager
+	NAME="Arch Linux"
+fi
+
+# Check OS type and use different command
+if [ "$NAME" ==  "Ubuntu" ]; then
+	packages=`apt-mark showmanual`
+	default_count=0
+	set_dep_cmd="apt-mark auto"
+	check_dep_cmd() {
+		local count=0
+		local deps_all=`apt-cache rdepends $1 | grep -v '|'`
+		for dep in $deps_all; do
+			if [ `dpkg --status 2>/dev/null $dep | wc -l` -gt 0 ]; then count=$[$count+1]; fi
+		done
+		echo $count
+	}
+elif [ "$NAME" == "Arch Linux" ]; then
+	packages=`pacman -Qeq`
+	default_count=1
+	set_dep_cmd="pacman -S --asdeps"
+	check_dep_cmd() {
+		pactree -r $1 | wc -l
+	}
+else
+	echo Your OS is not supported!
+	exit
 fi
 
 echo -e Start calculate the depends..."\n"
 
-for package in $packages
-do
-	deps=$(pactree -r $package)
-	eval `echo $deps | awk -F' ' '{ print "count="NF }'`
-	if [ $count -gt 1 ]; then
+for package in $packages; do
+
+	count=`check_dep_cmd $package`
+	# eval $(echo $deps | awk -F' ' '{ print "count="NF }')
+
+	if [ $count -gt $default_count ]; then
 		echo Package name: $package
-		echo Depends: $[$count-1]
-		eval "pactree -r $package"
-		echo ===========================================
+		echo Rdepends: $[$count-$default_count]
+#		if [ "$NAME" == "Ubuntu" ]; then
+#			echo -e $deps
+#		else
+#			pactree -r $package
+#		fi
+		echo -e "\n"==========================================="\n"
 		explicit+=" "$package
 	fi
+
 done
 
 if [ -n "$explicit" ]; then
@@ -32,10 +60,9 @@ if [ -n "$explicit" ]; then
 	echo Do you want to change the install reason?
 
 	# Show select menu
-	select ch in "YES" "NO"
-	do
-		if [ "$ch" = "YES" ]; then
-			$sudo pacman -S --asdeps $explicit
+	select ch in "YES" "NO"; do
+		if [ "$ch" == "YES" ]; then
+			$sudo $set_dep_cmd $explicit
 		fi
 		echo
 		break
@@ -47,10 +74,14 @@ fi
 
 # Check no needed package
 echo -e Start calculate the packages which are no longer needed..."\n"
-remove=$(pacman -Qdqtt)
-if [ -n "$remove" ]; then
-	echo -e Find package can be removed:"\n"$remove"\n"
-	$sudo pacman -Rsnc $remove
+if [ "$NAME" == "Ubuntu" ]; then
+	sudo apt autoremove --purge
 else
-	echo -e No package can be removed.'\n'Your system is clean.
+	remove=`pacman -Qdqtt`
+	if [ -n "$remove" ]; then
+		echo -e Find package can be removed:"\n"$remove"\n"
+		$sudo pacman -Rsnc $remove
+	else
+		echo -e No package can be removed.'\n'Your system is clean.
+	fi
 fi

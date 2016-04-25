@@ -3,7 +3,7 @@
 if [ -e /etc/os-release ]; then
 	sudo="sudo"
 	eval `cat /etc/os-release | sed -n '1, 1p'` # Read the first line of the os-release file
-elif [ `uname -o` == "Msys" ]; then # MYSY not needed root permission and use PACMAN package mamager
+elif [ `uname -o` == "Msys" ]; then # MYSY doesn't need root permission and use PACMAN package mamager
 	NAME="Arch Linux"
 fi
 
@@ -37,16 +37,10 @@ echo -e Start calculate the depends..."\n"
 for package in $packages; do
 
 	count=`check_dep_cmd $package`
-	# eval $(echo $deps | awk -F' ' '{ print "count="NF }')
 
 	if [ $count -gt $default_count ]; then
 		echo Package name: $package
 		echo Rdepends: $[$count-$default_count]
-#		if [ "$NAME" == "Ubuntu" ]; then
-#			echo -e $deps
-#		else
-#			pactree -r $package
-#		fi
 		echo -e "\n"==========================================="\n"
 		explicit+=" "$package
 	fi

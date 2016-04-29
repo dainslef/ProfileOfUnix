@@ -50,17 +50,6 @@ set list " 显示特殊符号
 
 
 " ------------------------------------------------------------------------------
-" --- 根据OS环境加载设置 ---
-if has("win32unix")
-	set listchars=tab:➜\ ,trail:•,extends:#,nbsp:.,eol:¬ " 设置Windows环境下vim的tab、行尾等位置的特殊符号的显示
-else
-	set t_Co=256 " 告知终端支持256色显示
-	set listchars=tab:⇥\ ,trail:•,extends:#,nbsp:.,eol:↵ " 设置Unix环境下vim的tab、行尾等位置的特殊符号的显示
-endif
-
-
-
-" ------------------------------------------------------------------------------
 " --- 设置GUI模式下的额外配置 ---
 if has("gui_running")
 	set lines=50 columns=130 " 设置GUI模式下的宽高
@@ -171,13 +160,7 @@ let Tlist_Exit_OnlyWindow = 1 " 关闭vim时关闭tag窗口
 " ------------------------------------------------------------------------------
 " --- vim-arline配置 ---
 let g:airline_theme = 'powerlineish' " 设置主题
-let g:airline_left_sep = '' " 设置下标签栏左分隔符
-let g:airline_right_sep = '' " 设置下标签栏右分隔符
 let g:airline#extensions#tabline#enabled = 1 " 显示标签栏
-let g:airline#extensions#tabline#left_sep = '✎' " 设置上标签栏左前分隔符
-let g:airline#extensions#tabline#left_alt_sep = '◀' " 设置上标签栏左后分隔符
-let g:airline#extensions#tabline#right_sep = '☰' " 设置上标签栏右分隔符
-let g:airline_powerline_fonts = 1 " 使用powerline字体
 " let g:airline_symbols = {'crypt':'1', 'inenr':'¶', 'branch':'⎇', 'paste':'∥', 'whitespace':'Ξ'} " 自定义特殊符号集
 
 
@@ -238,8 +221,6 @@ let g:neocomplcache_force_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\
 " ------------------------------------------------------------------------------
 " --- syntastic配置 ---
 let g:syntastic_check_on_open = 1 " 首次打开文件时即开始检测语法错误
-let g:syntastic_error_symbol = "✗" " 设置语法错误的提示
-let g:syntastic_warning_symbol = "⚠" " 设置语法警告的提示
 let g:syntastic_c_compiler_options = "-std=c11" " 检测c语法时使用c11语法
 let g:syntastic_cpp_compiler_options = "-std=c++1y" " 检测c++语法时支持c++1y的新特性
 let g:syntastic_ignore_files = [".*\.m$"] " 忽略objective-C语言的语法检测(objc的检测体验很差)
@@ -249,9 +230,38 @@ let g:syntastic_python_python_exe = "python3" " 检查python语法时使用pytho
 
 " ------------------------------------------------------------------------------
 " --- 常用的几个主题 ---
-colorschem molokai
+" colorschem molokai
 " colorschem materialbox
 " colorschem xterm16
 " colorscheme grb256
 
-highlight Normal ctermbg=None " 强制设置主题背景透明
+
+
+" ------------------------------------------------------------------------------
+" --- 根据OS环境加载设置 ---
+if has("win32unix")
+	set listchars=tab:›\ ,trail:•,extends:#,nbsp:.,eol:¬ " 设置Windows环境下vim的tab、行尾等位置的特殊符号的显示
+
+	"->syntastic配置
+	let g:syntastic_error_symbol = "X" " 设置语法错误的提示
+	let g:syntastic_warning_symbol = "!" " 设置语法警告的提示
+else
+	set t_Co=256 " 告知终端支持256色显示
+	set listchars=tab:⇥\ ,trail:•,extends:#,nbsp:.,eol:↵ " 设置Unix环境下vim的tab、行尾等位置的特殊符号的显示
+
+	"->syntastic配置
+	let g:syntastic_error_symbol = "✗" " 设置语法错误的提示
+	let g:syntastic_warning_symbol = "⚠" " 设置语法警告的提示
+
+	"->vim-arline配置
+	let g:airline_left_sep = '' " 设置下标签栏左分隔符
+	let g:airline_right_sep = '' " 设置下标签栏右分隔符
+	let g:airline#extensions#tabline#left_sep = '✎' " 设置上标签栏左前分隔符
+	let g:airline#extensions#tabline#left_alt_sep = '◀' " 设置上标签栏左后分隔符
+	let g:airline#extensions#tabline#right_sep = '☰' " 设置上标签栏右分隔符
+	let g:airline_powerline_fonts = 1 " 使用powerline字体
+
+	"->主题设置
+	colorschem molokai
+	highlight Normal ctermbg=None " 强制设置主题背景透明
+endif

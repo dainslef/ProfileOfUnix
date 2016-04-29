@@ -33,17 +33,16 @@ end
 do
 	local in_error = false
 	awesome.connect_signal("debug::error", function(err)
-		-- Make sure we don't go into an endless error loop
-		if in_error then return end
-		in_error = true
-
-		naughty.notify({
-			preset = naughty.config.presets.critical,
-			title = "Oops, an error happened!",
-			text = err
-		})
-		in_error = false
-	end)
+			-- Make sure we don't go into an endless error loop
+			if in_error then return end
+			in_error = true
+			naughty.notify({
+				preset = naughty.config.presets.critical,
+				title = "Oops, an error happened!",
+				text = err
+			})
+			in_error = false
+		end)
 end
 -- }}}
 
@@ -54,13 +53,11 @@ end
 -- Use theme
 beautiful.init("/usr/share/awesome/themes/default/theme.lua")
 
--- Custom theme settings
--- Border and font
+-- Custom theme settings, border and font
 theme.border_width = 2
 theme.font = "Dejavu Sans 10"
 
--- Color settings
--- The last two bits are alpha channels
+-- Color settings, the last two bits are alpha channels
 local color_transparent = "#00000000"
 local color_menu_bg = "#33445566"
 local color_task_tag_focus = "#55667788"
@@ -73,17 +70,17 @@ theme.taglist_bg_focus = color_task_tag_focus -- Set the focus color of taglist
 theme.tasklist_bg_focus = color_task_tag_focus -- Set the focus color of taskbar
 
 -- This is used later as the default terminal and editor to run
-mail = "thunderbird"
-terminal = "mate-terminal"
-browser = "google-chrome-stable"
-dictionary = "stardict"
-file_manager = "caja"
+local mail = "thunderbird"
+local terminal = "mate-terminal"
+local browser = "google-chrome-stable"
+local dictionary = "stardict"
+local file_manager = "caja"
 
 -- Set default editor
-editor = os.getenv("EDITOR") or "nano"
+local editor = os.getenv("EDITOR") or "nano"
 
 -- Set main key
-modkey = "Mod4"
+local modkey = "Mod4"
 
 -- Table of layouts to cover with awful.layout.inc, order matters.
 local layouts = {
@@ -104,7 +101,7 @@ local layouts = {
 
 
 
--- Load auto run apps.
+-- {{{ Load auto run apps.
 do
 	function run_once(prg)
 		awful.util.spawn_with_shell("pgrep -u $USER -x " .. prg .. " || (" .. prg .. ")")
@@ -126,6 +123,7 @@ do
 		run_once(cmd)
 	end
 end
+-- }}}
 
 
 
@@ -141,7 +139,7 @@ end
 
 -- {{{ Tags
 -- Define a tag table which hold all screen tags.
-tags = {
+local tags = {
 	names = { "❶", "❷", "❸", "❹" },
 	-- names = { "①", "②", "③", "④" },
 	layouts = { layouts[1], layouts[2], layouts[2], layouts[3] }
@@ -155,15 +153,15 @@ end
 
 
 -- {{{ Menu
--- Create a laucher widget and a main menu
-myawesomemenu = {
+
+-- Create menu items
+local myawesomemenu = {
 	{ "Suspend", "systemctl suspend" },
 	{ "RestartWM", awesome.restart },
 	{ "QuitWM", awesome.quit },
 	{ "PowerOff", "poweroff" }
 }
-
-developmenu = {
+local developmenu = {
 	{ "QtCreator", "qtcreator" },
 	{ "QtAssistant", "assistant-qt5" },
 	{ "QtDesigner", "designer-qt5" },
@@ -174,20 +172,19 @@ developmenu = {
 	{ "Eclipse", "/home/dainslef/Public/eclipse/eclipse" },
 	{ "IDEA", "/home/dainslef/Public/idea-IU/bin/idea.sh" }
 }
-
-toolsmenu = {
+local toolsmenu = {
 	{ "StarDict", dictionary },
 	{ "VLC", "vlc" },
 	{ "GIMP", "gimp" }
 }
-
-systemmenu = {
+local systemmenu = {
 	{ "Terminal", terminal },
 	{ "VirtualBox", "virtualbox" },
 	{ "GParted", "gparted" }
 }
 
-mymainmenu = awful.menu({
+-- Add menu items to main menu
+local mymainmenu = awful.menu({
 	items = {
 		{ "Awesome", myawesomemenu, beautiful.awesome_icon },
 		{ "Develop", developmenu },
@@ -199,7 +196,8 @@ mymainmenu = awful.menu({
 	}
 })
 
-mylauncher = awful.widget.launcher({
+-- Create launcher and set menu
+local mylauncher = awful.widget.launcher({
 	image = beautiful.awesome_icon,
 	menu = mymainmenu
 })
@@ -211,15 +209,19 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 
 
 -- {{{ Wibox
+
 -- Create a textclock widget
-mytextclock = awful.widget.textclock(" <span font='Dejavu Sans 10'>[ %b %d -<span color='green'>%a</span>-"
+local mytextclock = awful.widget.textclock(" <span font='Dejavu Sans 10'>[ %b %d -<span color='green'>%a</span>-"
 	.. " ☪ <span color='yellow'>%H:%M</span> ]</span> ")
 
--- Create a wibox for each screen and add it
-mywibox = {}
-mypromptbox = {}
-mylayoutbox = {}
-mytaglist = {}
+-- Create widgetbox
+local mywidgetbox = {}
+local mypromptbox = {}
+local mylayoutbox = {}
+local mytaglist = {}
+local mytasklist = {}
+
+-- Set buttons in widgetbox
 mytaglist.buttons = awful.util.table.join(
 	awful.button({ }, 1, awful.tag.viewonly),
 	awful.button({ modkey }, 1, awful.client.movetotag),
@@ -228,7 +230,6 @@ mytaglist.buttons = awful.util.table.join(
 	awful.button({ }, 4, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end),
 	awful.button({ }, 5, function(t) awful.tag.viewnext(awful.tag.getscreen(t)) end)
 )
-mytasklist = {}
 mytasklist.buttons = awful.util.table.join(
 	awful.button({ }, 1, function(c)
 			if c == client.focus then
@@ -262,6 +263,7 @@ mytasklist.buttons = awful.util.table.join(
 		end)
 )
 
+-- Add widgetboxs in each screen
 for s = 1, screen.count() do
 
 	-- Create a promptbox for each screen
@@ -284,7 +286,7 @@ for s = 1, screen.count() do
 	mytasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, mytasklist.buttons)
 
 	-- Create the wibox
-	mywibox[s] = awful.wibox({ position = "top", screen = s, height = 25 })
+	mywidgetbox[s] = awful.wibox({ position = "top", screen = s, height = 25 })
 
 	-- Widgets that are aligned to the right
 	local right_layout = wibox.layout.fixed.horizontal()
@@ -299,7 +301,8 @@ for s = 1, screen.count() do
 	layout:set_middle(mytasklist[s])
 	layout:set_right(right_layout)
 
-	mywibox[s]:set_widget(layout)
+	mywidgetbox[s]:set_widget(layout)
+
 end
 -- }}}
 
@@ -318,7 +321,7 @@ root.buttons(
 
 
 -- {{{ Key bindings
-globalkeys = awful.util.table.join(
+local globalkeys = awful.util.table.join(
 
 	awful.key({ modkey }, "Left", awful.tag.viewprev),
 	awful.key({ modkey }, "Right", awful.tag.viewnext),
@@ -422,7 +425,7 @@ globalkeys = awful.util.table.join(
 		end)
 )
 
-clientkeys = awful.util.table.join(
+local clientkeys = awful.util.table.join(
 	awful.key({ modkey }, "f", function(c) c.fullscreen = not c.fullscreen end),
 	awful.key({ modkey, "Shift" }, "c", function(c) c:kill() end),
 	awful.key({ modkey, "Control" }, "space", awful.client.floating.toggle),
@@ -470,7 +473,7 @@ for i = 1, 4 do
 end
 
 -- Use modkey with mouse key to move/resize the window
-clientbuttons = awful.util.table.join(
+local clientbuttons = awful.util.table.join(
 	awful.button({ }, 1, function(c) client.focus = c; c:raise() end),
 	awful.button({ modkey }, 1, function(c)
 			c:raise()
@@ -518,6 +521,7 @@ awful.rules.rules = {
 
 
 -- {{{ Signals
+
 -- Signal function to execute when a new client appears.
 client.connect_signal("manage", function(c, startup)
 

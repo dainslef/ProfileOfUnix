@@ -511,6 +511,18 @@ awful.rules.rules = {
 	-- Start up terminal in floating mode
 		rule = { instance = terminal },
 		properties = { floating = true }
+	}, {
+		rule = { class = "jetbrains-idea" },
+		properties = { tag = tags[1][4] }
+	}, {
+		rule = { class = "NetBeans IDE 8.1" },
+		properties = { tag = tags[1][4] }
+	}, {
+		rule = { class = "QtCreator" },
+		properties = { tag = tags[1][4] }
+	}, {
+		rule = { class = "Eclipse" },
+		properties = { tag = tags[1][4] }
 	}
 	-- Set Firefox to always map on tags number 2 of screen 1
 	-- { rule = { class = "Firefox" },

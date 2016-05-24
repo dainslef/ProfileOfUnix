@@ -13,7 +13,6 @@ efibootmgr
 emacs
 engrampa
 eom
-fakeroot
 fcitx-anthy
 fcitx-configtool
 fcitx-gtk2
@@ -70,6 +69,7 @@ ruby
 sbcl
 scala
 screenfetch
+sed
 stardict-lite
 subversion
 sudo
@@ -84,7 +84,6 @@ wget
 which
 xcompmgr
 xdg-user-dirs
-xf86-input-synaptics
 xorg-server
 yaourt
 zsh

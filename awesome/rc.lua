@@ -12,7 +12,6 @@ awful.rules = require("awful.rules")
 
 -- {{{ Init
 -- Custom init command
--- awful.util.spawn_with_shell("synclient VertScrollDelta=-66") -- Mate-settings-daemon offer touchpad setting, it's not necessary.
 awful.util.spawn_with_shell("xset s 1800") -- Set screensaver timeout to 30 mintues
 -- }}}
 

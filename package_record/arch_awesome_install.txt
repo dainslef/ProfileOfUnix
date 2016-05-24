@@ -68,7 +68,6 @@ eom
 exempi
 expat
 faad2
-fakeroot
 fcitx
 fcitx-anthy
 fcitx-configtool
@@ -426,6 +425,7 @@ pixman
 polkit
 popt
 procps-ng
+psmisc
 pulseaudio
 pygobject2-devel
 pygtk
@@ -434,6 +434,7 @@ python-xdg
 python2
 python2-cairo
 python2-gobject2
+python2-six
 qt4
 qt5-base
 qt5-declarative
@@ -525,8 +526,7 @@ xcompmgr
 xdg-user-dirs
 xdg-utils
 xextproto
-xf86-input-evdev
-xf86-input-synaptics
+xf86-input-libinput
 xf86dgaproto
 xf86miscproto
 xf86vidmodeproto

@@ -30,7 +30,7 @@ grub
 gtk-theme-arc-git
 gvim
 ibus-anthy
-ibus-pinyin
+ibus-libpinyin
 iputils
 linux-zen
 linux-zen-headers

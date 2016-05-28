@@ -188,7 +188,7 @@ hyphen
 iana-etc
 ibus
 ibus-anthy
-ibus-pinyin
+ibus-libpinyin
 icu
 ilmbase
 imagemagick
@@ -317,6 +317,7 @@ libpcap
 libpciaccess
 libpeas
 libpgm
+libpinyin
 libpipeline
 libplist
 libpng
@@ -413,7 +414,6 @@ lldb
 llvm-libs
 lm_sensors
 lua
-lua51
 lua52
 lua52-bitop
 lua52-expat
@@ -510,7 +510,6 @@ python2-gobject
 python2-gobject2
 python2-six
 python2-xdg
-pyzy
 qt4
 qt5-base
 qt5-declarative

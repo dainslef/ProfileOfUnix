@@ -95,25 +95,23 @@ source $ZSH/oh-my-zsh.sh
 
 # Check the UID
 if [ $UID -ge $normal_uid ]; then # normal_user
-	local start_status="%{$fg_bold[green]%}➜"
-	local mid1_status="%{$fg_bold[yellow]%}%n"
-	local mid2_status="%{$fg_bold[cyan]%}⇒"
-	local end2_status="%{$fg_bold[blue]%}%T"
+	local start_status="%{$fg_bold[green]%}λ"
+	local mid_status="%{$fg_bold[yellow]%}%n"
+	local time_status="%{$fg_bold[blue]%}%T"
 elif [ $UID -eq 0 ]; then # root
-	local start_status="%{$fg_bold[yellow]%}➜"
-	local mid1_status="%{$fg_bold[red]%}%n"
-	local mid2_status="%{$fg_bold[blue]%}⇒"
-	local end2_status="%{$fg_bold[cyan]%}%T"
+	local start_status="%{$fg_bold[yellow]%}λ"
+	local mid_status="%{$fg_bold[red]%}%n"
+	local time_status="%{$fg_bold[cyan]%}%T"
 fi
 
 # Show the command execute result with different color and icon
-local end_status="%(?:%{$fg_bold[green]%}✔:%{$fg_bold[red]%}✘)"
+local result_status="%(?:%{$fg_bold[green]%}✔:%{$fg_bold[red]%}✘)"
 
-PROMPT='${start_status} ${mid1_status} %{$fg[magenta]%}%2~%{$fg_bold[blue]%}$(git_prompt_info) ${mid2_status} '
-RPROMPT='${end_status} ${end2_status}%{$reset_color%}'
+PROMPT='${start_status} ${mid_status} %{$fg[magenta]%}[$(git_prompt_info)%{$fg_bold[cyan]%}%2~%{$fg_bold[magenta]%}] '
+RPROMPT='${result_status} ${time_status}%{$reset_color%}'
 
-ZSH_THEME_GIT_PROMPT_PREFIX="|"
-ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%}"
+ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg_bold[blue]%}"
+ZSH_THEME_GIT_PROMPT_SUFFIX="%{$fg_bold[yellow]%} ⇔ %{$reset_color%}"
 ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg_bold[red]%}⬆%{$reset_color%}"
 ZSH_THEME_GIT_PROMPT_AHEAD="%{$fg_bold[red]%}𝝙%{$reset_color%}"
 ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg_bold[green]%}⚑%{$reset_color%}"

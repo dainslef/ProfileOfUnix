@@ -4,12 +4,14 @@ aria2
 boost
 clang
 clojure
+cmake
 ctags
 dosfstools
 efibootmgr
 emacs
 eog
 file-roller
+filezilla
 freeglut
 gcc-objc
 gdb

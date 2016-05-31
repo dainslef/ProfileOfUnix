@@ -46,6 +46,7 @@ clojure
 clutter
 clutter-gst
 clutter-gtk
+cmake
 cogl
 colord
 colord-gtk
@@ -87,6 +88,7 @@ fftw
 file
 file-roller
 filesystem
+filezilla
 findutils
 fixesproto
 flac
@@ -166,6 +168,8 @@ gst-plugins-base
 gst-plugins-base-libs
 gst-plugins-good
 gstreamer
+gstreamer0.10
+gstreamer0.10-base
 gtk-engine-murrine
 gtk-theme-arc-git
 gtk-update-icon-cache
@@ -212,6 +216,7 @@ js
 js17
 json-c
 json-glib
+jsoncpp
 kbd
 kbproto
 keyutils
@@ -262,6 +267,7 @@ libevdev
 libevent
 libexif
 libffi
+libfilezilla
 libfontenc
 libgcrypt
 libgdiplus
@@ -604,6 +610,7 @@ which
 wildmidi
 wiredtiger
 wpa_supplicant
+wxgtk
 x265
 xcb-proto
 xcb-util

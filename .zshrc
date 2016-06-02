@@ -95,19 +95,19 @@ source $ZSH/oh-my-zsh.sh
 
 # Check the UID
 if [ $UID -ge $normal_uid ]; then # normal_user
-	local start_status="%{$fg_bold[green]%}λ"
-	local mid_status="%{$fg_bold[yellow]%}%n"
+	local start_status="%{$fg_bold[yellow]%}%n"
+	local mid_status="%{$fg_bold[green]%}$"
 	local time_status="%{$fg_bold[blue]%}%T"
 elif [ $UID -eq 0 ]; then # root
-	local start_status="%{$fg_bold[yellow]%}λ"
-	local mid_status="%{$fg_bold[red]%}%n"
+	local start_status="%{$fg_bold[red]%}%n"
+	local mid_status="%{$fg_bold[yellow]%}#"
 	local time_status="%{$fg_bold[cyan]%}%T"
 fi
 
 # Show the command execute result with different color and icon
 local result_status="%(?:%{$fg_bold[green]%}✔:%{$fg_bold[red]%}✘)"
 
-PROMPT='${start_status} ${mid_status} %{$fg[magenta]%}[$(git_prompt_info)%{$fg_bold[cyan]%}%2~%{$fg_bold[magenta]%}] '
+PROMPT='${start_status}%{$fg[magenta]%}[$(git_prompt_info)%{$fg_bold[cyan]%}%2~%{$fg_bold[magenta]%}] ${mid_status} '
 RPROMPT='${result_status} ${time_status}%{$reset_color%}'
 
 ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg_bold[blue]%}"

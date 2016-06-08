@@ -68,6 +68,7 @@ sysstat
 systemd-sysvcompat
 tcpdump
 thunderbird
+tree
 usbutils
 virtualbox
 vlc

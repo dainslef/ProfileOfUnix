@@ -43,6 +43,9 @@ then
 
 	if [ $(whoami) = "dainslef" ]; then
 
+		# Set the default user(for theme "agnoster")
+		DEFAULT_USER="dainslef"
+
 		# For golang
 		export GOPATH=~/Public/Go
 		PATH+=:$GOPATH/bin
@@ -56,6 +59,13 @@ then
 		# For python pip
 		if [ -e $pip_bin ]; then
 			PATH+=:$pip_bin
+		fi
+
+		# For custom IDE path in Linux
+		if [ $(uname) = "Linux" ]; then
+			alias netbeans=~/Public/netbeans/bin/netbeans
+			alias idea=~/Public/idea-IU/bin/idea.sh
+			alias eclipse=~/Public/eclipse/eclipse
 		fi
 
 	fi
@@ -86,42 +96,8 @@ fi
 export ARCHFLAGS="-arch x86_64"
 
 # Load plugins and themes
+ZSH_THEME="agnoster"
 source $ZSH/oh-my-zsh.sh
-
-
-
-# ------------------------------------------------------------------------------
-# --- Theme ---
-
-# Check the UID
-if [ $UID -ge $normal_uid ]; then # normal_user
-	local start_status="%{$fg_bold[yellow]%}%n"
-	local mid_status="%{$fg_bold[green]%}$"
-	local time_status="%{$fg_bold[blue]%}%T"
-elif [ $UID -eq 0 ]; then # root
-	local start_status="%{$fg_bold[red]%}%n"
-	local mid_status="%{$fg_bold[yellow]%}#"
-	local time_status="%{$fg_bold[cyan]%}%T"
-fi
-
-# Show the command execute result with different color and icon
-local result_status="%(?:%{$fg_bold[green]%}✔:%{$fg_bold[red]%}✘)"
-
-PROMPT='${start_status}%{$fg[magenta]%}[$(git_prompt_info)%{$fg_bold[cyan]%}%2~%{$fg_bold[magenta]%}] ${mid_status} '
-RPROMPT='${result_status} ${time_status}%{$reset_color%}'
-
-ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg_bold[blue]%}"
-ZSH_THEME_GIT_PROMPT_SUFFIX="%{$fg_bold[yellow]%} ⇔ %{$reset_color%}"
-ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg_bold[red]%}⬆%{$reset_color%}"
-ZSH_THEME_GIT_PROMPT_AHEAD="%{$fg_bold[red]%}𝝙%{$reset_color%}"
-ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg_bold[green]%}⚑%{$reset_color%}"
-
-ZSH_THEME_GIT_PROMPT_ADDED="%{$fg[green]%}✚"
-ZSH_THEME_GIT_PROMPT_MODIFIED="%{$fg[blue]%}✹"
-ZSH_THEME_GIT_PROMPT_DELETED="%{$fg[red]%}✖"
-ZSH_THEME_GIT_PROMPT_RENAMED="%{$fg[magenta]%}❤"
-ZSH_THEME_GIT_PROMPT_UNMERGED="%{$fg[yellow]%}↹"
-ZSH_THEME_GIT_PROMPT_UNTRACKED="%{$fg[cyan]%}✭"
 
 
 
@@ -134,6 +110,41 @@ unset normal_uid
 unset pip_bin
 unset plugins
 unset vscode
+
+
+
+# ------------------------------------------------------------------------------
+# --- Theme ---
+
+# # Check the UID
+# if [ $UID -ge $normal_uid ]; then # normal_user
+# 	local start_status="%{$fg_bold[yellow]%}%n"
+# 	local path_status="%{$fg_bold[green]%}%2~"
+# 	local end_status="%{$fg_bold[cyan]%}$"
+# elif [ $UID -eq 0 ]; then # root
+# 	local start_status="%{$fg_bold[red]%}%n"
+# 	local path_status="%{$fg_bold[cyan]%}%2~"
+# 	local end_status="%{$fg_bold[yellow]%}#"
+# fi
+
+# # Show the command execute result with different color and icon
+# local result_status="%(?:%{$fg_bold[green]%}✔:%{$fg_bold[red]%}✘)"
+
+# PROMPT='${start_status}%{$fg[magenta]%}[$(git_prompt_info)${path_status}%{$fg_bold[magenta]%}] ${end_status} '
+# RPROMPT='${result_status} %{$fg_bold[blue]%}%T%{$reset_color%}'
+
+# ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg_bold[blue]%}"
+# ZSH_THEME_GIT_PROMPT_SUFFIX="%{$fg_bold[yellow]%} ⇔ %f"
+# ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg_bold[red]%}⬆%f"
+# ZSH_THEME_GIT_PROMPT_AHEAD="%{$fg_bold[red]%}𝝙%f"
+# ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg_bold[green]%}⚑%f"
+
+# ZSH_THEME_GIT_PROMPT_ADDED="%{$fg[green]%}✚"
+# ZSH_THEME_GIT_PROMPT_MODIFIED="%{$fg[blue]%}✹"
+# ZSH_THEME_GIT_PROMPT_DELETED="%{$fg[red]%}✖"
+# ZSH_THEME_GIT_PROMPT_RENAMED="%{$fg[magenta]%}❤"
+# ZSH_THEME_GIT_PROMPT_UNMERGED="%{$fg[yellow]%}↹"
+# ZSH_THEME_GIT_PROMPT_UNTRACKED="%{$fg[cyan]%}✭"
 
 
 

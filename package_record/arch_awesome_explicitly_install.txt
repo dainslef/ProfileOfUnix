@@ -8,7 +8,6 @@ clang
 clojure
 ctags
 dconf-editor
-dosfstools
 efibootmgr
 emacs
 engrampa
@@ -19,7 +18,7 @@ fcitx-gtk2
 fcitx-gtk3
 fcitx-qt4
 fcitx-qt5
-freeglut
+filezilla
 gcc-objc
 gdb
 gimp
@@ -34,11 +33,10 @@ grub
 gtk-theme-arc-git
 gvim
 iputils
-kchmviewer
 light-locker
 lightdm-gtk-greeter
-linux-zen
-linux-zen-headers
+linux
+linux-headers
 lldb
 man-db
 man-pages
@@ -71,7 +69,6 @@ scala
 screenfetch
 sed
 stardict-lite
-subversion
 sudo
 sysstat
 systemd-sysvcompat
@@ -84,6 +81,7 @@ wget
 which
 xcompmgr
 xdg-user-dirs
+xf86-input-synaptics
 xorg-server
 yaourt
 zsh

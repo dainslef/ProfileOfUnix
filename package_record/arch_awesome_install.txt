@@ -4,8 +4,6 @@ acl
 adwaita-icon-theme
 alsa-lib
 anthy
-apr
-apr-util
 arch-install-scripts
 archlinux-keyring
 aria2
@@ -33,7 +31,6 @@ cairo
 cairomm
 caja
 cdparanoia
-chmlib
 clang
 clojure
 colord
@@ -55,7 +52,6 @@ diffutils
 dkms
 dmxproto
 dnssec-anchors
-dosfstools
 dotconf
 e2fsprogs
 efibootmgr
@@ -78,12 +74,12 @@ fcitx-qt5
 ffmpeg2.8
 file
 filesystem
+filezilla
 findutils
 fixesproto
 flac
 fontconfig
 fontsproto
-freeglut
 freetype2
 fribidi
 fuse
@@ -132,6 +128,8 @@ gsm
 gst-plugins-base
 gst-plugins-base-libs
 gstreamer
+gstreamer0.10
+gstreamer0.10-base
 gtk-engine-murrine
 gtk-theme-arc-git
 gtk-update-icon-cache
@@ -173,7 +171,6 @@ json-c
 json-glib
 kbd
 kbproto
-kchmviewer
 keyutils
 kmod
 krb5
@@ -216,6 +213,7 @@ libevdev
 libevent
 libexif
 libffi
+libfilezilla
 libfontenc
 libgcrypt
 libgdiplus
@@ -340,14 +338,13 @@ libxxf86dga
 libxxf86misc
 libxxf86vm
 libyaml
-libzip
 light-locker
 lightdm
 lightdm-gtk-greeter
+linux
 linux-api-headers
 linux-firmware
-linux-zen
-linux-zen-headers
+linux-headers
 lldb
 llvm-libs
 lm_sensors
@@ -467,7 +464,6 @@ sdl
 sdl_image
 sed
 semver
-serf
 shadow
 shared-mime-info
 slang
@@ -479,7 +475,6 @@ speexdsp
 sqlite
 stardict-lite
 startup-notification
-subversion
 sudo
 sysfsutils
 sysstat
@@ -514,6 +509,7 @@ wget
 which
 wiredtiger
 wpa_supplicant
+wxgtk
 x265
 xcb-proto
 xcb-util
@@ -526,7 +522,8 @@ xcompmgr
 xdg-user-dirs
 xdg-utils
 xextproto
-xf86-input-libinput
+xf86-input-evdev
+xf86-input-synaptics
 xf86dgaproto
 xf86miscproto
 xf86vidmodeproto

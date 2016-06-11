@@ -4,7 +4,7 @@ else
 	input_method=fcitx
 fi
 
-if [ $DESKTOP_SESSION != "kde" ]; then
+if [ $XDG_SESSION_DESKTOP != "KDE" ]; then
 	export QT_STYLE_OVERRIDE=GTK+
 fi
 

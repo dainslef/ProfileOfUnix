@@ -11,9 +11,9 @@ else
 fi
 
 # Check OS type and set the different enviornment variables
-if [ $(uname) = "Darwin" ]; then # Darwin kernel means in OS X
+if [ $(uname) = "Darwin" ]; then # Darwin kernel means in macOS
 	local show_os_version="$(uname -srnm)"
-	local normal_uid=500 # In OS X, the normal user's uid start with 500.
+	local normal_uid=500 # In macOS, the normal user's uid start with 500.
 	local vscode="/Users/dainslef/Applications/Develop/Visual\ Studio\ Code.app/Contents/MacOS/Electron"
 	local python_version=`echo $(python3 -V) | awk -F' ' '{ print $2 }' | awk -F'.' '{ print $1 "." $2 }'`
 	local pip_bin=~/Library/Python/$python_version/bin
@@ -43,9 +43,6 @@ then
 
 	if [ $(whoami) = "dainslef" ]; then
 
-		# Set the default user(for theme "agnoster")
-		DEFAULT_USER="dainslef"
-
 		# For golang
 		export GOPATH=~/Public/Go
 		PATH+=:$GOPATH/bin
@@ -61,11 +58,19 @@ then
 			PATH+=:$pip_bin
 		fi
 
-		# For custom IDE path in Linux
+		# Load special config under Linux
 		if [ $(uname) = "Linux" ]; then
+
+			# For custom IDE path in Linux
 			alias netbeans=~/Public/netbeans/bin/netbeans
 			alias idea=~/Public/idea-IU/bin/idea.sh
 			alias eclipse=~/Public/eclipse/eclipse
+
+			# Set the default user(for theme "agnoster")
+			DEFAULT_USER="dainslef"
+
+			# Use theme "agnoster"
+			ZSH_THEME="agnoster"
 		fi
 
 	fi
@@ -96,8 +101,47 @@ fi
 export ARCHFLAGS="-arch x86_64"
 
 # Load plugins and themes
-ZSH_THEME="agnoster"
 source $ZSH/oh-my-zsh.sh
+
+
+
+# ------------------------------------------------------------------------------
+# --- Custom theme ---
+
+# Only use custom them uder macOS
+if [ $(uname) = "Darwin" ]; then
+
+	# Check the UID
+	if [ $UID -ge $normal_uid ]; then # normal_user
+		local start_status="%{$fg_bold[yellow]%}%n"
+		local path_status="%{$fg_bold[green]%}%2~"
+		local end_status="%{$fg_bold[cyan]%}$"
+	elif [ $UID -eq 0 ]; then # root
+		local start_status="%{$fg_bold[red]%}%n"
+		local path_status="%{$fg_bold[cyan]%}%2~"
+		local end_status="%{$fg_bold[yellow]%}#"
+	fi
+
+	# Show the command execute result with different color and icon
+	local result_status="%(?:%{$fg_bold[green]%}✔:%{$fg_bold[red]%}✘)"
+
+	PROMPT='${start_status}%{$fg[magenta]%}[$(git_prompt_info)${path_status}%{$fg_bold[magenta]%}] ${end_status} '
+	RPROMPT='${result_status} %{$fg_bold[blue]%}%T%{$reset_color%}'
+
+	ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg_bold[blue]%}"
+	ZSH_THEME_GIT_PROMPT_SUFFIX="%{$fg_bold[yellow]%} ⇔ %f"
+	ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg_bold[red]%}⬆%f"
+	ZSH_THEME_GIT_PROMPT_AHEAD="%{$fg_bold[red]%}𝝙%f"
+	ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg_bold[green]%}⚑%f"
+
+	ZSH_THEME_GIT_PROMPT_ADDED="%{$fg[green]%}✚"
+	ZSH_THEME_GIT_PROMPT_MODIFIED="%{$fg[blue]%}✹"
+	ZSH_THEME_GIT_PROMPT_DELETED="%{$fg[red]%}✖"
+	ZSH_THEME_GIT_PROMPT_RENAMED="%{$fg[magenta]%}❤"
+	ZSH_THEME_GIT_PROMPT_UNMERGED="%{$fg[yellow]%}↹"
+	ZSH_THEME_GIT_PROMPT_UNTRACKED="%{$fg[cyan]%}✭"
+
+fi
 
 
 
@@ -110,41 +154,6 @@ unset normal_uid
 unset pip_bin
 unset plugins
 unset vscode
-
-
-
-# ------------------------------------------------------------------------------
-# --- Theme ---
-
-# # Check the UID
-# if [ $UID -ge $normal_uid ]; then # normal_user
-# 	local start_status="%{$fg_bold[yellow]%}%n"
-# 	local path_status="%{$fg_bold[green]%}%2~"
-# 	local end_status="%{$fg_bold[cyan]%}$"
-# elif [ $UID -eq 0 ]; then # root
-# 	local start_status="%{$fg_bold[red]%}%n"
-# 	local path_status="%{$fg_bold[cyan]%}%2~"
-# 	local end_status="%{$fg_bold[yellow]%}#"
-# fi
-
-# # Show the command execute result with different color and icon
-# local result_status="%(?:%{$fg_bold[green]%}✔:%{$fg_bold[red]%}✘)"
-
-# PROMPT='${start_status}%{$fg[magenta]%}[$(git_prompt_info)${path_status}%{$fg_bold[magenta]%}] ${end_status} '
-# RPROMPT='${result_status} %{$fg_bold[blue]%}%T%{$reset_color%}'
-
-# ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg_bold[blue]%}"
-# ZSH_THEME_GIT_PROMPT_SUFFIX="%{$fg_bold[yellow]%} ⇔ %f"
-# ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg_bold[red]%}⬆%f"
-# ZSH_THEME_GIT_PROMPT_AHEAD="%{$fg_bold[red]%}𝝙%f"
-# ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg_bold[green]%}⚑%f"
-
-# ZSH_THEME_GIT_PROMPT_ADDED="%{$fg[green]%}✚"
-# ZSH_THEME_GIT_PROMPT_MODIFIED="%{$fg[blue]%}✹"
-# ZSH_THEME_GIT_PROMPT_DELETED="%{$fg[red]%}✖"
-# ZSH_THEME_GIT_PROMPT_RENAMED="%{$fg[magenta]%}❤"
-# ZSH_THEME_GIT_PROMPT_UNMERGED="%{$fg[yellow]%}↹"
-# ZSH_THEME_GIT_PROMPT_UNTRACKED="%{$fg[cyan]%}✭"
 
 
 

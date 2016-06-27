@@ -30,6 +30,7 @@ fi
 if [ $(whoami) != "root" ]
 then
 
+	echo $(uptime)
 	echo $show_os_version
 	echo $(date)
 	echo --- Welcome, $(whoami). Try your best everyday! ---
@@ -78,7 +79,7 @@ then
 fi
 
 # Add common widgets
-plugins+=(gem pip sudo scala golang mvn)
+plugins+=(gem pip django sudo scala golang mvn)
 
 # Uncomment the following line to disable bi-weekly auto-update checks
 DISABLE_AUTO_UPDATE="true"

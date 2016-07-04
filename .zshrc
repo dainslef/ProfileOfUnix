@@ -32,8 +32,7 @@ then
 
 	echo $(uptime)
 	echo $show_os_version
-	echo $(date)
-	echo --- Welcome, $(whoami). Try your best everyday! ---
+	echo --- Welcome, $(whoami)! Today is $(date +"%d %B %Y, %A"). ---
 	case $[$RANDOM % 5] in
 		0) echo "--- 夢に描けることなら、実現できる。 ---\n" ;;
 		1) echo "--- 一日は貴い一生である。これを空費してはならない。 ---\n" ;;
@@ -97,9 +96,6 @@ if [[ -n $SSH_CONNECTION ]]; then
 else
 	export EDITOR="vim"
 fi
-
-# Compilation flags
-export ARCHFLAGS="-arch x86_64"
 
 # Load plugins and themes
 source $ZSH/oh-my-zsh.sh

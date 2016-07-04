@@ -7,8 +7,6 @@ adwaita-icon-theme
 alsa-lib
 alsa-plugins
 anthy
-apr
-apr-util
 arch-install-scripts
 archlinux-keyring
 aria2
@@ -68,7 +66,6 @@ diffutils
 dkms
 dmxproto
 dnssec-anchors
-dosfstools
 dotconf
 e2fsprogs
 efibootmgr
@@ -95,7 +92,6 @@ flac
 fluidsynth
 fontconfig
 fontsproto
-freeglut
 freetype2
 fribidi
 fuse
@@ -549,7 +545,6 @@ sdl
 sdl_image
 sed
 semver
-serf
 shadow
 shared-color-targets
 shared-mime-info
@@ -565,7 +560,6 @@ speexdsp
 sqlite
 stardict-lite
 startup-notification
-subversion
 sudo
 sysfsutils
 sysstat

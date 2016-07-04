@@ -6,13 +6,11 @@ clang
 clojure
 cmake
 ctags
-dosfstools
 efibootmgr
 emacs
 eog
 file-roller
 filezilla
-freeglut
 gcc-objc
 gdb
 gdm
@@ -62,7 +60,6 @@ scala
 screenfetch
 sed
 stardict-lite
-subversion
 sudo
 sysstat
 systemd-sysvcompat

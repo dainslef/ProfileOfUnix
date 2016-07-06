@@ -32,7 +32,7 @@ then
 
 	echo $(uptime)
 	echo $show_os_version
-	echo --- Welcome, $(whoami)! Today is $(date +"%d %B %Y, %A"). ---
+	echo --- Welcome, $(whoami)! Today is $(date +"%B %d %Y, %A"). ---
 	case $[$RANDOM % 5] in
 		0) echo "--- 夢に描けることなら、実現できる。 ---\n" ;;
 		1) echo "--- 一日は貴い一生である。これを空費してはならない。 ---\n" ;;

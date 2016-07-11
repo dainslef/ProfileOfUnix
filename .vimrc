@@ -241,14 +241,14 @@ let g:syntastic_python_python_exe = "python3" " 检查python语法时使用pytho
 " ------------------------------------------------------------------------------
 " --- 根据OS环境加载设置 ---
 if has("win32unix")
-	set listchars=tab:›\ ,trail:•,extends:#,nbsp:.,eol:¬ " 设置Windows环境下vim的tab、行尾等位置的特殊符号的显示
+	set listchars=tab:›\ ,trail:•,extends:#,nbsp:.,eol:\ " 设置Windows环境下vim的tab、行尾等位置的特殊符号的显示
 
 	"->syntastic配置
 	let g:syntastic_error_symbol = "X" " 设置语法错误的提示
 	let g:syntastic_warning_symbol = "!" " 设置语法警告的提示
 else
 	set t_Co=256 " 告知终端支持256色显示
-	set listchars=tab:⇥\ ,trail:•,extends:#,nbsp:.,eol:↵ " 设置Unix环境下vim的tab、行尾等位置的特殊符号的显示
+	set listchars=tab:➛\ ,trail:•,extends:#,nbsp:.,eol:\ " 设置Unix环境下vim的tab、行尾等位置的特殊符号的显示
 
 	"->syntastic配置
 	let g:syntastic_error_symbol = "✗" " 设置语法错误的提示

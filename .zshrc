@@ -10,26 +10,41 @@ else
 	export ZSH=~/.oh-my-zsh
 fi
 
-# Check OS type and set the different enviornment variables
-if [ $(uname) = "Darwin" ]; then # Darwin kernel means in macOS
-	local show_os_version="$(uname -srnm)"
-	local normal_uid=500 # In macOS, the normal user's uid start with 500.
-	local vscode="/Users/dainslef/Applications/Develop/Visual\ Studio\ Code.app/Contents/MacOS/Electron"
-	local python_version=`echo $(python3 -V) | awk -F' ' '{ print $2 }' | awk -F'.' '{ print $1 "." $2 }'`
-	local pip_bin=~/Library/Python/$python_version/bin
-	plugins=(osx sublime)
-elif [ $(uname) = "Linux" ]; then
-	local show_os_version="$(uname -ornm)"
-	local normal_uid=1000 # In Linux, the normal user's uid start with 1000.
-	local vscode=/home/dainslef/Public/VSCode-linux-x64/code
-	local pip_bin=~/.local/bin
-	plugins=(systemd)
-fi
-
 # Check user, show login info and load custom environment variables
-if [ $(whoami) != "root" ]
-then
+if [ $(whoami) = "dainslef" ]; then
 
+	# Check OS type and set the different enviornment variables
+	if [ $(uname) = "Darwin" ]; then # Darwin kernel means in macOS
+
+		local show_os_version="$(uname -srnm)"
+		local vscode="/Users/dainslef/Applications/Develop/Visual\ Studio\ Code.app/Contents/MacOS/Electron"
+		local python_version=`echo $(python3 -V) | awk -F' ' '{ print $2 }' | awk -F'.' '{ print $1 "." $2 }'`
+		local pip_bin=~/Library/Python/$python_version/bin
+
+		plugins=(osx sublime)
+
+	elif [ $(uname) = "Linux" ]; then
+
+		local show_os_version="$(uname -ornm)"
+		local vscode=/home/dainslef/Public/VSCode-linux-x64/code
+		local pip_bin=~/.local/bin
+
+		# For custom IDE alias in Linux
+		alias netbeans=~/Public/netbeans/bin/netbeans
+		alias idea=~/Public/idea-IU/bin/idea.sh
+		alias eclipse=~/Public/eclipse/eclipse
+
+		# Set the default user (for ZSH theme "agnoster")
+		DEFAULT_USER="dainslef"
+
+		# Use ZSH theme "agnoster"
+		ZSH_THEME="agnoster"
+
+		plugins=(systemd)
+
+	fi
+
+	# Print the welcome message
 	echo $(uptime)
 	echo $show_os_version
 	echo --- Welcome, $(whoami)! Today is $(date +"%B %d %Y, %A"). ---
@@ -41,44 +56,32 @@ then
 		4) echo "--- あなたもきっと、誰かの奇跡。 ---\n" ;;
 	esac
 
-	if [ $(whoami) = "dainslef" ]; then
+	# Set golang path
+	export GOPATH=~/Public/Go
+	PATH+=:$GOPATH/bin
 
-		# For golang
-		export GOPATH=~/Public/Go
-		PATH+=:$GOPATH/bin
+	# Set scala activator path
+	alias activator=~/Public/activator-dist/bin/activator
 
-		# For scala activator
-		alias activator=~/Public/activator-dist/bin/activator
+	# Set visual studio code path
+	alias code=$vscode
 
-		# For visual studio code
-		alias code=$vscode
-
-		# For python pip
-		if [ -e $pip_bin ]; then
-			PATH+=:$pip_bin
-		fi
-
-		# Load special config under Linux
-		if [ $(uname) = "Linux" ]; then
-
-			# For custom IDE path in Linux
-			alias netbeans=~/Public/netbeans/bin/netbeans
-			alias idea=~/Public/idea-IU/bin/idea.sh
-			alias eclipse=~/Public/eclipse/eclipse
-
-			# Set the default user(for theme "agnoster")
-			DEFAULT_USER="dainslef"
-
-			# Use theme "agnoster"
-			ZSH_THEME="agnoster"
-		fi
-
+	# Set python pip package path
+	if [ -e $pip_bin ]; then
+		PATH+=:$pip_bin
 	fi
 
-fi
+	# Add common widgets
+	plugins+=(gem pip django sudo scala golang mvn)
 
-# Add common widgets
-plugins+=(gem pip django sudo scala golang mvn)
+	# Clean the custom variables
+	unset show_os_version
+	unset python_version
+	unset pip_bin
+	unset plugins
+	unset vscode
+
+fi
 
 # Uncomment the following line to disable bi-weekly auto-update checks
 DISABLE_AUTO_UPDATE="true"
@@ -105,18 +108,17 @@ source $ZSH/oh-my-zsh.sh
 # ------------------------------------------------------------------------------
 # --- Custom theme ---
 
-# Only use custom them uder macOS
+# Now only use custom theme under macOS
 if [ $(uname) = "Darwin" ]; then
 
-	# Check the UID
-	if [ $UID -ge $normal_uid ]; then # normal_user
-		local start_status="%{$fg_bold[yellow]%}%n"
-		local path_status="%{$fg_bold[green]%}%2~"
-		local end_status="%{$fg_bold[cyan]%}$"
-	elif [ $UID -eq 0 ]; then # root
+	if [ $UID -eq 0 ]; then # root
 		local start_status="%{$fg_bold[red]%}%n"
 		local path_status="%{$fg_bold[cyan]%}%2~"
 		local end_status="%{$fg_bold[yellow]%}#"
+	else # normal_user
+		local start_status="%{$fg_bold[yellow]%}%n"
+		local path_status="%{$fg_bold[green]%}%2~"
+		local end_status="%{$fg_bold[cyan]%}$"
 	fi
 
 	# Show the command execute result with different color and icon
@@ -139,18 +141,6 @@ if [ $(uname) = "Darwin" ]; then
 	ZSH_THEME_GIT_PROMPT_UNTRACKED="%{$fg[cyan]%}✭"
 
 fi
-
-
-
-# ------------------------------------------------------------------------------
-# --- Clean custom variables ---
-
-unset show_os_version
-unset python_version
-unset normal_uid
-unset pip_bin
-unset plugins
-unset vscode
 
 
 

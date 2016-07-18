@@ -27,7 +27,6 @@ google-chrome
 gparted
 gradle
 grub
-gtk-theme-arc-git
 gvim
 ibus-anthy
 ibus-libpinyin
@@ -51,8 +50,8 @@ ntfs-3g
 openssh
 os-prober
 p7zip
-qt4
 qt5-doc
+qt5-x11extras
 qtcreator
 ruby
 sbcl

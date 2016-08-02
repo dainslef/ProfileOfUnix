@@ -137,7 +137,6 @@ gnome-themes-standard
 gnome-tweak-tool
 gnome-video-effects
 gnupg
-gnustep-back
 gnustep-base
 gnustep-gui
 gnustep-make

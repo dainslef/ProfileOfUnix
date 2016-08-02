@@ -51,7 +51,6 @@ openssh
 os-prober
 p7zip
 qt5-doc
-qt5-x11extras
 qtcreator
 ruby
 sbcl

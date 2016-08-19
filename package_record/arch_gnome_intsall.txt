@@ -64,7 +64,6 @@ desktop-file-utils
 device-mapper
 diffutils
 dkms
-dmxproto
 dnssec-anchors
 dotconf
 e2fsprogs
@@ -104,6 +103,7 @@ gconf
 gcr
 gd
 gdb
+gdb-common
 gdbm
 gdk-pixbuf2
 gdm
@@ -185,7 +185,7 @@ hyphen
 iana-etc
 ibus
 ibus-anthy
-ibus-libpinyin
+ibus-pinyin
 icu
 ilmbase
 imagemagick
@@ -246,7 +246,6 @@ libdaemon
 libdatrie
 libdbus
 libdca
-libdmx
 libdrm
 libdv
 libdvbpsi
@@ -316,7 +315,6 @@ libpcap
 libpciaccess
 libpeas
 libpgm
-libpinyin
 libpipeline
 libplist
 libpng
@@ -402,17 +400,16 @@ libxss
 libxt
 libxtst
 libxv
-libxxf86dga
 libxxf86vm
 libyaml
 linux-api-headers
 linux-firmware
-linux-zen
-linux-zen-headers
-lldb
+linux-pf
+linux-pf-headers
 llvm-libs
 lm_sensors
 lua
+lua51
 lua52
 lua52-bitop
 lua52-expat
@@ -465,6 +462,7 @@ ocl-icd
 opencore-amr
 openexr
 openjpeg
+openjpeg2
 openssh
 openssl
 opus
@@ -507,8 +505,8 @@ python2-cairo
 python2-dbus
 python2-gobject
 python2-gobject2
-python2-six
 python2-xdg
+pyzy
 qt5-base
 qt5-declarative
 qt5-doc
@@ -536,7 +534,6 @@ sbc
 sbcl
 scala
 schroedinger
-screenfetch
 scrnsaverproto
 sdl
 sdl_image
@@ -613,7 +610,6 @@ xdg-user-dirs
 xdg-utils
 xextproto
 xf86-input-libinput
-xf86dgaproto
 xf86vidmodeproto
 xineramaproto
 xkeyboard-config
@@ -629,10 +625,8 @@ xorg-server
 xorg-server-common
 xorg-server-xwayland
 xorg-setxkbmap
-xorg-xdpyinfo
 xorg-xhost
 xorg-xkbcomp
-xorg-xprop
 xorg-xrdb
 xorg-xset
 xproto

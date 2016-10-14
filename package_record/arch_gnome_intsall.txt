@@ -76,7 +76,6 @@ eog
 exempi
 exiv2
 expat
-faac
 faad2
 ffmpeg
 ffmpeg2.8
@@ -88,7 +87,6 @@ filezilla
 findutils
 fixesproto
 flac
-fluidsynth
 fontconfig
 fontsproto
 freetype2
@@ -122,6 +120,7 @@ glibmm
 glu
 gmime
 gmp
+gnome-autoar
 gnome-bluetooth
 gnome-color-manager
 gnome-control-center
@@ -168,6 +167,7 @@ gstreamer0.10-base
 gtk-update-icon-cache
 gtk2
 gtk3
+gtk3-print-backends
 gtkmm
 guile
 gvfs
@@ -185,7 +185,7 @@ hyphen
 iana-etc
 ibus
 ibus-anthy
-ibus-pinyin
+ibus-libpinyin
 icu
 ilmbase
 imagemagick
@@ -244,7 +244,6 @@ libcroco
 libcups
 libdaemon
 libdatrie
-libdbus
 libdca
 libdrm
 libdv
@@ -295,7 +294,6 @@ libmms
 libmng
 libmnl
 libmodplug
-libmp4v2
 libmpc
 libmpcdec
 libmpeg2
@@ -315,6 +313,7 @@ libpcap
 libpciaccess
 libpeas
 libpgm
+libpinyin
 libpipeline
 libplist
 libpng
@@ -409,7 +408,6 @@ linux-pf-headers
 llvm-libs
 lm_sensors
 lua
-lua51
 lua52
 lua52-bitop
 lua52-expat
@@ -445,7 +443,6 @@ nasm
 nautilus
 nautilus-sendto
 ncurses
-neon
 net-tools
 netcdf
 nettle
@@ -481,6 +478,7 @@ parted
 patch
 pciutils
 pcre
+pcre2
 perl
 perl-error
 pinentry
@@ -505,13 +503,12 @@ python2-cairo
 python2-dbus
 python2-gobject
 python2-gobject2
-python2-xdg
-pyzy
 qt5-base
 qt5-declarative
 qt5-doc
 qt5-location
 qt5-quickcontrols
+qt5-quickcontrols2
 qt5-script
 qt5-sensors
 qt5-tools
@@ -519,7 +516,6 @@ qt5-webchannel
 qt5-webkit
 qt5-x11extras
 qt5-xmlpatterns
-qtchooser
 qtcreator
 randrproto
 readline
@@ -546,8 +542,6 @@ slang
 smbclient
 snappy
 sound-theme-freedesktop
-soundtouch
-spandsp
 speech-dispatcher
 speex
 speexdsp
@@ -596,7 +590,6 @@ webkit2gtk
 webrtc-audio-processing
 wget
 which
-wildmidi
 wiredtiger
 wpa_supplicant
 wxgtk

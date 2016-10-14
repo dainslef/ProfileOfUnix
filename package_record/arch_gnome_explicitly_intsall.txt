@@ -29,7 +29,7 @@ gradle
 grub
 gvim
 ibus-anthy
-ibus-pinyin
+ibus-libpinyin
 iputils
 linux-pf-headers
 man-db

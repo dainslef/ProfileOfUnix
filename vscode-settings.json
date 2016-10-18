@@ -1,6 +1,7 @@
 // Config for Visual Studio Code
 {
 	"editor.fontFamily": "",
+	"editor.rulers": [100],
 	"editor.fontSize": 13,
 	"editor.tabSize": 4,
 	"editor.wrappingColumn": 0,
@@ -9,8 +10,13 @@
 	"editor.folding": false,
 	"editor.glyphMargin": true,
 	"editor.formatOnType": true,
-	"editor.renderWhitespace": true,
+	"editor.renderWhitespace": "all",
+	"editor.cursorBlinking": "expand",
 	"update.channel": "none",
 	"files.trimTrailingWhitespace": true,
-	"diffEditor.ignoreTrimWhitespace": false
+	"diffEditor.ignoreTrimWhitespace": false,
+	"telemetry.enableCrashReporter": false,
+	"telemetry.enableTelemetry": false,
+	"terminal.integrated.shell.osx": "zsh",
+	"terminal.integrated.shell.linux": "zsh"
 }

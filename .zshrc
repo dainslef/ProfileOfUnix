@@ -23,6 +23,9 @@ if [ $(whoami) = "dainslef" ]; then
 
 		plugins=(osx sublime)
 
+		# Set environment variable for Homebrew Bottles mirror (use USTC mirror)
+		export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles
+
 	elif [ $(uname) = "Linux" ]; then
 
 		local show_os_version="$(uname -ornm)"

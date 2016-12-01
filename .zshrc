@@ -61,7 +61,6 @@ if [ $(whoami) = "dainslef" ]; then
 
 	# Set golang path
 	export GOPATH=~/Public/Go
-	PATH+=:$GOPATH/bin
 
 	# Set scala activator path
 	alias activator=~/Public/activator-dist/bin/activator
@@ -81,7 +80,6 @@ if [ $(whoami) = "dainslef" ]; then
 	unset show_os_version
 	unset python_version
 	unset pip_bin
-	unset plugins
 	unset vscode
 
 fi

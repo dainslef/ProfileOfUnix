@@ -12,14 +12,28 @@
 	"editor.formatOnType": true,
 	"editor.renderWhitespace": "all",
 	"editor.cursorBlinking": "expand",
-	"update.channel": "none",
+	"editor.stablePeek": true,
+
+	"diffEditor.ignoreTrimWhitespace": false,
+	"emmet.triggerExpansionOnTab": false,
+
 	"files.eol": "\n",
 	"files.encoding": "utf8",
 	"files.trimTrailingWhitespace": true,
-	"diffEditor.ignoreTrimWhitespace": false,
-	"emmet.triggerExpansionOnTab": false,
+
+	"update.channel": "none",
 	"telemetry.enableCrashReporter": false,
 	"telemetry.enableTelemetry": false,
 	"terminal.integrated.shell.osx": "zsh",
-	"terminal.integrated.shell.linux": "zsh"
+	"terminal.integrated.shell.linux": "zsh",
+	"workbench.activityBar.visible": false,
+	"workbench.sideBar.location": "left",
+	"extensions.autoUpdate": true,
+
+	// C/C++ Configuration
+	"C_Cpp.clang_format_sortIncludes": true,
+	"C_Cpp.clang_format_style": null,
+
+	// C# Configuration
+	"omnisharp.useMono": true
 }

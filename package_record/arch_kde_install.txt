@@ -80,6 +80,7 @@ ffmpeg
 ffmpeg2.8
 file
 filesystem
+filezilla
 findutils
 fixesproto
 flac
@@ -127,6 +128,8 @@ gsm
 gst-plugins-base
 gst-plugins-base-libs
 gstreamer
+gstreamer0.10
+gstreamer0.10-base
 gtk-update-icon-cache
 gtk2
 gtk3
@@ -276,6 +279,7 @@ libevdev
 libevent
 libexif
 libffi
+libfilezilla
 libfontenc
 libgcrypt
 libgdiplus
@@ -561,6 +565,7 @@ speex
 speexdsp
 sqlite
 startup-notification
+strace
 sudo
 syntax-highlighting
 sysfsutils
@@ -584,6 +589,7 @@ ttf-hack
 tzdata
 udisks2
 upower
+usbutils
 user-manager
 util-linux
 v4l-utils
@@ -599,6 +605,7 @@ webrtc-audio-processing
 wget
 which
 wpa_supplicant
+wxgtk
 x265
 xcb-proto
 xcb-util

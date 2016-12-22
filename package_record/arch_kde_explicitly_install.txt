@@ -14,6 +14,7 @@ fcitx-anthy
 fcitx-gtk2
 fcitx-gtk3
 fcitx-qt4
+filezilla
 gcc-objc
 gdb
 git
@@ -56,12 +57,14 @@ scala
 sddm-kcm
 sed
 spectacle
+strace
 sudo
 sysstat
 systemd-sysvcompat
 tcpdump
 thunderbird
 tree
+usbutils
 user-manager
 virtualbox
 wget

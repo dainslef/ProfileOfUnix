@@ -14,7 +14,6 @@ filezilla
 gcc-objc
 gdb
 gdm
-gimp
 git
 gnome-control-center
 gnome-disk-utility
@@ -31,6 +30,7 @@ gvim
 ibus-anthy
 ibus-libpinyin
 iputils
+java-openjfx
 linux-pf-headers
 man-db
 man-pages
@@ -42,6 +42,7 @@ nano
 nasm
 nautilus
 net-tools
+networkmanager
 nmap
 npm
 ntfs-3g
@@ -51,10 +52,10 @@ p7zip
 qt5-doc
 qtcreator
 ruby
-sbcl
 scala
 sed
 stardict-lite
+strace
 sudo
 sysstat
 systemd-sysvcompat

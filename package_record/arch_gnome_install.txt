@@ -18,7 +18,6 @@ atkmm
 attr
 audiofile
 avahi
-babl
 bash
 binutils
 bluez
@@ -69,7 +68,6 @@ dotconf
 e2fsprogs
 efibootmgr
 efivar
-elfutils
 emacs
 enchant
 eog
@@ -91,7 +89,8 @@ fontconfig
 fontsproto
 freetype2
 fribidi
-fuse
+fuse-common
+fuse2
 gawk
 gc
 gcc
@@ -105,12 +104,10 @@ gdb-common
 gdbm
 gdk-pixbuf2
 gdm
-gegl02
 geoclue2
 geocode-glib
 gettext
 giflib
-gimp
 git
 gjs
 glib-networking
@@ -155,7 +152,6 @@ grilo
 groff
 grub
 gsettings-desktop-schemas
-gsfonts
 gsm
 gst-plugins-bad
 gst-plugins-base
@@ -187,7 +183,6 @@ ibus
 ibus-anthy
 ibus-libpinyin
 icu
-ilmbase
 imagemagick
 imlib2
 inetutils
@@ -200,6 +195,7 @@ jack
 jansson
 jasper
 java-environment-common
+java-openjfx
 java-runtime-common
 jdk8-openjdk
 jemalloc
@@ -216,7 +212,6 @@ keyutils
 kmod
 krb5
 lame
-lcms
 lcms2
 ldb
 ldns
@@ -264,9 +259,7 @@ libgcrypt
 libgdiplus
 libgdm
 libgee
-libglade
 libgme
-libgnome-keyring
 libgnomekbd
 libgpg-error
 libgtop
@@ -291,7 +284,6 @@ libmariadbclient
 libmatroska
 libmm-glib
 libmms
-libmng
 libmnl
 libmodplug
 libmpc
@@ -318,6 +310,7 @@ libpipeline
 libplist
 libpng
 libproxy
+libpsl
 libpulse
 libpwquality
 libquvi
@@ -335,7 +328,6 @@ libsndfile
 libsodium
 libsoup
 libsoxr
-libspiro
 libsrtp
 libssh
 libssh2
@@ -368,7 +360,6 @@ libvpx
 libwacom
 libwbclient
 libwebp
-libwmf
 libx11
 libx264
 libxau
@@ -435,7 +426,6 @@ mongodb
 mono
 mozilla-common
 mpfr
-mpg123
 mtdev
 mutter
 nano
@@ -457,7 +447,6 @@ nss
 ntfs-3g
 ocl-icd
 opencore-amr
-openexr
 openjpeg
 openjpeg2
 openssh
@@ -491,7 +480,6 @@ pulseaudio
 pulseaudio-alsa
 pygobject-devel
 pygobject2-devel
-pygtk
 python
 python-atspi
 python-dbus
@@ -499,7 +487,6 @@ python-dbus-common
 python-gobject
 python-xdg
 python2
-python2-cairo
 python2-dbus
 python2-gobject
 python2-gobject2
@@ -527,11 +514,11 @@ rtkit
 rtmpdump
 ruby
 sbc
-sbcl
 scala
 schroedinger
 scrnsaverproto
 sdl
+sdl2
 sdl_image
 sed
 semver
@@ -548,6 +535,7 @@ speexdsp
 sqlite
 stardict-lite
 startup-notification
+strace
 sudo
 sysfsutils
 sysstat
@@ -587,6 +575,7 @@ wavpack
 wayland
 wayland-protocols
 webkit2gtk
+webkitgtk2
 webrtc-audio-processing
 wget
 which

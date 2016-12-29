@@ -26,9 +26,12 @@
 	"telemetry.enableTelemetry": false,
 	"terminal.integrated.shell.osx": "zsh",
 	"terminal.integrated.shell.linux": "zsh",
-	"workbench.activityBar.visible": false,
-	"workbench.sideBar.location": "left",
+	"workbench.activityBar.visible": true,
+	"workbench.sideBar.location": "right",
 	"extensions.autoUpdate": true,
+
+	// Markdown Configuration
+	"markdown.previewFrontMatter": "show",
 
 	// C/C++ Configuration
 	"C_Cpp.clang_format_sortIncludes": true,

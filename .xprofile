@@ -12,3 +12,6 @@ export GTK_IM_MODULE=$input_method
 export QT_IM_MODULE=$input_method
 export XMODIFIERS="@im=$input_method"
 export CLASSPATH=$CLASSPATH:.
+
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8

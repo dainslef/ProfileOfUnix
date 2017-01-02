@@ -1,9 +1,11 @@
+# Set input method
 if [ $DESKTOP_SESSION == "gnome" ] || [ $DESKTOP_SESSION == "ubuntu" ]; then
 	input_method=ibus
 else
 	input_method=fcitx
 fi
 
+# Set Qt style
 if [ $XDG_SESSION_DESKTOP != "KDE" ]; then
 	export QT_STYLE_OVERRIDE=fusion
 fi
@@ -13,5 +15,6 @@ export QT_IM_MODULE=$input_method
 export XMODIFIERS="@im=$input_method"
 export CLASSPATH=$CLASSPATH:.
 
+# Set language environment
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8

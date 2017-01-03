@@ -55,38 +55,7 @@ function pre_define()
 # Set theme
 function set_theme()
 {
-	if [ $(uname) = "Darwin" ]; then # Now only use custom theme under macOS
-
-		if [ $UID -eq 0 ]; then # root
-			local start_status="%{$fg_bold[red]%}%n"
-			local path_status="%{$fg_bold[cyan]%}%2~"
-			local end_status="%{$fg_bold[yellow]%}#"
-		else # normal_user
-			local start_status="%{$fg_bold[yellow]%}%n"
-			local path_status="%{$fg_bold[green]%}%2~"
-			local end_status="%{$fg_bold[cyan]%}$"
-		fi
-
-		# Show the command execute result with different color and icon
-		local result_status="%(?:%{$fg_bold[green]%}✔:%{$fg_bold[red]%}✘)"
-
-		PROMPT='${start_status}%{$fg[magenta]%}[$(git_prompt_info)${path_status}%{$fg_bold[magenta]%}] ${end_status} '
-		RPROMPT='${result_status} %{$fg_bold[blue]%}%T%{$reset_color%}'
-
-		ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg_bold[blue]%}"
-		ZSH_THEME_GIT_PROMPT_SUFFIX="%{$fg_bold[yellow]%} ⇔ %f"
-		ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg_bold[red]%}⬆%f"
-		ZSH_THEME_GIT_PROMPT_AHEAD="%{$fg_bold[red]%}𝝙%f"
-		ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg_bold[green]%}⚑%f"
-
-		ZSH_THEME_GIT_PROMPT_ADDED="%{$fg[green]%}✚"
-		ZSH_THEME_GIT_PROMPT_MODIFIED="%{$fg[blue]%}✹"
-		ZSH_THEME_GIT_PROMPT_DELETED="%{$fg[red]%}✖"
-		ZSH_THEME_GIT_PROMPT_RENAMED="%{$fg[magenta]%}❤"
-		ZSH_THEME_GIT_PROMPT_UNMERGED="%{$fg[yellow]%}↹"
-		ZSH_THEME_GIT_PROMPT_UNTRACKED="%{$fg[cyan]%}✭"
-
-	elif [ -n "$DISPLAY" ]; then # If has set DISPLAY variable, means in Linux GUI
+	if [ -n "$DISPLAY" ] || [ $(uname) = "Darwin" ]; then # Set theme in Linux GUI and macOS
 
 		# Set the default user (for ZSH theme "agnoster")
 		DEFAULT_USER="dainslef"
@@ -189,6 +158,40 @@ fi
 
 # Load plugins and themes
 source $ZSH/oh-my-zsh.sh
+
+
+
+# ------------------------------------------------------------------------------
+# --- Custom theme ---
+
+# if [ $UID -eq 0 ]; then # root
+# 	local start_status="%{$fg_bold[red]%}%n"
+# 	local path_status="%{$fg_bold[cyan]%}%2~"
+# 	local end_status="%{$fg_bold[yellow]%}#"
+# else # normal_user
+# 	local start_status="%{$fg_bold[yellow]%}%n"
+# 	local path_status="%{$fg_bold[green]%}%2~"
+# 	local end_status="%{$fg_bold[cyan]%}$"
+# fi
+
+# # Show the command execute result with different color and icon
+# local result_status="%(?:%{$fg_bold[green]%}✔:%{$fg_bold[red]%}✘)"
+
+# PROMPT='${start_status}%{$fg[magenta]%}[$(git_prompt_info)${path_status}%{$fg_bold[magenta]%}] ${end_status} '
+# RPROMPT='${result_status} %{$fg_bold[blue]%}%T%{$reset_color%}'
+
+# ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg_bold[blue]%}"
+# ZSH_THEME_GIT_PROMPT_SUFFIX="%{$fg_bold[yellow]%} ⇔ %f"
+# ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg_bold[red]%}⬆%f"
+# ZSH_THEME_GIT_PROMPT_AHEAD="%{$fg_bold[red]%}𝝙%f"
+# ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg_bold[green]%}⚑%f"
+
+# ZSH_THEME_GIT_PROMPT_ADDED="%{$fg[green]%}✚"
+# ZSH_THEME_GIT_PROMPT_MODIFIED="%{$fg[blue]%}✹"
+# ZSH_THEME_GIT_PROMPT_DELETED="%{$fg[red]%}✖"
+# ZSH_THEME_GIT_PROMPT_RENAMED="%{$fg[magenta]%}❤"
+# ZSH_THEME_GIT_PROMPT_UNMERGED="%{$fg[yellow]%}↹"
+# ZSH_THEME_GIT_PROMPT_UNTRACKED="%{$fg[cyan]%}✭"
 
 
 

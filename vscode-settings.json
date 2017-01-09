@@ -21,17 +21,18 @@
 	"files.encoding": "utf8",
 	"files.trimTrailingWhitespace": true,
 
-	"update.channel": "none",
 	"telemetry.enableCrashReporter": false,
 	"telemetry.enableTelemetry": false,
+
 	"terminal.integrated.shell.osx": "zsh",
 	"terminal.integrated.shell.linux": "zsh",
+	"terminal.integrated.shell.windows": "C:\\Windows\\sysnative\\WindowsPowerShell\\v1.0\\powershell.exe",
+
 	"workbench.activityBar.visible": true,
 	"workbench.sideBar.location": "right",
-	"extensions.autoUpdate": true,
 
-	// Markdown Configuration
-	"markdown.previewFrontMatter": "show",
+	"update.channel": "none",
+	"extensions.autoUpdate": true,
 
 	// C/C++ Configuration
 	"C_Cpp.clang_format_sortIncludes": true,

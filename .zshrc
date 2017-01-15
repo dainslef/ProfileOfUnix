@@ -101,8 +101,6 @@ function file_alias()
 		local editor="nano"
 	fi
 
-	alias -s py=$editor
-	alias -s rb=$editor
 	alias -s cpp=$editor
 	alias -s cc=$editor
 	alias -s c=$editor

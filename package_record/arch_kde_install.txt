@@ -23,6 +23,7 @@ bash
 binutils
 bluedevil
 bluez
+bluez-libs
 bluez-qt
 boost
 boost-libs
@@ -67,6 +68,7 @@ ebook-tools
 efibootmgr
 efivar
 emacs
+enchant
 exiv2
 expat
 faad2
@@ -102,6 +104,7 @@ gdb
 gdb-common
 gdbm
 gdk-pixbuf2
+geoclue2
 gettext
 giflib
 git
@@ -128,8 +131,6 @@ gsm
 gst-plugins-base
 gst-plugins-base-libs
 gstreamer
-gstreamer0.10
-gstreamer0.10-base
 gtk-update-icon-cache
 gtk2
 gtk3
@@ -141,6 +142,7 @@ harfbuzz
 harfbuzz-icu
 hdf5
 hicolor-icon-theme
+hspell
 http-parser
 hunspell
 hwids
@@ -158,13 +160,13 @@ jack
 jansson
 jasper
 java-environment-common
+java-openjfx
 java-runtime-common
 jdk8-openjdk
 jemalloc
 jre8-openjdk
 jre8-openjdk-headless
-js17
-json-c
+js
 json-glib
 jsoncpp
 kaccounts-integration
@@ -317,6 +319,7 @@ libndp
 libnewt
 libnftnl
 libnl
+libnm
 libnm-glib
 libnotify
 libogg
@@ -347,6 +350,7 @@ libsndfile
 libsodium
 libsoup
 libsoxr
+libsrtp
 libssh
 libssh2
 libsystemd
@@ -371,6 +375,7 @@ libuv
 libva
 libvdpau
 libvisual
+libvoikko
 libvorbis
 libvpx
 libwacom
@@ -388,6 +393,7 @@ libxdmcp
 libxext
 libxfixes
 libxfont
+libxfont2
 libxft
 libxi
 libxinerama
@@ -413,6 +419,7 @@ linux-api-headers
 linux-firmware
 linux-pf
 linux-pf-headers
+lldb
 llvm-libs
 lm_sensors
 lmdb
@@ -433,6 +440,7 @@ mesa
 mesa-libgl
 milou
 mime-types
+minizip
 mkinitcpio
 mkinitcpio-busybox
 modemmanager
@@ -444,6 +452,7 @@ mtdev
 nano
 nasm
 ncurses
+neofetch
 net-tools
 netcdf
 nettle
@@ -503,11 +512,13 @@ powerdevil
 ppp
 prison
 procps-ng
+protobuf
 pulseaudio
 purpose
 python
 python-xdg
 python2
+python2-six
 qca-qt5
 qrencode
 qstardict
@@ -522,9 +533,11 @@ qt5-quickcontrols
 qt5-quickcontrols2
 qt5-script
 qt5-sensors
+qt5-speech
 qt5-svg
 qt5-tools
 qt5-webchannel
+qt5-webengine
 qt5-webkit
 qt5-x11extras
 qt5-xmlpatterns
@@ -536,7 +549,6 @@ renderproto
 rsync
 rtkit
 ruby
-sbc
 scala
 schroedinger
 scrnsaverproto
@@ -589,6 +601,7 @@ ttf-hack
 tzdata
 udisks2
 upower
+usbmuxd
 usbutils
 user-manager
 util-linux
@@ -601,6 +614,7 @@ virtualbox-host-dkms
 vlc
 wayland
 wayland-protocols
+webkitgtk2
 webrtc-audio-processing
 wget
 which

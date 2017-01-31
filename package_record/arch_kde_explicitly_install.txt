@@ -26,10 +26,12 @@ grub
 gvim
 gwenview
 iputils
+java-openjfx
 kcm-fcitx
 kde-gtk-config
 kmix
 linux-pf-headers
+lldb
 man-db
 man-pages
 mariadb
@@ -37,6 +39,7 @@ maven
 mono
 nano
 nasm
+neofetch
 net-tools
 nmap
 npm

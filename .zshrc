@@ -105,6 +105,8 @@ function file_alias()
 	alias -s cc=$editor
 	alias -s c=$editor
 	alias -s cs=$editor
+	alias -s m=$editor
+	alias -s mm=$editor
 	alias -s scala=$editor
 	alias -s java=$editor
 	alias -s html=$editor
@@ -114,6 +116,7 @@ function file_alias()
 	alias -s gz=$extract
 	alias -s bz2=$extract
 	alias -s rar=$extract
+	alias -s tar=$extract
 }
 
 # Call function

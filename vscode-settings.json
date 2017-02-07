@@ -1,6 +1,6 @@
 // Config for Visual Studio Code
 {
-	"editor.fontFamily": "",
+	"editor.fontFamily": "Monaco, Source Code Pro, Consolas",
 	"editor.rulers": [100],
 	"editor.fontSize": 13,
 	"editor.tabSize": 4,
@@ -11,8 +11,11 @@
 	"editor.glyphMargin": true,
 	"editor.formatOnType": true,
 	"editor.renderWhitespace": "all",
+	"editor.renderControlCharacters": true,
+	"editor.renderIndentGuides": true,
 	"editor.cursorBlinking": "expand",
 	"editor.stablePeek": true,
+	"editor.hideCursorInOverviewRuler": true,
 
 	"diffEditor.ignoreTrimWhitespace": false,
 	"emmet.triggerExpansionOnTab": false,
@@ -21,18 +24,27 @@
 	"files.encoding": "utf8",
 	"files.trimTrailingWhitespace": true,
 
-	"telemetry.enableCrashReporter": false,
-	"telemetry.enableTelemetry": false,
-
-	"terminal.integrated.shell.osx": "zsh",
-	"terminal.integrated.shell.linux": "zsh",
-	"terminal.integrated.shell.windows": "C:\\Windows\\sysnative\\WindowsPowerShell\\v1.0\\powershell.exe",
-
+	// UI
+	"window.menuBarVisibility": "toggle",
 	"workbench.activityBar.visible": true,
 	"workbench.sideBar.location": "right",
 
+	// Update
 	"update.channel": "none",
 	"extensions.autoUpdate": true,
+
+	// Data report
+	"telemetry.enableCrashReporter": false,
+	"telemetry.enableTelemetry": false,
+
+	// Terminal
+	"terminal.integrated.fontSize": 13,
+	"terminal.integrated.shell.windows": "cmd.exe",
+	"terminal.integrated.shell.osx": "zsh",
+	"terminal.integrated.shell.linux": "zsh",
+
+	// Markdown Configuration
+	"markdown.previewFrontMatter": "show",
 
 	// C/C++ Configuration
 	"C_Cpp.clang_format_sortIncludes": true,

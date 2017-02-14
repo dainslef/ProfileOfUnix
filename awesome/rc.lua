@@ -49,8 +49,9 @@ end
 
 -- {{{ Variable definitions
 
--- Use theme
-beautiful.init("/usr/share/awesome/themes/default/theme.lua")
+-- Init theme
+beautiful.init(awful.util.get_themes_dir() .. "default/theme.lua")
+local theme = beautiful.get()
 
 -- Custom theme settings, border and font
 theme.border_width = 2
@@ -348,7 +349,7 @@ local globalkeys = awful.util.table.join(
 		end),
 
 	-- Standard program
-	awful.key({ modkey }, "Return", function() awful.util.spawn(terminal) end),
+	awful.key({ modkey }, "Return", function() awful.spawn(terminal) end),
 	awful.key({ modkey, "Control" }, "r", awesome.restart),
 	awful.key({ modkey, "Shift"   }, "q", awesome.quit),
 
@@ -381,10 +382,12 @@ local globalkeys = awful.util.table.join(
 		end),
 
 	-- Prompt
-	awful.key({ modkey }, "r", function() mypromptbox[mouse.screen]:run() end),
+	awful.key({ modkey }, "r", function() mypromptbox[mouse.screen.index]:run() end, {
+			description = "run prompt", group = "launcher"
+		}),
 	awful.key({ modkey }, "x", function()
 			awful.prompt.run({ prompt = "Run Lua code: " },
-			mypromptbox[mouse.screen].widget,
+			mypromptbox[mouse.screen.index].widget,
 			awful.util.eval, nil,
 			awful.util.getdir("cache") .. "/history_eval")
 		end),
@@ -393,9 +396,9 @@ local globalkeys = awful.util.table.join(
 	awful.key({ modkey }, "p", function() menubar.show() end),
 
 	-- Custom key bindings
-	awful.key({ modkey, "Control" }, "l", function() awful.util.spawn("xdg-screensaver lock") end),
-	awful.key({ modkey }, "b", function() awful.util.spawn(browser) end),
-	awful.key({ modkey }, "d", function() awful.util.spawn(dictionary) end),
+	awful.key({ modkey, "Control" }, "l", function() awful.spawn("xdg-screensaver lock") end),
+	awful.key({ modkey }, "b", function() awful.spawn(browser) end),
+	awful.key({ modkey }, "d", function() awful.spawn(dictionary) end),
 	-- awful.key({ }, "XF86AudioRaiseVolume", function() end),
 	-- awful.key({ }, "XF86AudioLowerVolume", function() end),
 	awful.key({ modkey, "Control" }, "n", function()

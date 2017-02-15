@@ -138,16 +138,31 @@ end
 
 
 -- {{{ Tags
+
 -- Define a tag table which hold all screen tags.
-local tags = {
-	names = { "❶", "❷", "❸", "❹" },
-	-- names = { "①", "②", "③", "④" },
-	layouts = { layouts[1], layouts[2], layouts[2], layouts[3] }
+-- local tag_names = { "①", "②", "③", "④" }
+local tags = {}
+local tag_properties = {
+	{ "❶", layouts[1] },
+	{ "❷", layouts[2] },
+	{ "❸", layouts[2] },
+	{ "❹", layouts[3] }
 }
+
+-- Each screen has its own tag table.
 for s = 1, screen.count() do
-	-- Each screen has its own tag table.
-	tags[s] = awful.tag(tags.names, s, tags.layouts)
+	-- Use operate # to get lua table's size.
+	for i = 1, #tag_properties do
+		tags[i] = awful.tag.add(tag_properties[i][1], {
+			screen = s,
+			gap_single_client = true,
+			gap = 5,
+			layout = tag_properties[i][2],
+			selected = i == 1 and true or false -- Only focus on index one.
+		})
+	end
 end
+
 -- }}}
 
 
@@ -297,11 +312,11 @@ for s = 1, screen.count() do
 
 	-- Now bring it all together (with the tasklist in the middle)
 	local layout = wibox.layout.align.horizontal()
-	layout:set_left(mypromptbox[s])
-	layout:set_middle(mytasklist[s])
-	layout:set_right(right_layout)
+	layout.left = mypromptbox[s]
+	layout.middle = mytasklist[s]
+	layout.right = right_layout
 
-	mywidgetbox[s]:set_widget(layout)
+	mywidgetbox[s].widget = layout
 
 end
 -- }}}
@@ -338,9 +353,9 @@ local globalkeys = awful.util.table.join(
 	awful.key({ modkey }, "w", function() mymainmenu:show() end),
 
 	-- Layout manipulation
-	awful.key({ modkey, "Shift"  }, "j", function() awful.client.swap.byidx(1) end),
-	awful.key({ modkey, "Shift"  }, "k", function() awful.client.swap.byidx( -1) end),
-	awful.key({ modkey, "Control" }, "j", function() awful.screen.focus_relative( 1) end),
+	awful.key({ modkey, "Shift" }, "j", function() awful.client.swap.byidx(1) end),
+	awful.key({ modkey, "Shift" }, "k", function() awful.client.swap.byidx(-1) end),
+	awful.key({ modkey, "Control" }, "j", function() awful.screen.focus_relative(1) end),
 	awful.key({ modkey, "Control" }, "k", function() awful.screen.focus_relative(-1) end),
 	awful.key({ modkey }, "u", awful.client.urgent.jumpto),
 	awful.key({ modkey }, "Tab", function()
@@ -351,7 +366,7 @@ local globalkeys = awful.util.table.join(
 	-- Standard program
 	awful.key({ modkey }, "Return", function() awful.spawn(terminal) end),
 	awful.key({ modkey, "Control" }, "r", awesome.restart),
-	awful.key({ modkey, "Shift"   }, "q", awesome.quit),
+	awful.key({ modkey, "Shift" }, "q", awesome.quit),
 
 	awful.key({ modkey }, "l", function() awful.tag.incmwfact(0.05) end),
 	awful.key({ modkey }, "h", function() awful.tag.incmwfact(-0.05) end),
@@ -403,7 +418,10 @@ local globalkeys = awful.util.table.join(
 	-- awful.key({ }, "XF86AudioLowerVolume", function() end),
 	awful.key({ modkey, "Control" }, "n", function()
 			local c_restore = awful.client.restore() -- Restore the minimize window and focus it
-			if c_restore then client.focus = c_restore; c_restore:raise() end
+			if c_restore then
+				client.focus = c_restore
+				c_restore:raise()
+			end
 		end),
 	awful.key({ }, "Print", function()
 			os.execute("import -window root ~/Pictures/$(date -Iseconds).png") -- Use imagemagick tools
@@ -499,7 +517,7 @@ root.keys(globalkeys)
 -- Rules to apply to new clients (through the "manage" signal)
 awful.rules.rules = {
 	{
-	-- All clients will match this rule
+		-- All clients will match this rule
 		rule = { },
 		properties = {
 			border_width = beautiful.border_width,
@@ -510,7 +528,7 @@ awful.rules.rules = {
 			buttons = clientbuttons
 		}
 	}, {
-	-- Start up terminal in floating mode
+		-- Start up terminal in floating mode
 		rule = { instance = terminal },
 		properties = { floating = true }
 	}, {

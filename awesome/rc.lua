@@ -61,6 +61,7 @@ theme.font = "Dejavu Sans 10"
 local color_transparent = "#00000000"
 local color_menu_bg = "#33445566"
 local color_task_tag_focus = "#55667788"
+local color_naughty_bg = "#00112288"
 
 theme.bg_normal = color_transparent -- Set background transparent
 theme.bg_minimize = color_transparent -- Set the minimize color of taskbar
@@ -226,8 +227,8 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 -- {{{ Wibox
 
 -- Create a textclock widget
-local mytextclock = awful.widget.textclock(" <span font='Dejavu Sans 10'>[ %b %d -<span color='green'>%a</span>-"
-	.. " ☪ <span color='yellow'>%H:%M</span> ]</span> ")
+local mytextclock = awful.widget.textclock(" <span font='Dejavu Sans 10'>" ..
+	"[ %b %d <span color='red'>%a</span> ⇔ <span color='yellow'>%H:%M</span> ]</span> ")
 
 -- Create widgetbox
 local mywidgetbox = {}
@@ -381,7 +382,7 @@ local globalkeys = awful.util.table.join(
 				title = 'Layout Change',
 				text = "The current layout is " .. awful.layout.getname() .. ".",
 				timeout = 1,
-				bg = beautiful.menu_bg_normal,
+				bg = color_naughty_bg,
 				fg = beautiful.fg_focus
 			})
 		end),
@@ -391,7 +392,7 @@ local globalkeys = awful.util.table.join(
 				title = 'Layout Change',
 				text = "The current layout is " .. awful.layout.getname() .. ".",
 				timeout = 1,
-				bg = beautiful.menu_bg_normal,
+				bg = color_naughty_bg,
 				fg = beautiful.fg_focus
 			})
 		end),
@@ -429,7 +430,7 @@ local globalkeys = awful.util.table.join(
 				title = "Screen Shot",
 				text = "Take the fullscreen screenshot success!\n"
 					.. "Screenshot saved in ~/Pictures.",
-				bg = beautiful.menu_bg_normal,
+				bg = color_naughty_bg,
 				fg = beautiful.fg_focus
 			})
 		end),
@@ -439,7 +440,7 @@ local globalkeys = awful.util.table.join(
 				title = "Screen Shot",
 				text = "Please select window to take the screenshot...\n"
 					.. "Screenshot will be saved in ~/Pictures.",
-				bg = beautiful.menu_bg_normal,
+				bg = color_naughty_bg,
 				fg = beautiful.fg_focus
 			})
 		end)
@@ -588,8 +589,14 @@ client.connect_signal("focus", function(c)
 		end
 
 		c.border_color = beautiful.border_focus
+		c.opacity = 1
 
 	end)
 
-client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
+client.connect_signal("unfocus", function(c)
+	
+		c.border_color = beautiful.border_normal
+		c.opacity = 0.8
+	
+	end)
 -- }}}

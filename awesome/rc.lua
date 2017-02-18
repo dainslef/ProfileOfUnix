@@ -75,7 +75,7 @@ local mail = "thunderbird"
 local terminal = "mate-terminal"
 local browser = "google-chrome-stable"
 local dictionary = "stardict"
-local file_manager = "caja"
+local file_manager = "mc"
 
 -- Set default editor
 local editor = os.getenv("EDITOR") or "nano"
@@ -207,7 +207,7 @@ local mymainmenu = awful.menu({
 		{ "Tools", toolsmenu },
 		{ "System", systemmenu },
 		{ "Mail", mail },
-		{ "Files", file_manager },
+		{ "Files", terminal .. " -e " .. file_manager },
 		{ "Browser", browser }
 	}
 })
@@ -304,16 +304,20 @@ for s = 1, screen.count() do
 	-- Create the wibox
 	mywidgetbox[s] = awful.wibox({ position = "top", screen = s, height = 25 })
 
+	-- Widgets that are aligned to the left
+	local left_layout = wibox.layout.fixed.horizontal()
+	left_layout:add(mylayoutbox[s])
+	left_layout:add(mypromptbox[s])
+
 	-- Widgets that are aligned to the right
 	local right_layout = wibox.layout.fixed.horizontal()
 	right_layout:add(mytaglist[s])
 	right_layout:add(mytextclock)
-	right_layout:add(mylayoutbox[s])
 	right_layout:add(wibox.widget.systray())
 
 	-- Now bring it all together (with the tasklist in the middle)
 	local layout = wibox.layout.align.horizontal()
-	layout.left = mypromptbox[s]
+	layout.left = left_layout
 	layout.middle = mytasklist[s]
 	layout.right = right_layout
 
@@ -545,9 +549,6 @@ awful.rules.rules = {
 		rule = { class = "Eclipse" },
 		properties = { tag = tags[1][4] }
 	}
-	-- Set Firefox to always map on tags number 2 of screen 1
-	-- { rule = { class = "Firefox" },
-	--	 properties = { tag = tags[1][2] } },
 }
 -- }}}
 
@@ -589,14 +590,12 @@ client.connect_signal("focus", function(c)
 		end
 
 		c.border_color = beautiful.border_focus
-		c.opacity = 1
 
 	end)
 
 client.connect_signal("unfocus", function(c)
-	
+
 		c.border_color = beautiful.border_normal
-		c.opacity = 0.8
-	
+
 	end)
 -- }}}

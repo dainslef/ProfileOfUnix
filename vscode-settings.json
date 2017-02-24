@@ -25,9 +25,12 @@
 	"files.trimTrailingWhitespace": true,
 
 	// UI
+	"window.openFilesInNewWindow": "on",
+	"window.openFoldersInNewWindow": "on",
 	"window.menuBarVisibility": "toggle",
 	"workbench.activityBar.visible": true,
 	"workbench.sideBar.location": "right",
+	"explorer.enableDragAndDrop": true,
 
 	// Update
 	"update.channel": "none",

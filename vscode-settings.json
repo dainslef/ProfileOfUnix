@@ -4,17 +4,21 @@
 	"editor.rulers": [100],
 	"editor.fontSize": 13,
 	"editor.tabSize": 4,
-	"editor.wrappingColumn": 0,
+	"editor.wordWrap": "on",
 	"editor.quickSuggestionsDelay": 5,
 	"editor.insertSpaces": false,
+	"editor.detectIndentation": true,
 	"editor.folding": false,
 	"editor.glyphMargin": true,
 	"editor.formatOnType": true,
 	"editor.renderWhitespace": "all",
 	"editor.renderControlCharacters": true,
 	"editor.renderIndentGuides": true,
+	"editor.cursorStyle": "block",
 	"editor.cursorBlinking": "expand",
 	"editor.stablePeek": true,
+	"editor.minimap.enabled": true,
+	"editor.minimap.maxColumn": 100,
 	"editor.hideCursorInOverviewRuler": true,
 
 	"diffEditor.ignoreTrimWhitespace": false,
@@ -54,5 +58,16 @@
 	"C_Cpp.clang_format_style": null,
 
 	// C# Configuration
-	"omnisharp.useMono": true
+	"omnisharp.useMono": true,
+	"workbench.iconTheme": "vs-minimal",
+
+	// Language specific editor settings
+	"[scala]": {
+		"editor.insertSpaces": true,
+		"editor.tabSize": 2
+	},
+	"[python]": {
+		"editor.insertSpaces": true,
+		"editor.tabSize": 4
+	}
 }

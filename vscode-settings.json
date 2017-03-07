@@ -5,6 +5,7 @@
 	"editor.fontSize": 13,
 	"editor.tabSize": 4,
 	"editor.wordWrap": "on",
+	"editor.wrappingIndent": "same",
 	"editor.quickSuggestionsDelay": 5,
 	"editor.insertSpaces": false,
 	"editor.detectIndentation": true,
@@ -14,8 +15,9 @@
 	"editor.renderWhitespace": "all",
 	"editor.renderControlCharacters": true,
 	"editor.renderIndentGuides": true,
-	"editor.cursorStyle": "block",
+	"editor.cursorStyle": "line",
 	"editor.cursorBlinking": "expand",
+	"editor.renderLineHighlight": "all",
 	"editor.stablePeek": true,
 	"editor.minimap.enabled": true,
 	"editor.minimap.maxColumn": 100,
@@ -34,6 +36,7 @@
 	"window.menuBarVisibility": "toggle",
 	"workbench.activityBar.visible": true,
 	"workbench.sideBar.location": "right",
+	"workbench.editor.openPositioning": "last",
 	"explorer.enableDragAndDrop": true,
 
 	// Update
@@ -69,5 +72,9 @@
 	"[python]": {
 		"editor.insertSpaces": true,
 		"editor.tabSize": 4
+	},
+	"[markdown]": {
+		"editor.trimAutoWhitespace": false,
+		"editor.quickSuggestions": false
 	}
 }

@@ -37,6 +37,7 @@
 	"workbench.activityBar.visible": true,
 	"workbench.sideBar.location": "right",
 	"workbench.editor.openPositioning": "last",
+	"workbench.iconTheme": "vs-minimal",
 	"explorer.enableDragAndDrop": true,
 
 	// Update
@@ -62,10 +63,10 @@
 
 	// C# Configuration
 	"omnisharp.useMono": true,
-	"workbench.iconTheme": "vs-minimal",
 
 	// Language specific editor settings
 	"[scala]": {
+		"editor.detectIndentation": false,
 		"editor.insertSpaces": true,
 		"editor.tabSize": 2
 	},

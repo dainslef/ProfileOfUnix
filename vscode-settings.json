@@ -15,7 +15,7 @@
 	"editor.renderWhitespace": "all",
 	"editor.renderControlCharacters": true,
 	"editor.renderIndentGuides": true,
-	"editor.cursorStyle": "line",
+	"editor.cursorStyle": "block",
 	"editor.cursorBlinking": "expand",
 	"editor.renderLineHighlight": "all",
 	"editor.stablePeek": true,
@@ -66,16 +66,15 @@
 
 	// Language specific editor settings
 	"[scala]": {
-		"editor.detectIndentation": false,
 		"editor.insertSpaces": true,
 		"editor.tabSize": 2
 	},
-	"[python]": {
+	"[ruby]": {
 		"editor.insertSpaces": true,
-		"editor.tabSize": 4
+		"editor.tabSize": 2
 	},
 	"[markdown]": {
-		"editor.trimAutoWhitespace": false,
+		"files.trimTrailingWhitespace": false,
 		"editor.quickSuggestions": false
 	}
 }

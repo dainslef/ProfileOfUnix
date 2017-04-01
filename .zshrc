@@ -1,68 +1,15 @@
+# This zsh config need to set up Antigen:
+# $ git clone https://github.com/zsh-users/antigen.git ~/.antigen
+
+
+
 # ------------------------------------------------------------------------------
 # --- Function define ---
 
-# Check user, show login info and load custom environment variables
-function pre_define()
+# Set the default user
+function set_default_user()
 {
-	if [ $(whoami) = "dainslef" ]; then
-
-		# Check OS type and set the different enviornment variables
-		if [ $(uname) = "Darwin" ]; then # Darwin kernel means in macOS
-
-			local vscode="/Users/dainslef/Applications/Develop/Visual\ Studio\ Code.app/Contents/MacOS/Electron"
-			local python_version=`echo $(python3 -V) | awk -F' ' '{ print $2 }' | awk -F'.' '{ print $1 "." $2 }'`
-			local pip_bin=~/Library/Python/$python_version/bin
-
-			plugins=(osx sublime)
-
-			# Set environment variable for Homebrew Bottles mirror (use USTC mirror)
-			export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles
-
-		elif [ $(uname) = "Linux" ]; then
-
-			local vscode=/home/dainslef/Public/VSCode-linux-x64/code
-			local pip_bin=~/.local/bin
-
-			# For custom IDE alias in Linux
-			alias netbeans=~/Public/netbeans/bin/netbeans
-			alias idea=~/Public/idea-IU/bin/idea.sh
-			alias eclipse=~/Public/eclipse/eclipse
-
-			plugins=(systemd)
-
-		fi
-
-		# Set golang path
-		export GOPATH=~/Public/Go
-
-		# Set scala activator path
-		alias activator=~/Public/activator-dist/bin/activator
-
-		# Set visual studio code path
-		alias code=$vscode
-
-		# Set python pip package path
-		if [ -e $pip_bin ]; then
-			PATH+=:$pip_bin
-		fi
-
-		# Add common widgets
-		plugins+=(gem pip django sudo scala golang mvn)
-
-	fi
-}
-
-# Set theme
-function set_theme()
-{
-	if [ -n "$DISPLAY" ] || [ $(uname) = "Darwin" ]; then # Set theme in Linux GUI and macOS
-
-		# Set the default user (for ZSH theme "agnoster")
-		DEFAULT_USER="dainslef"
-		# Use ZSH theme "agnoster"
-		ZSH_THEME="agnoster"
-
-	fi
+	DEFAULT_USER=$1
 }
 
 # Print the welcome message
@@ -70,9 +17,9 @@ function show_welcome()
 {
 	if [ $UID -gt 0 ]; then
 		if [ $(uname) = "Darwin" ]; then
-			local show_os_version=$(uname -srnm)
+			local show_os_version="$(uname -srnm)"
 		elif [ -n "$DISPLAY" ]; then
-			local show_os_version=$(uname -ornm)
+			local show_os_version="$(uname -ornm)"
 		fi
 	fi
 
@@ -90,15 +37,70 @@ function show_welcome()
 	fi
 }
 
+# Check user, set the custom environment variables
+function env_config()
+{
+	if [ $(whoami) = $DEFAULT_USER ]; then
+
+		# Check OS type and set the different enviornment variables
+		if [ $(uname) = "Darwin" ]; then # Darwin kernel means in macOS
+
+			local vscode="/Users/$DEFAULT_USER/Applications/Develop/Visual\ Studio\ Code.app/Contents/MacOS/Electron"
+			local python_version=`echo $(python3 -V) | awk -F' ' '{ print $2 }' | awk -F'.' '{ print $1 "." $2 }'`
+			local pip_bin=~/Library/Python/$python_version/bin
+
+			# Set environment variable for Homebrew Bottles mirror (use USTC mirror)
+			export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles
+
+		elif [ $(uname) = "Linux" ]; then
+
+			local vscode=/home/$DEFAULT_USER/Public/VSCode-linux-x64/code
+			local pip_bin=~/.local/bin
+
+			# For custom IDE alias in Linux
+			alias netbeans=~/Public/netbeans/bin/netbeans
+			alias idea=~/Public/idea-IU/bin/idea.sh
+			alias eclipse=~/Public/eclipse/eclipse
+
+		fi
+
+		# Set golang path
+		export GOPATH=~/Public/Go
+
+		# Set scala activator path
+		alias activator=~/Public/activator-dist/bin/activator
+
+		# Set visual studio code path
+		alias code=$vscode
+
+		# Set python pip package path
+		if [ -e $pip_bin ]; then
+			PATH+=:$pip_bin
+		fi
+
+		# Set language environment
+		export LANG=en_US.UTF-8
+		export LC_ALL=en_US.UTF-8
+
+		# Preferred editor for local and remote sessions
+		if [[ -n $SSH_CONNECTION ]]; then
+			export EDITOR="nano"
+		else
+			export EDITOR="vim"
+		fi
+
+	fi
+}
+
 # Set the file type alias
-function file_alias()
+function type_alias_config()
 {
 	local extract="7z x"
 
 	if [ $(uname) = "Darwin" ] || [ -n "$DISPLAY" ]; then
 		local editor="code"
 	else
-		local editor="nano"
+		local editor=$EDITOR
 	fi
 
 	alias -s cpp=$editor
@@ -119,46 +121,45 @@ function file_alias()
 	alias -s tar=$extract
 }
 
-# Call function
-pre_define
-set_theme
+# Set the Antigen and Oh-My-Zsh config:
+function antigen_config()
+{
+	# Set the “Oh My ZSH!” path
+	if [ -e "/home/$DEFAULT_USER" ]; then
+		source /home/$DEFAULT_USER/.antigen/antigen.zsh
+		local PLANTFORM_PLUGIN="systemd"
+	elif [ -e "/Users/$DEFAULT_USER" ]; then
+		source /Users/$DEFAULT_USER/.antigen/antigen.zsh
+		local PLANTFORM_PLUGIN="osx"
+	else
+		source ~/.antigen/antigen.zsh
+	fi
+
+	# Uncomment the following line to disable bi-weekly auto-update checks
+	DISABLE_AUTO_UPDATE="true"
+
+	# Stamp shown in the history command output
+	# The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
+	HIST_STAMPS="yyyy-mm-dd"
+
+	# Load plugins
+	antigen use oh-my-zsh
+	antigen bundle zsh-users/zsh-syntax-highlighting
+	antigen bundle gem pip django sudo scala golang mvn
+	antigen bundle $PLANTFORM_PLUGIN
+
+	# Load the theme, set theme only in Linux GUI and macOS
+	if [ -n "$DISPLAY" ] || [ $(uname) = "Darwin" ]; then
+		antigen theme "agnoster" # Use ZSH theme "agnoster"
+	fi
+}
+
+# Run function
+set_default_user "dainslef"
 show_welcome
-file_alias
-
-
-
-# ------------------------------------------------------------------------------
-# --- User configuration ---
-
-# Set the “Oh My ZSH!” path
-if [ -e "/home/dainslef" ]; then
-	export ZSH=/home/dainslef/.oh-my-zsh
-elif [ -e "/Users/dainslef" ]; then
-	export ZSH=/Users/dainslef/.oh-my-zsh
-else
-	export ZSH=~/.oh-my-zsh
-fi
-
-# Uncomment the following line to disable bi-weekly auto-update checks
-DISABLE_AUTO_UPDATE="true"
-
-# Stamp shown in the history command output
-# The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-HIST_STAMPS="yyyy-mm-dd"
-
-# Set language environment
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
-
-# Preferred editor for local and remote sessions
-if [[ -n $SSH_CONNECTION ]]; then
-	export EDITOR="nano"
-else
-	export EDITOR="vim"
-fi
-
-# Load plugins and themes
-source $ZSH/oh-my-zsh.sh
+env_config
+type_alias_config
+antigen_config
 
 
 

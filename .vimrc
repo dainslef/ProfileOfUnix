@@ -1,3 +1,8 @@
+" This vim config need to set up Vundle:
+" $ git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+
+
+
 syntax enable " 显示语法高亮
 syntax on " 开启文件类型语法检测
 set nocompatible " 关闭 vi 兼容模式

@@ -1,5 +1,7 @@
-# This zsh config need to set up Antigen:
-# $ git clone https://github.com/zsh-users/antigen.git ~/.antigen
+# This zsh config need to set up Oh-My-Zsh:
+# $ git clone git://github.com/robbyrussell/oh-my-zsh ~/.oh-my-zsh
+# $ git clone git://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+# $ git clone git://github.com/zsh-users/zsh-syntax-highlighting ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
 
 
 
@@ -121,18 +123,18 @@ function type_alias_config()
 	alias -s tar=$extract
 }
 
-# Set the Antigen and Oh-My-Zsh config:
-function antigen_config()
+# Set the Oh-My-Zsh config:
+function oh_my_zsh_config()
 {
-	# Set the “Oh My ZSH!” path
+	# Set the Oh-My-Zsh path and plantform plugins
 	if [ -e "/home/$DEFAULT_USER" ]; then
-		source /home/$DEFAULT_USER/.antigen/antigen.zsh
-		local PLANTFORM_PLUGIN="systemd"
+		local ZSH="/home/$DEFAULT_USER/.oh-my-zsh"
+		plugins=(systemd)
 	elif [ -e "/Users/$DEFAULT_USER" ]; then
-		source /Users/$DEFAULT_USER/.antigen/antigen.zsh
-		local PLANTFORM_PLUGIN="osx"
+		local ZSH="/Users/$DEFAULT_USER/.oh-my-zsh"
+		plugins=(osx)
 	else
-		source ~/.antigen/antigen.zsh
+		local ZSH="~/.oh-my-zsh"
 	fi
 
 	# Uncomment the following line to disable bi-weekly auto-update checks
@@ -142,16 +144,15 @@ function antigen_config()
 	# The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
 	HIST_STAMPS="yyyy-mm-dd"
 
-	# Load plugins
-	antigen use oh-my-zsh
-	antigen bundle zsh-users/zsh-syntax-highlighting
-	antigen bundle gem pip django sudo scala golang mvn
-	antigen bundle $PLANTFORM_PLUGIN
+	# Set common plugins
+	plugins+=(sudo scala pip django gem golang mvn zsh-syntax-highlighting zsh-autosuggestions)
 
-	# Load the theme, set theme only in Linux GUI and macOS
+	# Set the theme, only in Linux GUI and macOS
 	if [ -n "$DISPLAY" ] || [ $(uname) = "Darwin" ]; then
-		antigen theme "agnoster" # Use ZSH theme "agnoster"
+		local ZSH_THEME="agnoster" # Use ZSH theme "agnoster"
 	fi
+
+	source $ZSH/oh-my-zsh.sh
 }
 
 # Run function
@@ -159,7 +160,10 @@ set_default_user "dainslef"
 show_welcome
 env_config
 type_alias_config
-antigen_config
+oh_my_zsh_config
+
+# Delete defined functions
+unset -f set_default_user show_welcome env_config type_alias_config oh_my_zsh_config
 
 
 

@@ -1,12 +1,12 @@
 # Set input method
-if [ $DESKTOP_SESSION == "gnome" ] || [ $DESKTOP_SESSION == "ubuntu" ]; then
+if [ "$DESKTOP_SESSION" = "gnome" ] || [ "$DESKTOP_SESSION" = "ubuntu" ]; then
 	input_method=ibus
 else
 	input_method=fcitx
 fi
 
 # Set Qt style
-if [ $XDG_SESSION_DESKTOP != "KDE" ]; then
+if [ "$XDG_SESSION_DESKTOP" != "KDE" ]; then
 	export QT_STYLE_OVERRIDE=fusion
 fi
 

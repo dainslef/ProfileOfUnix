@@ -5,6 +5,7 @@
 
 syntax enable " 显示语法高亮
 syntax on " 开启文件类型语法检测
+set shell=/usr/bin/bash " 设置默认shell
 set nocompatible " 关闭 vi 兼容模式
 set number " 显示行号
 set cursorline " 突出显示当前行

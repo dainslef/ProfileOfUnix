@@ -1,3 +1,5 @@
+#! /usr/bin/bash
+
 # Set input method
 if [ "$DESKTOP_SESSION" = "gnome" ] || [ "$DESKTOP_SESSION" = "ubuntu" ]; then
 	input_method=ibus

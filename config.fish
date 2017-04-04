@@ -111,7 +111,7 @@ end
 
 # Set theme color for bobthefish
 # Override default greeting at ~/.config/fish/functions/fish_greeting.fish
-set theme_color_scheme terminal2
+set theme_color_scheme terminal2-dark-white
 
 # Run function
 set_default_user "dainslef"

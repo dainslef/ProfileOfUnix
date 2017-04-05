@@ -26,6 +26,7 @@ function show_welcome()
 	fi
 
 	if [ -n "$show_os_version" ]; then # Print welcome message in macOS or Linux GUI
+		echo -ne "\033[1;30m" # Set greet color
 		echo $(uptime)
 		echo $show_os_version
 		echo --- Welcome, $(whoami)! Today is $(date +"%B %d %Y, %A"). ---
@@ -36,6 +37,7 @@ function show_welcome()
 			3) echo "--- 春は夜桜、夏には星、秋に満月、冬には雪。 ---\n" ;;
 			4) echo "--- あなたもきっと、誰かの奇跡。 ---\n" ;;
 		esac
+		echo -ne "\033[0m" # Reset color
 	fi
 }
 
@@ -44,7 +46,7 @@ function env_config()
 {
 	if [ $(whoami) = $DEFAULT_USER ]; then
 
-		# Check OS type and set the different enviornment variables
+		# Check OS type and set the different environment variables
 		if [ $(uname) = "Darwin" ]; then # Darwin kernel means in macOS
 
 			local vscode="/Users/$DEFAULT_USER/Applications/Develop/Visual\ Studio\ Code.app/Contents/MacOS/Electron"

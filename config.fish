@@ -10,45 +10,12 @@
 
 
 # ------------------------------------------------------------------------------
-# --- Function define ---
+# --- Custom function define ---
 
 # Set the default user
 function set_default_user
 	# Use "set" to create a variable, use "-g" to create a global variable
 	set -g default_user $argv[1]
-end
-
-# Print the welcome message
-function show_welcome
-
-	if test (id -u) -gt 0
-		if test (uname) = "Darwin"
-			set show_os_version (uname -srnm)
-		else if test -n "$DISPLAY"
-			set show_os_version (uname -ornm)
-		end
-	end
-
-	if test -n "$show_os_version" # Print welcome message in macOS or Linux GUI
-		echo -ne "\033[1;30m" # Set greet color
-		echo (uptime)
-		echo " $show_os_version"
-		echo --- Welcome, (whoami)! Today is (date +"%B %d %Y, %A"). ---
-		switch (random 1 5)
-			case 1
-				echo -e "--- 夢に描けることなら、実現できる。 ---\n"
-			case 2
-				echo -e "--- 一日は貴い一生である。これを空費してはならない。 ---\n"
-			case 3
-				echo -e "--- 世界は美しくなんかない。そしてそれ故に、美しい。 ---\n"
-			case 4
-				echo -e "--- 春は夜桜、夏には星、秋に満月、冬には雪。 ---\n"
-			case 5
-				echo -e "--- あなたもきっと、誰かの奇跡。 ---\n"
-		end
-		echo -ne "\033[0m" # Reset color
-	end
-
 end
 
 # Check user, set the custom environment variables
@@ -109,18 +76,68 @@ function env_config
 
 end
 
-# Set theme color for bobthefish
-# Override default greeting at ~/.config/fish/functions/fish_greeting.fish
-set theme_color_scheme terminal2-dark-white
+# Set the theme config
+function theme_config
 
-# Run function
+	# Check the current theme
+	if test (cat $OMF_CONFIG/theme) = "bobthefish"
+
+		# Set theme color for bobthefish
+		# Override default greeting at ~/.config/fish/functions/fish_greeting.fish or refine function
+		set -g theme_color_scheme terminal2-light
+		set -g theme_date_format "+%b-%d [%a] %R:%S"
+
+	end
+
+end
+
+# Call function
 set_default_user "dainslef"
-show_welcome
 env_config
+theme_config
 
 # Delete defined functions and variables
 # Use "-e" means to erase a function/variable
 set -e DEFAULT_USER
 functions -e set_default_user
-functions -e show_welcome
 functions -e env_config
+functions -e theme_config
+
+
+
+# ------------------------------------------------------------------------------
+# --- Function override ---
+
+# In fish shell, function which named with "fish_greeting" will override default greeting
+function fish_greeting
+
+	if test (id -u) -gt 0
+		if test (uname) = "Darwin"
+			set show_os_version (uname -srnm)
+		else if test -n "$DISPLAY"
+			set show_os_version (uname -ornm)
+		end
+	end
+
+	# Print welcome message in macOS or Linux GUI
+	if test -n "$show_os_version"
+		echo -ne "\033[1;30m" # Set greet color
+		echo (uptime)
+		echo " $show_os_version"
+		echo --- Welcome, (whoami)! Today is (date +"%B %d %Y, %A"). ---
+		switch (random 1 5)
+			case 1
+				echo -e "--- 夢に描けることなら、実現できる。 ---\n"
+			case 2
+				echo -e "--- 一日は貴い一生である。これを空費してはならない。 ---\n"
+			case 3
+				echo -e "--- 世界は美しくなんかない。そしてそれ故に、美しい。 ---\n"
+			case 4
+				echo -e "--- 春は夜桜、夏には星、秋に満月、冬には雪。 ---\n"
+			case 5
+				echo -e "--- あなたもきっと、誰かの奇跡。 ---\n"
+		end
+		echo -ne "\033[0m" # Reset color
+	end
+
+end

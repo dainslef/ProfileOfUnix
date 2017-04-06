@@ -157,7 +157,7 @@ function oh_my_zsh_config()
 	source $ZSH/oh-my-zsh.sh
 }
 
-# Run function
+# Call function
 set_default_user "dainslef"
 show_welcome
 env_config

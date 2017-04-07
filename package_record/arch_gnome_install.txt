@@ -19,8 +19,10 @@ attr
 audiofile
 avahi
 bash
+bc
 binutils
 bluez
+bluez-libs
 boost
 boost-libs
 bzip2
@@ -32,6 +34,7 @@ ca-certificates-utils
 cairo
 cairomm
 cantarell-fonts
+cargo
 caribou
 cdparanoia
 celt
@@ -39,7 +42,6 @@ cheese
 chromaprint
 cifs-utils
 clang
-clojure
 clutter
 clutter-gst
 clutter-gtk
@@ -64,7 +66,6 @@ device-mapper
 diffutils
 dkms
 dnssec-anchors
-dotconf
 e2fsprogs
 efibootmgr
 efivar
@@ -83,6 +84,7 @@ file-roller
 filesystem
 filezilla
 findutils
+fish
 fixesproto
 flac
 fontconfig
@@ -107,6 +109,7 @@ gdm
 geoclue2
 geocode-glib
 gettext
+ghc
 giflib
 git
 gjs
@@ -131,7 +134,6 @@ gnome-shell
 gnome-terminal
 gnome-themes-standard
 gnome-tweak-tool
-gnome-video-effects
 gnupg
 gnustep-base
 gnustep-gui
@@ -144,7 +146,6 @@ gparted
 gperftools
 gpgme
 gpm
-gradle
 graphene
 graphite
 grep
@@ -158,8 +159,6 @@ gst-plugins-base
 gst-plugins-base-libs
 gst-plugins-good
 gstreamer
-gstreamer0.10
-gstreamer0.10-base
 gtk-update-icon-cache
 gtk2
 gtk3
@@ -195,15 +194,10 @@ jack
 jansson
 jasper
 java-environment-common
-java-openjfx
 java-runtime-common
-jdk8-openjdk
+jdk
 jemalloc
-jre8-openjdk
-jre8-openjdk-headless
 js
-js17
-json-c
 json-glib
 jsoncpp
 kbd
@@ -259,6 +253,7 @@ libgcrypt
 libgdiplus
 libgdm
 libgee
+libglvnd
 libgme
 libgnomekbd
 libgpg-error
@@ -294,6 +289,7 @@ libndp
 libnewt
 libnftnl
 libnl
+libnm
 libnm-glib
 libnotify
 liboauth
@@ -372,6 +368,7 @@ libxdmcp
 libxext
 libxfixes
 libxfont
+libxfont2
 libxft
 libxi
 libxinerama
@@ -396,8 +393,10 @@ linux-api-headers
 linux-firmware
 linux-pf
 linux-pf-headers
+lldb
 llvm-libs
 lm_sensors
+lsb-release
 lua
 lua52
 lua52-bitop
@@ -416,8 +415,8 @@ mariadb
 mariadb-clients
 maven
 mesa
-mesa-libgl
 mime-types
+minizip
 mjpegtools
 mkinitcpio
 mkinitcpio-busybox
@@ -433,6 +432,7 @@ nasm
 nautilus
 nautilus-sendto
 ncurses
+neofetch
 net-tools
 netcdf
 nettle
@@ -475,6 +475,7 @@ pixman
 polkit
 popt
 procps-ng
+protobuf
 psmisc
 pulseaudio
 pulseaudio-alsa
@@ -490,6 +491,8 @@ python2
 python2-dbus
 python2-gobject
 python2-gobject2
+python2-six
+qbs
 qt5-base
 qt5-declarative
 qt5-doc
@@ -500,6 +503,7 @@ qt5-script
 qt5-sensors
 qt5-tools
 qt5-webchannel
+qt5-webengine
 qt5-webkit
 qt5-x11extras
 qt5-xmlpatterns
@@ -513,6 +517,7 @@ rsync
 rtkit
 rtmpdump
 ruby
+rust
 sbc
 scala
 schroedinger
@@ -529,11 +534,10 @@ slang
 smbclient
 snappy
 sound-theme-freedesktop
-speech-dispatcher
 speex
 speexdsp
 sqlite
-stardict-lite
+stardict
 startup-notification
 strace
 sudo
@@ -552,6 +556,7 @@ telepathy-mission-control
 tevent
 texinfo
 thunderbird
+time
 totem-plparser
 tree
 tslib
@@ -560,6 +565,7 @@ tzdata
 udisks2
 unzip
 upower
+usbmuxd
 usbutils
 util-linux
 v4l-utils
@@ -575,7 +581,6 @@ wavpack
 wayland
 wayland-protocols
 webkit2gtk
-webkitgtk2
 webrtc-audio-processing
 wget
 which
@@ -587,6 +592,7 @@ xcb-proto
 xcb-util
 xcb-util-image
 xcb-util-keysyms
+xcb-util-renderutil
 xcb-util-wm
 xdg-user-dirs
 xdg-utils
@@ -623,5 +629,4 @@ zip
 zita-alsa-pcmi
 zita-resampler
 zlib
-zsh
 zvbi

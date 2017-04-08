@@ -21,10 +21,10 @@ end
 # Check user, set the custom environment variables
 function env_config
 
-	if test (whoami) = $default_user
+	if [ (whoami) = $default_user ]
 
 		# Check OS type and set the different environment variables
-		if test (uname) = "Darwin" # Darwin kernel means in macOS
+		if [ (uname) = "Darwin" ] # Darwin kernel means in macOS
 
 			set vscode "/Users/$default_user/Applications/Develop/Visual\ Studio\ Code.app/Contents/MacOS/Electron"
 			set python_version (python3 -V | awk -F' ' '{ print $2 }' | awk -F'.' '{ print $1 "." $2 }')
@@ -33,7 +33,7 @@ function env_config
 			# Set environment variable for Homebrew Bottles mirror (use USTC mirror)
 			set -xg HOMEBREW_BOTTLE_DOMAIN https://mirrors.ustc.edu.cn/homebrew-bottles
 
-		else if test (uname) = "Linux"
+		else if [ (uname) = "Linux" ]
 
 			set vscode /home/$default_user/Public/VSCode-linux-x64/code
 			set pip_bin ~/.local/bin
@@ -52,7 +52,7 @@ function env_config
 		alias code $vscode
 
 		# Set python pip package path
-		if test -e $pip_bin
+		if [ -e $pip_bin ]
 			set PATH $PATH $pip_bin
 		end
 
@@ -66,7 +66,7 @@ function env_config
 		set -xg LC_ALL en_US.UTF-8
 
 		# Preferred editor for local and remote sessions
-		if test -n $SSH_CONNECTION
+		if [ -n $SSH_CONNECTION ]
 			set -xg EDITOR "nano"
 		else
 			set -xg EDITOR "vim"
@@ -80,7 +80,7 @@ end
 function theme_config
 
 	# Check the current theme
-	if test (cat $OMF_CONFIG/theme) = "bobthefish"
+	if [ (cat $OMF_CONFIG/theme) = "bobthefish" ]
 
 		# Set theme color for bobthefish
 		# Override default greeting at ~/.config/fish/functions/fish_greeting.fish or refine function
@@ -111,16 +111,16 @@ functions -e theme_config
 # In fish shell, function which named with "fish_greeting" will override default greeting
 function fish_greeting
 
-	if test (id -u) -gt 0
-		if test (uname) = "Darwin"
+	if [ (id -u) -gt 0 ]
+		if [ (uname) = "Darwin" ]
 			set show_os_version (uname -srnm)
-		else if test -n "$DISPLAY"
+		else if [ -n "$DISPLAY" ]
 			set show_os_version (uname -ornm)
 		end
 	end
 
 	# Print welcome message in macOS or Linux GUI
-	if test -n "$show_os_version"
+	if [ -n "$show_os_version" ]
 		echo -ne "\033[1;30m" # Set greet color
 		echo (uptime)
 		echo " $show_os_version"

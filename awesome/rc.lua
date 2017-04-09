@@ -75,7 +75,7 @@ local mail = "thunderbird"
 local terminal = "mate-terminal"
 local browser = "google-chrome-stable"
 local dictionary = "stardict"
-local file_manager = "mc"
+local file_manager = "ranger"
 
 -- Set default editor
 local editor = os.getenv("EDITOR") or "nano"
@@ -105,7 +105,7 @@ local layouts = {
 -- {{{ Load auto run apps.
 do
 	function run_once(prg)
-		awful.util.spawn_with_shell("pgrep -u $USER -x " .. prg .. " || (" .. prg .. ")")
+		awful.util.spawn_with_shell("pgrep -u $USER -x " .. prg .. " or (" .. prg .. ")")
 	end
 
 	local auto_run_list = {
@@ -116,8 +116,7 @@ do
 		-- "blueman-applet", -- Use bluetooth
 		"mate-power-manager", -- Show power and set backlights
 		"mate-volume-control-applet",
-		"/usr/lib/mate-settings-daemon/mate-settings-daemon", -- For keyboard binding support
-		"/usr/lib/mate-polkit/polkit-mate-authentication-agent-1"
+		"/usr/lib/mate-settings-daemon/mate-settings-daemon" -- For keyboard binding support
 	}
 
 	for _, cmd in pairs(auto_run_list) do

@@ -12,7 +12,7 @@ awful.rules = require("awful.rules")
 
 -- {{{ Init
 -- Custom init command
-awful.util.spawn_with_shell("xset s 1800") -- Set screensaver timeout to 30 mintues
+awful.spawn.with_shell("xset s 1800") -- Set screensaver timeout to 30 mintues
 -- }}}
 
 
@@ -105,7 +105,7 @@ local layouts = {
 -- {{{ Load auto run apps.
 do
 	function run_once(prg)
-		awful.util.spawn_with_shell("pgrep -u $USER -x " .. prg .. " or (" .. prg .. ")")
+		awful.spawn.with_shell("pgrep -u $USER -x " .. prg .. " or (" .. prg .. ")")
 	end
 
 	local auto_run_list = {
@@ -170,41 +170,42 @@ end
 -- {{{ Menu
 
 -- Create menu items
-local myawesomemenu = {
+local home = "/home/dainslef"
+local awesome_menu = {
 	{ "Suspend", "systemctl suspend" },
 	{ "RestartWM", awesome.restart },
 	{ "QuitWM", awesome.quit },
 	{ "PowerOff", "poweroff" }
 }
-local developmenu = {
+local develop_menu = {
 	{ "QtCreator", "qtcreator" },
 	{ "QtAssistant", "assistant-qt5" },
 	{ "QtDesigner", "designer-qt5" },
 	{ "Emacs", "emacs" },
 	{ "GVIM", "gvim" },
-	{ "VSCode", "/home/dainslef/Public/VSCode-linux-x64/code" },
-	{ "NetBeans", "/home/dainslef/Public/netbeans/bin/netbeans" },
-	{ "Eclipse", "/home/dainslef/Public/eclipse/eclipse" },
-	{ "IDEA", "/home/dainslef/Public/idea-IU/bin/idea.sh" }
+	{ "VSCode", home .. "/Public/VSCode-linux-x64/code" },
+	{ "NetBeans", home .. "/Public/netbeans/bin/netbeans" },
+	{ "Eclipse", home .. "/Public/eclipse/eclipse" },
+	{ "IDEA", home .. "/Public/idea-IU/bin/idea.sh" }
 }
-local toolsmenu = {
+local tools_menu = {
 	{ "StarDict", dictionary },
 	{ "VLC", "vlc" },
 	{ "GIMP", "gimp" }
 }
-local systemmenu = {
+local system_menu = {
 	{ "Terminal", terminal },
 	{ "VirtualBox", "virtualbox" },
 	{ "GParted", "gparted" }
 }
 
 -- Add menu items to main menu
-local mymainmenu = awful.menu({
+local main_menu = awful.menu({
 	items = {
-		{ "Awesome", myawesomemenu, beautiful.awesome_icon },
-		{ "Develop", developmenu },
-		{ "Tools", toolsmenu },
-		{ "System", systemmenu },
+		{ "Awesome", awesome_menu, beautiful.awesome_icon },
+		{ "Develop", develop_menu },
+		{ "Tools", tools_menu },
+		{ "System", system_menu },
 		{ "Mail", mail },
 		{ "Files", terminal .. " -e " .. file_manager },
 		{ "Browser", browser }
@@ -212,9 +213,9 @@ local mymainmenu = awful.menu({
 })
 
 -- Create launcher and set menu
-local mylauncher = awful.widget.launcher({
+local launcher = awful.widget.launcher({
 	image = beautiful.awesome_icon,
-	menu = mymainmenu
+	menu = main_menu
 })
 
 -- Menubar configuration
@@ -226,18 +227,18 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 -- {{{ Wibox
 
 -- Create a textclock widget
-local mytextclock = awful.widget.textclock(" <span font='Dejavu Sans 10'>" ..
+local text_clock = wibox.widget.textclock(" <span font='Dejavu Sans 10'>" ..
 	"[ %b %d <span color='red'>%a</span> ⇔ <span color='yellow'>%H:%M</span> ]</span> ")
 
 -- Create widgetbox
-local mywidgetbox = {}
-local mypromptbox = {}
-local mylayoutbox = {}
-local mytaglist = {}
-local mytasklist = {}
+local widget_box = {}
+local prompt_box = {}
+local layout_box = {}
+local tag_list = {}
+local task_list = {}
 
 -- Set buttons in widgetbox
-mytaglist.buttons = awful.util.table.join(
+tag_list.buttons = awful.util.table.join(
 	awful.button({ }, 1, awful.tag.viewonly),
 	awful.button({ modkey }, 1, awful.client.movetotag),
 	awful.button({ }, 3, awful.tag.viewtoggle),
@@ -245,7 +246,7 @@ mytaglist.buttons = awful.util.table.join(
 	awful.button({ }, 4, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end),
 	awful.button({ }, 5, function(t) awful.tag.viewnext(awful.tag.getscreen(t)) end)
 )
-mytasklist.buttons = awful.util.table.join(
+task_list.buttons = awful.util.table.join(
 	awful.button({ }, 1, function(c)
 			if c == client.focus then
 				c.minimized = true
@@ -282,12 +283,12 @@ mytasklist.buttons = awful.util.table.join(
 for s = 1, screen.count() do
 
 	-- Create a promptbox for each screen
-	mypromptbox[s] = awful.widget.prompt()
+	prompt_box[s] = awful.widget.prompt()
 
 	-- Create an imagebox widget which will contains an icon indicating which layout we're using.
 	-- We need one layoutbox per screen.
-	mylayoutbox[s] = awful.widget.layoutbox(s)
-	mylayoutbox[s]:buttons(awful.util.table.join(
+	layout_box[s] = awful.widget.layoutbox(s)
+	layout_box[s]:buttons(awful.util.table.join(
 		awful.button({ }, 1, function() awful.layout.inc(layouts, 1) end),
 		awful.button({ }, 3, function() awful.layout.inc(layouts, -1) end),
 		awful.button({ }, 4, function() awful.layout.inc(layouts, 1) end),
@@ -295,32 +296,32 @@ for s = 1, screen.count() do
 	))
 
 	-- Create a taglist widget
-	mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, mytaglist.buttons)
+	tag_list[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, tag_list.buttons)
 
 	-- Create a tasklist widget
-	mytasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, mytasklist.buttons)
+	task_list[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, task_list.buttons)
 
-	-- Create the wibox
-	mywidgetbox[s] = awful.wibox({ position = "top", screen = s, height = 25 })
+	-- Create the wibar
+	widget_box[s] = awful.wibar({ position = "top", screen = s, height = 25 })
 
 	-- Widgets that are aligned to the left
 	local left_layout = wibox.layout.fixed.horizontal()
-	left_layout:add(mylayoutbox[s])
-	left_layout:add(mypromptbox[s])
+	left_layout:add(layout_box[s])
+	left_layout:add(prompt_box[s])
 
 	-- Widgets that are aligned to the right
 	local right_layout = wibox.layout.fixed.horizontal()
-	right_layout:add(mytaglist[s])
-	right_layout:add(mytextclock)
+	right_layout:add(tag_list[s])
+	right_layout:add(text_clock)
 	right_layout:add(wibox.widget.systray())
 
 	-- Now bring it all together (with the tasklist in the middle)
 	local layout = wibox.layout.align.horizontal()
 	layout.left = left_layout
-	layout.middle = mytasklist[s]
+	layout.middle = task_list[s]
 	layout.right = right_layout
 
-	mywidgetbox[s].widget = layout
+	widget_box[s].widget = layout
 
 end
 -- }}}
@@ -330,7 +331,7 @@ end
 -- {{{ Mouse bindings
 root.buttons(
 	awful.util.table.join(
-		awful.button({ }, 3, function() mymainmenu:toggle() end),
+		awful.button({ }, 3, function() main_menu:toggle() end),
 		awful.button({ }, 4, awful.tag.viewprev),
 		awful.button({ }, 5, awful.tag.viewnext)
 	)
@@ -354,7 +355,7 @@ local globalkeys = awful.util.table.join(
 			awful.client.focus.byidx(-1)
 			if client.focus then client.focus:raise() end
 		end),
-	awful.key({ modkey }, "w", function() mymainmenu:show() end),
+	awful.key({ modkey }, "m", function() main_menu:show() end),
 
 	-- Layout manipulation
 	awful.key({ modkey, "Shift" }, "j", function() awful.client.swap.byidx(1) end),
@@ -370,7 +371,7 @@ local globalkeys = awful.util.table.join(
 	-- Standard program
 	awful.key({ modkey }, "Return", function() awful.spawn(terminal) end),
 	awful.key({ modkey, "Control" }, "r", awesome.restart),
-	awful.key({ modkey, "Shift" }, "q", awesome.quit),
+	awful.key({ modkey, "Control" }, "q", awesome.quit),
 
 	awful.key({ modkey }, "l", function() awful.tag.incmwfact(0.05) end),
 	awful.key({ modkey }, "h", function() awful.tag.incmwfact(-0.05) end),
@@ -401,12 +402,12 @@ local globalkeys = awful.util.table.join(
 		end),
 
 	-- Prompt
-	awful.key({ modkey }, "r", function() mypromptbox[mouse.screen.index]:run() end, {
+	awful.key({ modkey }, "r", function() prompt_box[mouse.screen.index]:run() end, {
 			description = "run prompt", group = "launcher"
 		}),
 	awful.key({ modkey }, "x", function()
 			awful.prompt.run({ prompt = "Run Lua code: " },
-			mypromptbox[mouse.screen.index].widget,
+			prompt_box[mouse.screen.index].widget,
 			awful.util.eval, nil,
 			awful.util.getdir("cache") .. "/history_eval")
 		end),
@@ -451,16 +452,12 @@ local globalkeys = awful.util.table.join(
 
 local clientkeys = awful.util.table.join(
 	awful.key({ modkey }, "f", function(c) c.fullscreen = not c.fullscreen end),
-	awful.key({ modkey, "Shift" }, "c", function(c) c:kill() end),
+	awful.key({ modkey }, "w", function(c) c:kill() end),
 	awful.key({ modkey, "Control" }, "space", awful.client.floating.toggle),
 	awful.key({ modkey, "Control" }, "Return", function(c) c:swap(awful.client.getmaster()) end),
 	awful.key({ modkey }, "o", awful.client.movetoscreen),
 	awful.key({ modkey }, "t", function(c) c.ontop = not c.ontop end),
-	awful.key({ modkey }, "n", function(c) c.minimized = true end),
-	awful.key({ modkey }, "m", function(c)
-			c.maximized_horizontal = not c.maximized_horizontal
-			c.maximized_vertical   = not c.maximized_vertical
-		end)
+	awful.key({ modkey }, "n", function(c) c.minimized = true end)
 )
 
 -- Bind all key numbers to tags
@@ -578,11 +575,9 @@ client.connect_signal("manage", function(c, startup)
 client.connect_signal("focus", function(c)
 
 		-- Minimize all floating windows when change the focus to other normal window in tiles layout
-		if awful.layout.get() ~= awful.layout.suit.magnifier
-				and not awful.client.floating.get(c.focus) then
+		if awful.layout.get() ~= awful.layout.suit.magnifier and not c.floating then
 			for _, window in pairs(awful.client.visible(c.screen)) do
-				if awful.client.floating.get(window)
-						and not window.ontop then  -- Ingnore when floating window is ontop
+				if window.floating and not window.ontop then  -- Ingnore when floating window is ontop
 					window.minimized = true
 				end
 			end

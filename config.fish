@@ -66,7 +66,7 @@ function env_config
 		set -xg LC_ALL en_US.UTF-8
 
 		# Preferred editor for local and remote sessions
-		if [ -n $SSH_CONNECTION ]
+		if [ -n "$SSH_CONNECTION" ]
 			set -xg EDITOR "nano"
 		else
 			set -xg EDITOR "vim"
@@ -79,22 +79,31 @@ end
 # Set the theme config
 function theme_config
 
+	# Set the theme, only in Linux GUI and macOS
+	if [ -n "$DISPLAY" -o (uname) = "Darwin" ]
+		omf theme "bobthefish"
+	else # Use default in Non-GUI environment
+		omf theme "default"
+	end
+
 	# Check the current theme
 	if [ (cat $OMF_CONFIG/theme) = "bobthefish" ]
 
 		# Set theme color for bobthefish
 		# Override default greeting at ~/.config/fish/functions/fish_greeting.fish or refine function
-		set -g theme_color_scheme terminal2-light
+		set -g theme_color_scheme terminal2-light-black
 		set -g theme_date_format "+%b-%d [%a] %R:%S"
 
 	end
 
 end
 
-# Call function
-set_default_user "dainslef"
-env_config
-theme_config
+# Call function if oh-my-fish is installed
+if [ -n "$OMF_PATH" ]
+	set_default_user "dainslef"
+	env_config
+	theme_config
+end
 
 # Delete defined functions and variables
 # Use "-e" means to erase a function/variable

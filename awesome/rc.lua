@@ -15,13 +15,16 @@ vicious.contrib = require("vicious.contrib")
 
 
 -- {{{ Init
+
 -- Custom init command
 awful.spawn.with_shell("xset s 1800") -- Set screensaver timeout to 30 mintues
+
 -- }}}
 
 
 
 -- {{{ Error handling
+
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
 if awesome.startup_errors then
@@ -47,6 +50,7 @@ do
 			in_error = false
 		end)
 end
+
 -- }}}
 
 
@@ -73,6 +77,8 @@ theme.menu_bg_normal = color_menu_bg
 theme.menu_fg_normal = theme.fg_focus
 theme.taglist_bg_focus = color_task_tag_focus -- Set the focus color of taglist
 theme.tasklist_bg_focus = color_task_tag_focus -- Set the focus color of taskbar
+theme.notification_bg = color_naughty_bg
+theme.notification_fg = beautiful.fg_focus
 
 -- This is used later as the default terminal and editor to run
 local mail = "thunderbird"
@@ -101,40 +107,47 @@ local layouts = {
 	awful.layout.suit.tile.bottom, -- master in top
 	-- awful.layout.suit.tile.top,
 	-- awful.layout.suit.max,
-	-- awful.layout.suit.max.fullscreen
+	-- awful.layout.suit.max.fullscreen,
+	-- awful.layout.suit.corner.nw,
+	-- awful.layout.suit.corner.ne,
+	-- awful.layout.suit.corner.sw,
+	-- awful.layout.suit.corner.se,
 }
+
 -- }}}
 
 
 
 -- {{{ Load auto run apps.
-do
-	function run_once(prg)
-		awful.spawn.with_shell("pgrep -u $USER -x " .. prg .. " or (" .. prg .. ")")
-	end
 
-	local auto_run_list = {
-		"fcitx", -- Use input method
-		"xcompmgr", -- For transparent support
-		"light-locker", -- Lock screen need to load it first
-		"nm-applet", -- Show network status
-		-- "blueman-applet", -- Use bluetooth
-	}
-
-	for _, cmd in pairs(auto_run_list) do
-		run_once(cmd)
-	end
+function run_once(prg)
+	awful.spawn.with_shell("pgrep -u $USER -x " .. prg .. " or (" .. prg .. ")")
 end
+
+local auto_run_list = {
+	"fcitx", -- Use input method
+	"xcompmgr", -- For transparent support
+	"light-locker", -- Lock screen need to load it first
+	"nm-applet", -- Show network status
+	-- "blueman-applet", -- Use bluetooth
+}
+
+for _, cmd in pairs(auto_run_list) do
+	run_once(cmd)
+end
+
 -- }}}
 
 
 
 -- {{{ Wallpaper
+
 if beautiful.wallpaper then
 	for s = 1, screen.count() do
 		gears.wallpaper.maximized("/home/dainslef/Pictures/34844544_p0.png", s, true)
 	end
 end
+
 -- }}}
 
 
@@ -172,11 +185,11 @@ end
 -- {{{ Menu
 
 -- Create menu items
-local home = "/home/dainslef"
+local home_path = "/home/dainslef"
 local awesome_menu = {
-	{ "Suspend", "systemctl suspend" },
 	{ "RestartWM", awesome.restart },
 	{ "QuitWM", awesome.quit },
+	{ "Suspend", "systemctl suspend" },
 	{ "PowerOff", "poweroff" }
 }
 local develop_menu = {
@@ -185,14 +198,15 @@ local develop_menu = {
 	{ "QtDesigner", "designer-qt5" },
 	{ "Emacs", "emacs" },
 	{ "GVIM", "gvim" },
-	{ "VSCode", home .. "/Public/VSCode-linux-x64/code" },
-	{ "Eclipse", home .. "/Public/eclipse/eclipse" },
-	{ "IDEA", home .. "/Public/idea-IU/bin/idea.sh" }
+	{ "VSCode", "code" },
+	{ "Eclipse", home_path .. "/Public/eclipse/eclipse" },
+	{ "IDEA", home_path .. "/Public/idea-IU/bin/idea.sh" }
 }
 local tools_menu = {
+	{ "Files", file_manager },
+	{ "Browser", browser },
 	{ "StarDict", dictionary },
-	{ "VLC", "vlc" },
-	{ "GIMP", "gimp" }
+	{ "VLC", "vlc" }
 }
 local system_menu = {
 	{ "Terminal", terminal },
@@ -221,200 +235,6 @@ local launcher = awful.widget.launcher({
 
 -- Menubar configuration
 menubar.utils.terminal = terminal -- Set the terminal for applications that require it
--- }}}
-
-
-
--- {{{ Mouse bindings
-root.buttons(
-	awful.util.table.join(
-		awful.button({ }, 3, function() main_menu:toggle() end),
-		awful.button({ }, 4, awful.tag.viewprev),
-		awful.button({ }, 5, awful.tag.viewnext)
-	)
-)
--- }}}
-
-
-
--- {{{ Global key bindings
-
--- Brightness notify function
-function brightness_notify(isBrightnessUp)
-	local brightness, status = io.popen("xbacklight -get"):read(), ""
-	for i = 1, 10 do
-		status = i <= brightness / 10 and status .. " |" or status .. " _"
-	end
-	naughty.notify({
-		title = "Brightness " .. (isBrightnessUp and "up" or "down"),
-		text = "Change background brightness ...\n"
-				.. "[" .. status ..  " ] " .. brightness.. "%",
-		bg = color_naughty_bg,
-		fg = beautiful.fg_focus
-	})
-end
-
-local global_keys = awful.util.table.join(
-
-	awful.key({ mod_key }, "Left", awful.tag.viewprev),
-	awful.key({ mod_key }, "Right", awful.tag.viewnext),
-	awful.key({ mod_key }, "Escape", awful.tag.history.restore),
-
-	awful.key({ mod_key }, "j", function()
-			awful.client.focus.byidx(1)
-			if client.focus then client.focus:raise() end
-		end),
-	awful.key({ mod_key }, "k", function()
-			awful.client.focus.byidx(-1)
-			if client.focus then client.focus:raise() end
-		end),
-	awful.key({ mod_key }, "m", function() main_menu:show() end),
-
-	-- Layout manipulation
-	awful.key({ mod_key, "Shift" }, "j", function() awful.client.swap.byidx(1) end),
-	awful.key({ mod_key, "Shift" }, "k", function() awful.client.swap.byidx(-1) end),
-	awful.key({ mod_key, "Control" }, "j", function() awful.screen.focus_relative(1) end),
-	awful.key({ mod_key, "Control" }, "k", function() awful.screen.focus_relative(-1) end),
-	awful.key({ mod_key }, "u", awful.client.urgent.jumpto),
-	awful.key({ mod_key }, "Tab", function()
-			awful.client.focus.history.previous()
-			if client.focus then client.focus:raise() end
-		end),
-
-	-- Standard program
-	awful.key({ mod_key }, "Return", function() awful.spawn(terminal .. terminal_args) end),
-	awful.key({ mod_key, "Control" }, "r", awesome.restart),
-	awful.key({ mod_key, "Control" }, "q", awesome.quit),
-
-	awful.key({ mod_key }, "l", function() awful.tag.incmwfact(0.05) end),
-	awful.key({ mod_key }, "h", function() awful.tag.incmwfact(-0.05) end),
-	awful.key({ mod_key, "Shift" }, "h", function() awful.tag.incnmaster(1) end),
-	awful.key({ mod_key, "Shift" }, "l", function() awful.tag.incnmaster(-1) end),
-	awful.key({ mod_key, "Control" }, "h", function() awful.tag.incncol(1) end),
-	awful.key({ mod_key, "Control" }, "l", function() awful.tag.incncol(-1) end),
-
-	awful.key({ mod_key }, "space", function()
-			awful.layout.inc(layouts, 1)
-			naughty.notify({
-				title = 'Layout Change',
-				text = "The current layout is " .. awful.layout.getname() .. ".",
-				timeout = 1,
-				bg = color_naughty_bg,
-				fg = beautiful.fg_focus
-			})
-		end),
-	awful.key({ mod_key, "Shift" }, "space", function()
-			awful.layout.inc(layouts, -1)
-			naughty.notify({
-				title = 'Layout Change',
-				text = "The current layout is " .. awful.layout.getname() .. ".",
-				timeout = 1,
-				bg = color_naughty_bg,
-				fg = beautiful.fg_focus
-			})
-		end),
-
-	-- Prompt
-	awful.key({ mod_key }, "r", function() prompt_box[mouse.screen.index]:run() end, {
-			description = "run prompt", group = "launcher"
-		}),
-	awful.key({ mod_key }, "x", function()
-			awful.prompt.run({ prompt = "Run Lua code: " },
-			prompt_box[mouse.screen.index].widget,
-			awful.util.eval, nil,
-			awful.util.getdir("cache") .. "/history_eval")
-		end),
-
-	-- Menubar
-	awful.key({ mod_key }, "p", function() menubar.show() end),
-
-	-- Custom key bindings
-	awful.key({ mod_key }, "l", function() awful.spawn("xdg-screensaver lock") end),
-	awful.key({ mod_key }, "b", function() awful.spawn(browser) end),
-	awful.key({ mod_key }, "d", function() awful.spawn(dictionary) end),
-	awful.key({ mod_key }, "f", function() awful.spawn(terminal .. terminal_args  .. " -c " .. file_manager) end),
-	awful.key({ mod_key, "Control" }, "n", function()
-			local c_restore = awful.client.restore() -- Restore the minimize window and focus it
-			if c_restore then
-				client.focus = c_restore
-				c_restore:raise()
-			end
-		end),
-	awful.key({ }, "Print", function()
-			os.execute("import -window root ~/Pictures/$(date -Iseconds).png") -- Use imagemagick tools
-			naughty.notify({
-				title = "Screen Shot",
-				text = "Take the fullscreen screenshot success!\n"
-						.. "Screenshot saved in ~/Pictures.",
-				bg = color_naughty_bg,
-				fg = beautiful.fg_focus
-			})
-		end),
-	awful.key({ mod_key }, "Print", function()
-			os.execute("import ~/Pictures/$(date -Iseconds).png")
-			naughty.notify({
-				title = "Screen Shot",
-				text = "Please select window to take the screenshot...\n"
-						.. "Screenshot will be saved in ~/Pictures.",
-				bg = color_naughty_bg,
-				fg = beautiful.fg_focus
-			})
-		end),
-	awful.key({ }, "XF86MonBrightnessUp", function()
-			os.execute("xbacklight + 10")
-			brightness_notify(true)
-		end),
-	awful.key({ }, "XF86MonBrightnessDown", function()
-			os.execute("xbacklight - 10")
-			brightness_notify(false)
-		end)
-)
-
-local client_keys = awful.util.table.join(
-	awful.key({ mod_key }, "a", function(c) c.fullscreen = not c.fullscreen end),
-	awful.key({ mod_key }, "w", function(c) c:kill() end),
-	awful.key({ mod_key, "Control" }, "space", awful.client.floating.toggle),
-	awful.key({ mod_key, "Control" }, "Return", function(c) c:swap(awful.client.getmaster()) end),
-	awful.key({ mod_key }, "o", awful.client.movetoscreen),
-	awful.key({ mod_key }, "t", function(c) c.ontop = not c.ontop end),
-	awful.key({ mod_key }, "n", function(c) c.minimized = true end),
-	awful.key({ mod_key }, "s", function(c)
-		c.maximized_horizontal = not c.maximized_horizontal
-		c.maximized_vertical   = not c.maximized_vertical
-	end)
-)
-
--- Bind all key numbers to tags
--- Be careful: we use keycodes to make it works on any keyboard layout
--- This should map on the top row of your keyboard, usually 1 to 9
-for i = 1, 4 do
-	global_keys = awful.util.table.join(global_keys,
-		-- View tag only
-		awful.key({ mod_key }, "#" .. i + 9, function()
-				local tag = awful.tag.gettags(mouse.screen)[i]
-				if tag then awful.tag.viewonly(tag) end
-			end),
-		-- Toggle tag
-		awful.key({ mod_key, "Shift" }, "#" .. i + 9, function()
-				local tag = awful.tag.gettags(mouse.screen)[i]
-				if tag then awful.tag.viewtoggle(tag) end
-			end),
-		-- Move client to tag
-		awful.key({ mod_key, "Control" }, "#" .. i + 9, function()
-				if client.focus then
-					local tag = awful.tag.gettags(client.focus.screen)[i]
-					if tag then awful.client.movetotag(tag) end
-				end
-			end),
-		-- Toggle tag
-		awful.key({ mod_key, "Control", "Shift" }, "#" .. i + 9, function()
-				if client.focus then
-					local tag = awful.tag.gettags(client.focus.screen)[i]
-					if tag then awful.client.toggletag(tag) end
-				end
-			end))
-end
-
 -- }}}
 
 
@@ -474,7 +294,7 @@ task_list.buttons = awful.util.table.join(
 		end)
 )
 
--- {{{ Vicious
+-- {{ Vicious
 
 -- Battery state
 local battery_widget = wibox.widget.textbox()
@@ -482,10 +302,10 @@ local battery_widget = wibox.widget.textbox()
 -- Register battery widget
 vicious.register(battery_widget, vicious.widgets.bat,
 	function(_, args)
-		local battery_percent = args[2]
-		local battery_color = battery_percent >= 60 and "green" or battery_percent >= 20 and "yellow" or "red"
-		return "♨<span color='" .. battery_color .. "'>" .. battery_percent .. "%(" .. args[1] .. ")</span> "
-	end, 61, "BAT0"
+		local status, percent = args[1], args[2]
+		local color = percent >= 60 and "green" or percent >= 20 and "yellow" or "red"
+		return "♨<span color='" .. color .. "'>" .. percent .. "%(" .. status .. ")</span> "
+	end, 50, "BAT0"
 )
 
 -- Volume state
@@ -494,56 +314,12 @@ local volume_widget = wibox.widget.textbox()
 -- Register volume widget
 vicious.register(volume_widget, vicious.contrib.pulse,
 	function(_, args)
-		local volume_state = args[1]
-		return "♫<span color='white'>" .. volume_state .. "%(" .. args[2] .. ")</span> "
+		local percent, status = args[1], args[2]
+		return "♫<span color='white'>" .. percent .. "%(" .. status .. ")</span> "
 	end
 )
 
--- Volume notify function
-function volume_notify(isRaise)
-	local volume, status = vicious.contrib.pulse()[1], ""
-	for i = 1, 10 do
-		status = i <= volume / 10 and status .. " |" or status .. " _"
-	end
-	naughty.notify({
-		title = "Volume changed",
-		text = "Volume " .. (isRaise and "rise up" or "lower") .. " ...\n"
-				.. "[" .. status ..  " ] " .. volume .. "%",
-		bg = color_naughty_bg,
-		fg = beautiful.fg_focus
-	})
-end
-
--- Volume key binding
-global_keys = awful.util.table.join(global_keys,
-	awful.key({ }, "XF86AudioMute", function()
-		vicious.contrib.pulse.toggle()
-		naughty.notify({
-			title = "Sound state changed",
-			text = "Sound state change to Mute/Unmute...",
-			bg = color_naughty_bg,
-			fg = beautiful.fg_focus
-		})
-	end),
-	awful.key({ }, "XF86AudioRaiseVolume", function()
-		vicious.contrib.pulse.add(5)
-		volume_notify(true)
-	end),
-	awful.key({ }, "XF86AudioLowerVolume", function()
-		vicious.contrib.pulse.add(-5)
-		volume_notify(false)
-	end),
-	awful.key({ mod_key }, "XF86AudioRaiseVolume", function()
-		vicious.contrib.pulse.add(1)
-		volume_notify(true)
-	end),
-	awful.key({ mod_key }, "XF86AudioLowerVolume", function()
-		vicious.contrib.pulse.add(-1)
-		volume_notify(false)
-	end)
-)
-
--- }}}
+-- }}
 
 -- Add widgetboxs in each screen
 for s = 1, screen.count() do
@@ -592,12 +368,230 @@ for s = 1, screen.count() do
 	widget_box[s].widget = layout
 
 end
+
+-- }}}
+
+
+
+-- {{{ Mouse bindings
+
+root.buttons(
+	awful.util.table.join(
+		awful.button({ }, 3, function() main_menu:toggle() end),
+		awful.button({ }, 4, awful.tag.viewprev),
+		awful.button({ }, 5, awful.tag.viewnext)
+	)
+)
+
+-- }}}
+
+
+
+-- {{{ Global key bindings
+
+-- Brightness notify function
+function brightness_notify(isBrightnessUp)
+	local brightness, status = io.popen("xbacklight -get"):read(), ""
+	for i = 1, 10 do
+		status = i <= brightness / 10 and status .. " |" or status .. " _"
+	end
+	brightness_notify_id = naughty.notify({
+		title = "Brightness " .. (isBrightnessUp and "up" or "down"),
+		text = "Change background brightness ...\n"
+				.. "[" .. status ..  " ] " .. brightness.. "%",
+		replaces_id = brightness_notify_id
+	}).id
+end
+
+-- Volume notify function
+function volume_notify(isRaise)
+	local volume, status = vicious.contrib.pulse()[1], ""
+	for i = 1, 10 do
+		status = i <= volume / 10 and status .. " |" or status .. " _"
+	end
+	volume_notify_id = naughty.notify({
+		title = "Volume changed",
+		text = "Volume " .. (isRaise and "rise up" or "lower") .. " ...\n"
+				.. "[" .. status ..  " ] " .. volume .. "%",
+		replaces_id = volume_notify_id
+	}).id
+end
+
+local global_keys = awful.util.table.join(
+
+	awful.key({ mod_key }, "Left", awful.tag.viewprev),
+	awful.key({ mod_key }, "Right", awful.tag.viewnext),
+	awful.key({ mod_key }, "Escape", awful.tag.history.restore),
+
+	awful.key({ mod_key }, "j", function()
+			awful.client.focus.byidx(1)
+			if client.focus then client.focus:raise() end
+		end),
+	awful.key({ mod_key }, "k", function()
+			awful.client.focus.byidx(-1)
+			if client.focus then client.focus:raise() end
+		end),
+	awful.key({ mod_key }, "m", function() main_menu:show() end),
+
+	-- Layout manipulation
+	awful.key({ mod_key, "Shift" }, "j", function() awful.client.swap.byidx(1) end),
+	awful.key({ mod_key, "Shift" }, "k", function() awful.client.swap.byidx(-1) end),
+	awful.key({ mod_key, "Control" }, "j", function() awful.screen.focus_relative(1) end),
+	awful.key({ mod_key, "Control" }, "k", function() awful.screen.focus_relative(-1) end),
+	awful.key({ mod_key }, "u", awful.client.urgent.jumpto),
+	awful.key({ mod_key }, "Tab", function()
+			awful.client.focus.history.previous()
+			if client.focus then client.focus:raise() end
+		end),
+
+	-- Standard program
+	awful.key({ mod_key }, "Return", function() awful.spawn(terminal .. terminal_args) end),
+	awful.key({ mod_key, "Control" }, "r", awesome.restart),
+	awful.key({ mod_key, "Control" }, "q", awesome.quit),
+
+	awful.key({ mod_key }, "space", function()
+			awful.layout.inc(layouts, 1)
+			layout_notify_id = naughty.notify({
+				title = 'Layout Change',
+				text = "The current layout is [" .. awful.layout.getname() .. "]!",
+				replaces_id = layout_notify_id
+			}).id
+		end),
+	awful.key({ mod_key, "Shift" }, "space", function()
+			awful.layout.inc(layouts, -1)
+			layout_notify_id = naughty.notify({
+				title = 'Layout Change',
+				text = "The current layout is [" .. awful.layout.getname() .. "]!",
+				replaces_id = layout_notify_id
+			}).id
+		end),
+
+	-- Prompt
+	awful.key({ mod_key }, "r", function() prompt_box[mouse.screen.index]:run() end, {
+			description = "run prompt", group = "launcher"
+		}),
+	awful.key({ mod_key }, "x", function()
+			awful.prompt.run({ prompt = "Run Lua code: " },
+			prompt_box[mouse.screen.index].widget,
+			awful.util.eval, nil,
+			awful.util.getdir("cache") .. "/history_eval")
+		end),
+
+	-- Menubar
+	awful.key({ mod_key }, "p", function() menubar.show() end),
+
+	-- Custom key bindings
+	awful.key({ mod_key }, "l", function()
+		-- Lock screen when use AC Power, suspend system when use Battery
+		awful.spawn(vicious.call(vicious.widgets.bat, "$1", "BAT0") == "−"
+				and "systemctl suspend" or "xdg-screensaver lock")
+	end),
+	awful.key({ mod_key }, "b", function() awful.spawn(browser) end),
+	awful.key({ mod_key }, "d", function() awful.spawn(dictionary) end),
+	awful.key({ mod_key }, "f", function() awful.spawn(terminal .. terminal_args  .. " -c " .. file_manager) end),
+	awful.key({ mod_key, "Control" }, "n", function()
+			local c_restore = awful.client.restore() -- Restore the minimize window and focus it
+			if c_restore then
+				client.focus = c_restore
+				c_restore:raise()
+			end
+		end),
+
+	-- Screen shot key bindings
+	awful.key({ }, "Print", function()
+			os.execute("import -window root ~/Pictures/$(date -Iseconds).png") -- Use imagemagick tools
+			naughty.notify({
+				title = "Screen Shot",
+				text = "Take the fullscreen screenshot success!\n"
+						.. "Screenshot saved in ~/Pictures."
+			})
+		end),
+	awful.key({ mod_key }, "Print", function()
+			os.execute("import ~/Pictures/$(date -Iseconds).png")
+			naughty.notify({
+				title = "Screen Shot",
+				text = "Please select window to take the screenshot...\n"
+						.. "Screenshot will be saved in ~/Pictures."
+			})
+		end),
+
+	-- Brightness key bindings
+	awful.key({ }, "XF86MonBrightnessUp", function()
+			os.execute("xbacklight + 10")
+			brightness_notify(true)
+		end),
+	awful.key({ }, "XF86MonBrightnessDown", function()
+			os.execute("xbacklight - 10")
+			brightness_notify(false)
+		end),
+
+	-- Volume key bindings
+	awful.key({ }, "XF86AudioMute", function()
+		vicious.contrib.pulse.toggle()
+		volume_notify_id = naughty.notify({
+			title = "Volume changed",
+			text = "Sound state changed ["
+					.. (vicious.contrib.pulse()[1] > 0 and "ON" or "OFF") .. "] !",
+			replaces_id = volume_notify_id
+		}).id
+	end),
+	awful.key({ }, "XF86AudioRaiseVolume", function()
+		vicious.contrib.pulse.add(5)
+		volume_notify(true)
+	end),
+	awful.key({ }, "XF86AudioLowerVolume", function()
+		vicious.contrib.pulse.add(-5)
+		volume_notify(false)
+	end),
+	awful.key({ mod_key }, "XF86AudioRaiseVolume", function()
+		vicious.contrib.pulse.add(1)
+		volume_notify(true)
+	end),
+	awful.key({ mod_key }, "XF86AudioLowerVolume", function()
+		vicious.contrib.pulse.add(-1)
+		volume_notify(false)
+	end)
+)
+
+-- Bind all key numbers to tags
+-- Be careful: we use keycodes to make it works on any keyboard layout
+-- This should map on the top row of your keyboard, usually 1 to 9
+for i = 1, 4 do
+	global_keys = awful.util.table.join(global_keys,
+		-- View tag only
+		awful.key({ mod_key }, "#" .. i + 9, function()
+				local tag = awful.tag.gettags(mouse.screen)[i]
+				if tag then awful.tag.viewonly(tag) end
+			end),
+		-- Toggle tag
+		awful.key({ mod_key, "Shift" }, "#" .. i + 9, function()
+				local tag = awful.tag.gettags(mouse.screen)[i]
+				if tag then awful.tag.viewtoggle(tag) end
+			end),
+		-- Move client to tag
+		awful.key({ mod_key, "Control" }, "#" .. i + 9, function()
+				if client.focus then
+					local tag = awful.tag.gettags(client.focus.screen)[i]
+					if tag then awful.client.movetotag(tag) end
+				end
+			end),
+		-- Toggle tag
+		awful.key({ mod_key, "Control", "Shift" }, "#" .. i + 9, function()
+				if client.focus then
+					local tag = awful.tag.gettags(client.focus.screen)[i]
+					if tag then awful.client.toggletag(tag) end
+				end
+			end))
+end
+
+-- Set global keys
+root.keys(global_keys)
+
 -- }}}
 
 
 
 -- {{{ Rules
--- Rules to apply to new clients (through the "manage" signal)
 
 -- Use mod_key with mouse key to move/resize the window
 local client_buttons = awful.util.table.join(
@@ -614,6 +608,21 @@ local client_buttons = awful.util.table.join(
 		end)
 )
 
+local client_keys = awful.util.table.join(
+	awful.key({ mod_key }, "a", function(c) c.fullscreen = not c.fullscreen end),
+	awful.key({ mod_key }, "w", function(c) c:kill() end),
+	awful.key({ mod_key, "Control" }, "space", awful.client.floating.toggle),
+	awful.key({ mod_key, "Control" }, "Return", function(c) c:swap(awful.client.getmaster()) end),
+	awful.key({ mod_key }, "o", awful.client.movetoscreen),
+	awful.key({ mod_key }, "t", function(c) c.ontop = not c.ontop end),
+	awful.key({ mod_key }, "n", function(c) c.minimized = true end),
+	awful.key({ mod_key }, "s", function(c)
+		c.maximized_horizontal = not c.maximized_horizontal
+		c.maximized_vertical   = not c.maximized_vertical
+	end)
+)
+
+-- Rules to apply to new clients (through the "manage" signal)
 awful.rules.rules = {
 	{
 		-- All clients will match this rule
@@ -627,18 +636,7 @@ awful.rules.rules = {
 			buttons = client_buttons
 		}
 	}, {
-		-- Start up terminal in floating mode
-		rule = { instance = terminal },
-		callback = function(c)
-			if awful.layout.get() ~= awful.layout.suit.magnifier then
-				c.floating = true
-			end
-		end
-	}, {
 		rule = { class = "jetbrains-idea" },
-		properties = { tag = tags[4] }
-	}, {
-		rule = { class = "NetBeans IDE 8.1" },
 		properties = { tag = tags[4] }
 	}, {
 		rule = { class = "QtCreator" },
@@ -648,6 +646,7 @@ awful.rules.rules = {
 		properties = { tag = tags[4] }
 	}
 }
+
 -- }}}
 
 
@@ -676,13 +675,23 @@ client.connect_signal("manage", function(c, startup)
 
 client.connect_signal("focus", function(c)
 
-		-- Minimize all floating windows when change the focus to other normal window in tiles layout
-		if not c.floating then
-			for _, window in pairs(awful.client.visible(c.screen)) do
-				if window.floating and not window.ontop then  -- Ingnore when floating window is ontop
-					window.minimized = true
+		for _, window in pairs(c.screen.clients) do
+
+			-- Set terminal floating
+			if window.instance == "vte" then
+				if awful.layout.get() == awful.layout.suit.magnifier then
+					window.floating = false
+				else
+					window.floating = true
 				end
 			end
+
+			-- Minimize all floating windows when change the focus to other normal window in tiles layout
+			 -- Ingnore when floating window is ontop
+			if not c.floating and window.floating and not window.ontop then
+				window.minimized = true
+			end
+
 		end
 
 		c.border_color = beautiful.border_focus
@@ -694,9 +703,5 @@ client.connect_signal("unfocus", function(c)
 		c.border_color = beautiful.border_normal
 
 	end)
+
 -- }}}
-
-
-
--- Set keys
-root.keys(global_keys)

@@ -5,6 +5,7 @@ adwaita-icon-theme
 alsa-lib
 anthy
 archlinux-keyring
+aria2
 at-spi2-atk
 at-spi2-core
 atk
@@ -50,7 +51,6 @@ dnssec-anchors
 e2fsprogs
 efibootmgr
 efivar
-emacs
 expat
 faad2
 fcitx
@@ -80,7 +80,6 @@ gcc
 gcc-libs
 gconf
 gcr
-gd
 gdb
 gdb-common
 gdbm
@@ -221,7 +220,6 @@ libnm-glib
 libnotify
 libogg
 libomxil-bellagio
-libotf
 libpcap
 libpciaccess
 libpgm
@@ -321,8 +319,6 @@ lua-lgi
 lua52
 lz4
 lzo
-m17n-db
-m17n-lib
 make
 man-db
 man-pages
@@ -447,6 +443,7 @@ tdb
 texinfo
 thunderbird
 time
+tree
 tslib
 ttf-dejavu
 tzdata
@@ -466,7 +463,6 @@ vte-common
 wayland
 wayland-protocols
 webrtc-audio-processing
-wget
 which
 wiredtiger
 wpa_supplicant

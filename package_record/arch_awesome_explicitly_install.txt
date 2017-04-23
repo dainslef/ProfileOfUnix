@@ -1,10 +1,10 @@
 abs
+aria2
 awesome
 boost
 cargo
 ctags
 efibootmgr
-emacs
 fcitx-anthy
 fcitx-configtool
 fcitx-gtk2
@@ -21,6 +21,7 @@ google-chrome
 gparted
 grub
 gvim
+imagemagick
 iputils
 light-locker
 lightdm-gtk-greeter
@@ -59,12 +60,12 @@ systemd-sysvcompat
 tcpdump
 thunderbird
 time
+tree
 vicious
 virtualbox
 visual-studio-code
 vlc
 vte
-wget
 xcompmgr
 xdg-user-dirs
 xf86-video-intel

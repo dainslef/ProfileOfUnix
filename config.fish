@@ -26,7 +26,6 @@ function env_config
 		# Check OS type and set the different environment variables
 		if [ (uname) = "Darwin" ] # Darwin kernel means in macOS
 
-			set vscode "/Users/$default_user/Applications/Develop/Visual\ Studio\ Code.app/Contents/MacOS/Electron"
 			set python_version (python3 -V | awk -F' ' '{ print $2 }' | awk -F'.' '{ print $1 "." $2 }')
 			set pip_bin ~/Library/Python/$python_version/bin
 
@@ -35,11 +34,9 @@ function env_config
 
 		else if [ (uname) = "Linux" ]
 
-			set vscode /home/$default_user/Public/VSCode-linux-x64/code
 			set pip_bin ~/.local/bin
 
 			# For custom IDE alias in Linux
-			alias netbeans ~/Public/netbeans/bin/netbeans
 			alias idea ~/Public/idea-IU/bin/idea.sh
 			alias eclipse ~/Public/eclipse/eclipse
 
@@ -47,9 +44,6 @@ function env_config
 
 		# Set scala activator path
 		alias activator ~/Public/activator-dist/bin/activator
-
-		# Set visual studio code path
-		alias code $vscode
 
 		# Set python pip package path
 		if [ -e $pip_bin ]
@@ -91,7 +85,7 @@ function theme_config
 
 		# Set theme color for bobthefish
 		# Override default greeting at ~/.config/fish/functions/fish_greeting.fish or refine function
-		set -g theme_color_scheme terminal2-light-black
+		set -g theme_color_scheme light
 		set -g theme_date_format "+%b-%d [%a] %R:%S"
 
 	end

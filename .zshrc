@@ -49,7 +49,6 @@ function env_config()
 		# Check OS type and set the different environment variables
 		if [ $(uname) = "Darwin" ]; then # Darwin kernel means in macOS
 
-			local vscode="/Users/$DEFAULT_USER/Applications/Develop/Visual\ Studio\ Code.app/Contents/MacOS/Electron"
 			local python_version=`echo $(python3 -V) | awk -F' ' '{ print $2 }' | awk -F'.' '{ print $1 "." $2 }'`
 			local pip_bin=~/Library/Python/$python_version/bin
 
@@ -58,11 +57,9 @@ function env_config()
 
 		elif [ $(uname) = "Linux" ]; then
 
-			local vscode=/home/$DEFAULT_USER/Public/VSCode-linux-x64/code
 			local pip_bin=~/.local/bin
 
 			# For custom IDE alias in Linux
-			alias netbeans=~/Public/netbeans/bin/netbeans
 			alias idea=~/Public/idea-IU/bin/idea.sh
 			alias eclipse=~/Public/eclipse/eclipse
 
@@ -73,9 +70,6 @@ function env_config()
 
 		# Set scala activator path
 		alias activator=~/Public/activator-dist/bin/activator
-
-		# Set visual studio code path
-		alias code=$vscode
 
 		# Set python pip package path
 		if [ -e $pip_bin ]; then

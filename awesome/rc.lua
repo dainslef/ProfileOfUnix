@@ -555,26 +555,26 @@ for i = 1, #tags do
 	global_keys = awful.util.table.join(global_keys,
 		-- View tag only
 		awful.key({ mod_key }, "#" .. i + 9, function()
-			local tag = awful.tag.gettags(mouse.screen)[i]
-			if tag then awful.tag.viewonly(tag) end
+			local tag = mouse.screen.tags[i]
+			if tag then tag:view_only() end
 		end),
 		-- Toggle tag
 		awful.key({ mod_key, "Shift" }, "#" .. i + 9, function()
-			local tag = awful.tag.gettags(mouse.screen)[i]
+			local tag = mouse.screen.tags[i]
 			if tag then awful.tag.viewtoggle(tag) end
 		end),
 		-- Move client to tag
 		awful.key({ mod_key, "Control" }, "#" .. i + 9, function()
 			if client.focus then
-				local tag = awful.tag.gettags(client.focus.screen)[i]
-				if tag then awful.client.movetotag(tag) end
+				local tag = client.focus.screen.tags[i]
+				if tag then client.focus:move_to_tag(tag) end
 			end
 		end),
 		-- Toggle tag
 		awful.key({ mod_key, "Control", "Shift" }, "#" .. i + 9, function()
 			if client.focus then
-				local tag = awful.tag.gettags(client.focus.screen)[i]
-				if tag then awful.client.toggletag(tag) end
+				local tag = client.focus.screen.tags[i]
+				if tag then client.focus:toggle_tag(tag) end
 			end
 		end)
 	)
@@ -671,8 +671,8 @@ end)
 client.connect_signal("focus", function(c)
 
 	if not c.floating then
+		-- Set all floating windows lower when focus to a unfloating window
 		for _, window in pairs(c.screen.clients) do
-			-- Set all floating windows lower when focus to a unfloating window
 			if window.floating then window:lower() end
 		end
 	else

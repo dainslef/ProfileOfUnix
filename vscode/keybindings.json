@@ -1,5 +1,6 @@
 // Place your key bindings in this file to overwrite the defaults
 [
+	// User key bindings
 	{
 		"key": "numpad7",
 		"command": "cursorHome",
@@ -159,5 +160,27 @@
 		"key": "ctrl+shift+i",
 		"command": "editor.action.formatDocument",
 		"when": "editorHasDocumentFormattingProvider && editorTextFocus && !editorReadonly"
+	},
+
+	// Remove no need key bindings
+	{
+		"key": "ctrl+numpad_add",
+		"command": "-workbench.action.zoomIn"
+	},
+	{
+		"key": "ctrl+shift+=",
+		"command": "-workbench.action.zoomIn"
+	},
+	{
+		"key": "ctrl+numpad_subtract",
+		"command": "-workbench.action.zoomOut"
+	},
+	{
+		"key": "ctrl+=",
+		"command": "-workbench.action.zoomIn"
+	},
+	{
+		"key": "ctrl+-",
+		"command": "-workbench.action.zoomOut"
 	}
 ]

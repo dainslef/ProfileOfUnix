@@ -64,6 +64,8 @@ local theme = beautiful.get()
 -- Custom theme settings, border and font
 theme.border_width = 2
 theme.font = "Dejavu Sans 10"
+theme.master_width_factor = 0.6 -- Set the master window percent
+theme.useless_gap = 5 -- Set the window gap
 
 -- Color settings, the last two bits are alpha channels
 local color_transparent = "#00000000"
@@ -75,10 +77,11 @@ theme.bg_normal = color_transparent -- Set background transparent
 theme.bg_minimize = color_transparent -- Set the minimize color of taskbar
 theme.menu_bg_normal = color_menu_bg
 theme.menu_fg_normal = theme.fg_focus
+theme.menu_border_color = theme.border_focus
 theme.taglist_bg_focus = color_task_tag_focus -- Set the focus color of taglist
 theme.tasklist_bg_focus = color_task_tag_focus -- Set the focus color of taskbar
 theme.notification_bg = color_naughty_bg
-theme.notification_fg = beautiful.fg_focus
+theme.notification_fg = theme.fg_focus
 
 -- This is used later as the default terminal and editor to run
 local mail = "thunderbird"
@@ -120,8 +123,8 @@ local layouts = {
 
 -- {{{ Load auto run apps.
 
-function run_once(prg)
-	awful.spawn.with_shell("pgrep -u $USER -x " .. prg .. " or (" .. prg .. ")")
+function run_once(cmd)
+	awful.spawn.with_shell("pgrep -u $USER -x " .. cmd .. "; or " .. cmd)
 end
 
 local auto_run_list = {
@@ -132,8 +135,8 @@ local auto_run_list = {
 	-- "blueman-applet", -- Use bluetooth
 }
 
-for _, cmd in pairs(auto_run_list) do
-	run_once(cmd)
+for i = 1, #auto_run_list do
+	run_once(auto_run_list[i])
 end
 
 -- }}}
@@ -171,8 +174,6 @@ for s = 1, screen.count() do
 	for i = 1, #tag_properties do
 		tags[i] = awful.tag.add(tag_properties[i][1], {
 			screen = s,
-			gap_single_client = true,
-			gap = 5,
 			layout = tag_properties[i][2],
 			selected = i == 1 and true or false -- Only focus on index one.
 		})
@@ -271,18 +272,18 @@ task_list.buttons = awful.util.table.join(
 			-- Without this, the following
 			-- :isvisible() makes no sense
 			c.minimized = false
-			if not c:isvisible() then awful.tag.viewonly(c.first_tag) end
+			if not c:isvisible() then c.first_tag:view_only() end
 			-- This will also un-minimize
 			-- the client, if needed
 			client.focus = c
 		end
 	end),
 	awful.button({ }, 3, function()
-		if instance then
-			instance:hide()
-			instance = nil
+		if task_menu then
+			task_menu:hide()
+			task_menu = nil
 		else
-			instance = awful.menu.clients({ theme = { width = 250 } })
+			task_menu = awful.menu.clients({ theme = { width = 250 } })
 		end
 	end),
 	awful.button({ }, 4, function() awful.client.focus.byidx(1) end),
@@ -608,6 +609,7 @@ local client_buttons = awful.util.table.join(
 local client_keys = awful.util.table.join(
 	awful.key({ mod_key }, "w", function(c) c:kill() end),
 	awful.key({ mod_key }, "t", function(c) c.ontop = not c.ontop end),
+	awful.key({ mod_key }, "s", function(c) c.maximized = not c.maximized end),
 	awful.key({ mod_key }, "m", function(c) c.fullscreen = not c.fullscreen end),
 	awful.key({ mod_key }, "n", function(c) c.minimized = true end),
 	awful.key({ mod_key, "Control" }, "m", function(c) awful.client.setmaster(c) end),
@@ -688,6 +690,19 @@ end)
 client.connect_signal("unfocus", function(c)
 
 	c.border_color = beautiful.border_normal
+
+end)
+
+client.connect_signal("mouse::enter", function(c)
+
+	-- Hide main menu when focus other window
+	main_menu:hide()
+
+	-- Hide task menu when focus other window
+	if task_menu then
+		task_menu:hide()
+		task_menu = nil
+	end
 
 end)
 

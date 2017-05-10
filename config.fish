@@ -42,9 +42,6 @@ function env_config
 
 		end
 
-		# Set scala activator path
-		alias activator ~/Public/activator-dist/bin/activator
-
 		# Set python pip package path
 		if [ -e $pip_bin ]
 			set PATH $PATH $pip_bin

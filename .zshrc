@@ -68,9 +68,6 @@ function env_config()
 		# Set golang path
 		export GOPATH=~/Public/Go
 
-		# Set scala activator path
-		alias activator=~/Public/activator-dist/bin/activator
-
 		# Set python pip package path
 		if [ -e $pip_bin ]; then
 			PATH+=:$pip_bin

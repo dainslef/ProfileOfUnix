@@ -47,6 +47,7 @@ qt5-doc
 qt5-webkit
 qtcreator
 ruby
+sbt
 scala
 sed
 stardict

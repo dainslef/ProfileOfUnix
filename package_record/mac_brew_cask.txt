@@ -1,0 +1,16 @@
+appcleaner
+blender
+filezilla
+flash-npapi
+google-chrome
+intellij-idea
+iterm2
+java
+macdown
+onedrive
+qq
+qt-creator
+the-unarchiver
+virtualbox
+visual-studio-code
+vlc

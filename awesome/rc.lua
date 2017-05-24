@@ -1,12 +1,11 @@
 -- Load library
 require("awful.autofocus")
+local awful = require("awful")
 local gears = require("gears")
 local wibox = require("wibox")
-local beautiful = require("beautiful")
 local naughty = require("naughty")
 local menubar = require("menubar")
-local awful = require("awful")
-awful.rules = require("awful.rules")
+local beautiful = require("beautiful")
 
 -- Load vicious widgets
 local vicious = require("vicious")
@@ -301,7 +300,7 @@ vicious.register(battery_widget, vicious.widgets.bat,
 		local status, percent = args[1], args[2]
 		local color = percent >= 60 and "green" or percent >= 20 and "yellow" or "red"
 		return "<span color='" .. color .. "'>" .. percent .. "%(" .. status .. ")</span> "
-	end, 50, "BAT0"
+	end, 29, "BAT0"
 )
 
 -- Volume state

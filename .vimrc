@@ -117,6 +117,7 @@ Plugin 'vim-ruby/vim-ruby' " ruby插件
 Plugin 'tpope/vim-rails' " ROR插件
 Plugin 'plasticboy/vim-markdown' " markdown语法高亮插件
 Plugin 'Raimondi/delimitMate' " 符号智能补全插件
+Plugin 'udalov/kotlin-vim' " Kotlin语法高亮
 " Plugin 'klen/python-mode' " python插件
 " Plugin 'fholgado/minibufexpl.vim' " 窗口标签插件，功能已由vim-airline提供
 " Plugin 'Lokaltog/vim-powerline' " 来自github的vim插件，写成这样的格式

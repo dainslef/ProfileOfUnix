@@ -1,5 +1,4 @@
 a52dec
-abs
 acl
 adwaita-icon-theme
 alsa-lib
@@ -103,6 +102,7 @@ gparted
 gperftools
 gpgme
 gpm
+gradle
 graphite
 grep
 groff
@@ -117,11 +117,11 @@ gtk2
 gtk3
 gtkmm
 guile
+guile2.0
 gvfs
 gvim
 gzip
 harfbuzz
-hdf5
 hicolor-icon-theme
 http-parser
 hunspell
@@ -150,6 +150,7 @@ kbd
 kbproto
 keyutils
 kmod
+kotlin
 krb5
 lame
 lcms2
@@ -214,6 +215,7 @@ libmpeg2
 libndp
 libnewt
 libnftnl
+libnghttp2
 libnl
 libnm
 libnm-glib
@@ -309,14 +311,14 @@ lightdm
 lightdm-gtk-greeter
 linux-api-headers
 linux-firmware
-linux-pf
-linux-pf-headers
+linux-lts
+linux-lts-headers
 lldb
 llvm-libs
+lm_sensors
 lsb-release
 lua
 lua-lgi
-lua52
 lz4
 lzo
 make
@@ -324,7 +326,6 @@ man-db
 man-pages
 mariadb
 mariadb-clients
-maven
 mesa
 mime-types
 minizip
@@ -340,12 +341,10 @@ nano
 nasm
 ncurses
 neofetch
-netcdf
 nettle
 network-manager-applet
 networkmanager
 nm-connection-editor
-nmap
 nodejs
 npm
 npth
@@ -358,6 +357,7 @@ openjpeg
 openjpeg2
 openssh
 openssl
+openssl-1.0
 opus
 orc
 os-prober
@@ -410,10 +410,10 @@ ranger
 readline
 recordproto
 renderproto
-rsync
 rtkit
 ruby
 rust
+sbt
 scala
 schroedinger
 scrnsaverproto
@@ -466,7 +466,8 @@ webrtc-audio-processing
 which
 wiredtiger
 wpa_supplicant
-wxgtk
+wxgtk-common
+wxgtk2
 x265
 xcb-proto
 xcb-util

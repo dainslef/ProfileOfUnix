@@ -386,30 +386,44 @@ root.buttons(
 
 -- Brightness notify function
 function brightness_notify(isBrightnessUp)
-	local brightness, status = io.popen("xbacklight -get"):read(), ""
-	for i = 1, 10 do
-		status = i <= brightness / 10 and status .. " |" or status .. " _"
+
+	-- Define the call back function for brightness
+	function call_back(brightness, _, _, _)
+		local status = ""
+		for i = 1, 20 do
+			status = i <= brightness / 5 and status .. " |" or status .. " _"
+		end
+		brightness_notify_id = naughty.notify({
+			title = "☀️ Brightness changed ",
+			text = "Change background brightness "
+					.. (isBrightnessUp and "up ⬆️" or "down ⬇") .. "\n"
+					.. "[" .. status ..  " ] "
+					.. string.format("%.2f", tonumber(brightness)) .. " %",
+			replaces_id = brightness_notify_id
+		}).id
 	end
-	brightness_notify_id = naughty.notify({
-		title = "☀️ Brightness changed ",
-		text = "Change background brightness " .. (isBrightnessUp and "up ⬆️" or "down ⬇") .. "\n"
-				.. "[" .. status ..  " ] " .. brightness.. "%",
-		replaces_id = brightness_notify_id
-	}).id
+
+	-- Execute async operate
+	awful.spawn.easy_async("xbacklight -get", call_back)
+
 end
 
 -- Volume notify function
 function volume_notify(isRaise)
+
 	local volume, status = vicious.contrib.pulse()[1], ""
-	for i = 1, 10 do
-		status = i <= volume / 10 and status .. " |" or status .. " _"
+
+	for i = 1, 20 do
+		status = i <= volume / 5 and status .. " |" or status .. " _"
 	end
+
 	volume_notify_id = naughty.notify({
 		title = " Volume changed",
 		text = "Volume " .. (isRaise and "rise up ⬆️" or "lower ⬇") .. "\n"
 				.. "[" .. status ..  " ] " .. volume .. "%",
 		replaces_id = volume_notify_id
 	}).id
+
 end
 
 local global_keys = awful.util.table.join(
@@ -443,7 +457,7 @@ local global_keys = awful.util.table.join(
 	awful.key({ mod_key }, "space", function()
 		awful.layout.inc(layouts, 1)
 		layout_notify_id = naughty.notify({
-			title = 'Layout Change',
+			title = "Layout Change",
 			text = "The current layout is [" .. awful.layout.getname() .. "]!",
 			replaces_id = layout_notify_id
 		}).id
@@ -451,7 +465,7 @@ local global_keys = awful.util.table.join(
 	awful.key({ mod_key, "Control" }, "space", function()
 		awful.layout.inc(layouts, -1)
 		layout_notify_id = naughty.notify({
-			title = 'Layout Change',
+			title = "Layout Change",
 			text = "The current layout is [" .. awful.layout.getname() .. "]!",
 			replaces_id = layout_notify_id
 		}).id
@@ -495,7 +509,7 @@ local global_keys = awful.util.table.join(
 	awful.key({ }, "Print", function()
 		os.execute("import -window root ~/Pictures/$(date -Iseconds).png") -- Use imagemagick tools
 		naughty.notify({
-			title = "Screen Shot",
+			title = " Screen Shot",
 			text = "Take the fullscreen screenshot success!\n"
 					.. "Screenshot saved in ~/Pictures."
 		})
@@ -503,7 +517,7 @@ local global_keys = awful.util.table.join(
 	awful.key({ mod_key }, "Print", function()
 		os.execute("import ~/Pictures/$(date -Iseconds).png")
 		naughty.notify({
-			title = "Screen Shot",
+			title = " Screen Shot",
 			text = "Please select window to take the screenshot...\n"
 					.. "Screenshot will be saved in ~/Pictures."
 		})
@@ -511,11 +525,11 @@ local global_keys = awful.util.table.join(
 
 	-- Brightness key bindings
 	awful.key({ }, "XF86MonBrightnessUp", function()
-		os.execute("xbacklight + 10")
+		os.execute("xbacklight + 5")
 		brightness_notify(true)
 	end),
 	awful.key({ }, "XF86MonBrightnessDown", function()
-		os.execute("xbacklight - 10")
+		os.execute("xbacklight - 5")
 		brightness_notify(false)
 	end),
 
@@ -523,7 +537,7 @@ local global_keys = awful.util.table.join(
 	awful.key({ }, "XF86AudioMute", function()
 		vicious.contrib.pulse.toggle()
 		volume_notify_id = naughty.notify({
-			title = "Volume changed",
+			title = " Volume changed",
 			text = "Sound state changed ["
 					.. (vicious.contrib.pulse()[1] > 0 and "ON" or "OFF") .. "] !",
 			replaces_id = volume_notify_id

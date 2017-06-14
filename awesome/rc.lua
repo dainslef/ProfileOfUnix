@@ -387,24 +387,21 @@ root.buttons(
 -- Brightness notify function
 function brightness_notify(isBrightnessUp)
 
-	-- Define the call back function for brightness
-	function call_back(brightness, _, _, _)
+	-- Execute async brightness config
+	awful.spawn.easy_async("xbacklight -get", function(brightness, _, _, _)
 		local status = ""
 		for i = 1, 20 do
-			status = i <= brightness / 5 and status .. " |" or status .. " _"
+			status = i <= brightness / 5 and status .. " |" or status .. " -"
 		end
 		brightness_notify_id = naughty.notify({
 			title = "☀️ Brightness changed ",
-			text = "Change background brightness "
+			text = "Background brightness "
 					.. (isBrightnessUp and "up ⬆️" or "down ⬇") .. "\n"
 					.. "[" .. status ..  " ] "
-					.. string.format("%.2f", tonumber(brightness)) .. " %",
+					.. string.format("%.f", tonumber(brightness)) .. "%",
 			replaces_id = brightness_notify_id
 		}).id
-	end
-
-	-- Execute async operate
-	awful.spawn.easy_async("xbacklight -get", call_back)
+	end)
 
 end
 
@@ -414,7 +411,7 @@ function volume_notify(isRaise)
 	local volume, status = vicious.contrib.pulse()[1], ""
 
 	for i = 1, 20 do
-		status = i <= volume / 5 and status .. " |" or status .. " _"
+		status = i <= volume / 5 and status .. " |" or status .. " -"
 	end
 
 	volume_notify_id = naughty.notify({

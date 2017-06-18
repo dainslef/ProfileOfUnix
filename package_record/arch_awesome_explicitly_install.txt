@@ -22,13 +22,12 @@ gparted
 gradle
 grub
 gvim
-imagemagick
 iputils
 kotlin
 light-locker
 lightdm-gtk-greeter
-linux-lts
-linux-lts-headers
+linux-lily
+linux-lily-headers
 lldb
 man-db
 man-pages
@@ -54,6 +53,7 @@ ranger
 ruby
 sbt
 scala
+scrot
 sed
 stardict
 strace

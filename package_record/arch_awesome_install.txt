@@ -47,6 +47,7 @@ device-mapper
 diffutils
 dkms
 dnssec-anchors
+double-conversion
 e2fsprogs
 efibootmgr
 efivar
@@ -85,6 +86,7 @@ gdbm
 gdk-pixbuf2
 gettext
 ghc
+giblib
 giflib
 git
 glib-networking
@@ -126,9 +128,9 @@ hicolor-icon-theme
 http-parser
 hunspell
 hwids
+hyphen
 iana-etc
 icu
-imagemagick
 imlib2
 inetutils
 inputproto
@@ -202,7 +204,6 @@ libjpeg-turbo
 libkate
 libksba
 libldap
-liblqr
 libmad
 libmariadbclient
 libmatroska
@@ -311,8 +312,8 @@ lightdm
 lightdm-gtk-greeter
 linux-api-headers
 linux-firmware
-linux-lts
-linux-lts-headers
+linux-lily
+linux-lily-headers
 lldb
 llvm-libs
 lm_sensors
@@ -351,7 +352,6 @@ npth
 nspr
 nss
 ntfs-3g
-ocl-icd
 opencore-amr
 openjpeg
 openjpeg2
@@ -374,6 +374,7 @@ parted
 patch
 pciutils
 pcre
+pcre2
 perl
 perl-error
 pinentry
@@ -417,6 +418,7 @@ sbt
 scala
 schroedinger
 scrnsaverproto
+scrot
 sdl
 sdl2
 sdl_image

@@ -389,18 +389,22 @@ function brightness_notify(isBrightnessUp)
 
 	-- Execute async brightness config
 	awful.spawn.easy_async("xbacklight -get", function(brightness, _, _, _)
+
 		local status = ""
+
 		for i = 1, 20 do
 			status = i <= brightness / 5 and status .. " |" or status .. " -"
 		end
+
 		brightness_notify_id = naughty.notify({
-			title = "☀️ Brightness changed ",
+			title = "☀️ Brightness Change",
 			text = "Background brightness "
 					.. (isBrightnessUp and "up ⬆️" or "down ⬇") .. "\n"
 					.. "[" .. status ..  " ] "
 					.. string.format("%.f", tonumber(brightness)) .. "%",
 			replaces_id = brightness_notify_id
 		}).id
+
 	end)
 
 end
@@ -415,10 +419,22 @@ function volume_notify(isRaise)
 	end
 
 	volume_notify_id = naughty.notify({
-		title = " Volume changed",
+		title = " Volume Change",
 		text = "Volume " .. (isRaise and "rise up ⬆️" or "lower ⬇") .. "\n"
 				.. "[" .. status ..  " ] " .. volume .. "%",
 		replaces_id = volume_notify_id
+	}).id
+
+end
+
+-- Layout changed notify function
+function layout_notify()
+
+	layout_notify_id = naughty.notify({
+		title = " Layout Change",
+		text = "Layout has been changed ...\n"
+			.. "The current layout is [" .. awful.layout.getname() .. "]!",
+		replaces_id = layout_notify_id
 	}).id
 
 end
@@ -453,19 +469,11 @@ local global_keys = awful.util.table.join(
 	-- Change layout
 	awful.key({ mod_key }, "space", function()
 		awful.layout.inc(layouts, 1)
-		layout_notify_id = naughty.notify({
-			title = "Layout Change",
-			text = "The current layout is [" .. awful.layout.getname() .. "]!",
-			replaces_id = layout_notify_id
-		}).id
+		layout_notify()
 	end),
 	awful.key({ mod_key, "Control" }, "space", function()
 		awful.layout.inc(layouts, -1)
-		layout_notify_id = naughty.notify({
-			title = "Layout Change",
-			text = "The current layout is [" .. awful.layout.getname() .. "]!",
-			replaces_id = layout_notify_id
-		}).id
+		layout_notify()
 	end),
 
 	-- Prompt
@@ -504,19 +512,19 @@ local global_keys = awful.util.table.join(
 
 	-- Screen shot key bindings
 	awful.key({ }, "Print", function()
-		os.execute("import -window root ~/Pictures/$(date -Iseconds).png") -- Use imagemagick tools
+		awful.spawn.with_shell("scrot ~/Pictures/(date -Iseconds).png")
 		naughty.notify({
 			title = " Screen Shot",
 			text = "Take the fullscreen screenshot success!\n"
-					.. "Screenshot saved in ~/Pictures."
+					.. "Screenshot saved in dir ~/Pictures."
 		})
 	end),
 	awful.key({ mod_key }, "Print", function()
-		os.execute("import ~/Pictures/$(date -Iseconds).png")
+		awful.spawn.with_shell("scrot -u ~/Pictures/(date -Iseconds).png")
 		naughty.notify({
 			title = " Screen Shot",
-			text = "Please select window to take the screenshot...\n"
-					.. "Screenshot will be saved in ~/Pictures."
+			text = "Take the window screenshot success!\n"
+					.. "Screenshot saved in dir ~/Pictures."
 		})
 	end),
 
@@ -535,7 +543,8 @@ local global_keys = awful.util.table.join(
 		vicious.contrib.pulse.toggle()
 		volume_notify_id = naughty.notify({
 			title = " Volume changed",
-			text = "Sound state changed ["
+			text = "Sound state has been changed ...\n"
+					.. "Current sound state is ["
 					.. (vicious.contrib.pulse()[1] > 0 and "ON" or "OFF") .. "] !",
 			replaces_id = volume_notify_id
 		}).id

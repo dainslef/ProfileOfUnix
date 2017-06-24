@@ -59,7 +59,9 @@ function env_config()
 
 			local pip_bin=~/.local/bin
 
-			# For custom IDE alias in Linux
+			# For custom tools alias in Linux
+			alias stack=~/Public/stack-linux-x86_64-static/stack
+			alias code=~/Public/VSCode-linux-x64/code
 			alias idea=~/Public/idea-IU/bin/idea.sh
 			alias eclipse=~/Public/eclipse/eclipse
 

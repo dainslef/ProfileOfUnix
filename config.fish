@@ -38,9 +38,10 @@ function env_config
 
 			# For custom tools alias in Linux
 			alias stack ~/Public/stack-linux-x86_64-static/stack
-			alias code ~/Public/VSCode-linux-x64/code
-			alias idea ~/Public/idea-IU/bin/idea.sh
-			alias eclipse ~/Public/eclipse/eclipse
+			# Remember "alias" is synatx candy for "function",
+			# alias command can not run at background like "xxx &".
+			function idea; ~/Public/idea-IU/bin/idea.sh $argv & end
+			function code; ~/Public/VSCode-linux-x64/code $argv & end
 
 		end
 

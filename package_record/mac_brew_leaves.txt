@@ -3,11 +3,13 @@ boost
 fish
 gcc
 gdb
-ghc
 gradle
+haskell-stack
+kotlin
 mariadb
 mongodb
 mono
+nmap
 node
 p7zip
 postgresql

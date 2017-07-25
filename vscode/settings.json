@@ -61,7 +61,8 @@
 
 	// C/C++ Configuration
 	"C_Cpp.clang_format_sortIncludes": true,
-	"C_Cpp.clang_format_style": null,
+	"C_Cpp.clang_format_style": "",
+	"C_Cpp.intelliSenseEngine": "Default",
 
 	// C# Configuration
 	"omnisharp.useMono": true,

@@ -197,10 +197,8 @@ local develop_menu = {
 	{ "QtCreator", "qtcreator" },
 	{ "QtAssistant", "assistant-qt5" },
 	{ "QtDesigner", "designer-qt5" },
-	{ "Emacs", "emacs" },
 	{ "GVIM", "gvim" },
-	{ "VSCode", "code" },
-	{ "Eclipse", home_path .. "/Public/eclipse/eclipse" },
+	{ "VSCode", home_path .. "/Public/VSCode-linux-x64/code" },
 	{ "IDEA", home_path .. "/Public/idea-IU/bin/idea.sh" }
 }
 local tools_menu = {
@@ -325,12 +323,6 @@ for s = 1, screen.count() do
 	-- Create an imagebox widget which will contains an icon indicating which layout we're using.
 	-- We need one layoutbox per screen.
 	layout_box[s] = awful.widget.layoutbox(s)
-	layout_box[s]:buttons(awful.util.table.join(
-		awful.button({ }, 1, function() awful.layout.inc(layouts, 1) end),
-		awful.button({ }, 3, function() awful.layout.inc(layouts, -1) end),
-		awful.button({ }, 4, function() awful.layout.inc(layouts, 1) end),
-		awful.button({ }, 5, function() awful.layout.inc(layouts, -1) end)
-	))
 
 	-- Create a taglist widget
 	tag_list[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, tag_list.buttons)
@@ -384,8 +376,12 @@ root.buttons(
 
 -- {{{ Global key bindings
 
--- Brightness notify function
-function brightness_notify(isBrightnessUp)
+-- Brightness change function
+function brightness_change(change)
+
+	isBrightnessUp = change > 0
+	operate = isBrightnessUp and "+" or ""
+	os.execute("xbacklight " .. operate .. change)
 
 	-- Execute async brightness config
 	awful.spawn.easy_async("xbacklight -get", function(brightness, _, _, _)
@@ -409,9 +405,10 @@ function brightness_notify(isBrightnessUp)
 
 end
 
--- Volume notify function
-function volume_notify(isRaise)
+-- Volume change function
+function volume_change(change)
 
+	vicious.contrib.pulse.add(change)
 	local volume, status = vicious.contrib.pulse()[1], ""
 
 	for i = 1, 20 do
@@ -420,15 +417,17 @@ function volume_notify(isRaise)
 
 	volume_notify_id = naughty.notify({
 		title = " Volume Change",
-		text = "Volume " .. (isRaise and "rise up ⬆️" or "lower ⬇") .. "\n"
+		text = "Volume " .. (change > 0 and "rise up ⬆️" or "lower ⬇") .. "\n"
 				.. "[" .. status ..  " ] " .. volume .. "%",
 		replaces_id = volume_notify_id
 	}).id
 
 end
 
--- Layout changed notify function
-function layout_notify()
+-- Layout change function
+function layout_change(change)
+
+	awful.layout.inc(layouts, change)
 
 	layout_notify_id = naughty.notify({
 		title = " Layout Change",
@@ -467,14 +466,8 @@ local global_keys = awful.util.table.join(
 	awful.key({ mod_key, "Control" }, "q", awesome.quit),
 
 	-- Change layout
-	awful.key({ mod_key }, "space", function()
-		awful.layout.inc(layouts, 1)
-		layout_notify()
-	end),
-	awful.key({ mod_key, "Control" }, "space", function()
-		awful.layout.inc(layouts, -1)
-		layout_notify()
-	end),
+	awful.key({ mod_key }, "space", function() layout_change(1) end),
+	awful.key({ mod_key, "Control" }, "space", function() layout_change(-1) end),
 
 	-- Prompt
 	awful.key({ mod_key }, "r", function() prompt_box[mouse.screen.index]:run() end, {
@@ -529,14 +522,8 @@ local global_keys = awful.util.table.join(
 	end),
 
 	-- Brightness key bindings
-	awful.key({ }, "XF86MonBrightnessUp", function()
-		os.execute("xbacklight + 5")
-		brightness_notify(true)
-	end),
-	awful.key({ }, "XF86MonBrightnessDown", function()
-		os.execute("xbacklight - 5")
-		brightness_notify(false)
-	end),
+	awful.key({ }, "XF86MonBrightnessUp", function() brightness_change(5) end),
+	awful.key({ }, "XF86MonBrightnessDown", function() brightness_change(-5) end),
 
 	-- Volume key bindings
 	awful.key({ }, "XF86AudioMute", function()
@@ -549,22 +536,10 @@ local global_keys = awful.util.table.join(
 			replaces_id = volume_notify_id
 		}).id
 	end),
-	awful.key({ }, "XF86AudioRaiseVolume", function()
-		vicious.contrib.pulse.add(5)
-		volume_notify(true)
-	end),
-	awful.key({ }, "XF86AudioLowerVolume", function()
-		vicious.contrib.pulse.add(-5)
-		volume_notify(false)
-	end),
-	awful.key({ mod_key }, "XF86AudioRaiseVolume", function()
-		vicious.contrib.pulse.add(1)
-		volume_notify(true)
-	end),
-	awful.key({ mod_key }, "XF86AudioLowerVolume", function()
-		vicious.contrib.pulse.add(-1)
-		volume_notify(false)
-	end)
+	awful.key({ }, "XF86AudioRaiseVolume", function() volume_change(5) end),
+	awful.key({ }, "XF86AudioLowerVolume", function() volume_change(-5) end),
+	awful.key({ mod_key }, "XF86AudioRaiseVolume", function() volume_change(1) end),
+	awful.key({ mod_key }, "XF86AudioLowerVolume", function() volume_change(-1) end)
 )
 
 -- Bind all key numbers to tags

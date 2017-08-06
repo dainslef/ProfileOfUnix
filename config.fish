@@ -34,21 +34,28 @@ function env_config
 
 		else if [ (uname) = "Linux" ]
 
-			set pip_bin ~/.local/bin
+			# Set haskell stack path
+			set stack_path ~/Public/stack-linux-x86_64-static
 
-			# For custom tools alias in Linux
-			alias stack ~/Public/stack-linux-x86_64-static/stack
-			# Remember "alias" is synatx candy for "function",
+			# Remember "alias" is synatx candy for "function" in fish shell,
 			# alias command can not run at background like "xxx &".
 			function idea; ~/Public/idea-IU/bin/idea.sh $argv & end
 			function code; ~/Public/VSCode-linux-x64/code $argv & end
 
 		end
 
-		# Set python pip package path
+		# Set haskell stack path
+		if [ -e $stack_path ]
+			set PATH $PATH $stack_path
+		end
+
+		# Set python pip package binary path
 		if [ -e $pip_bin ]
 			set PATH $PATH $pip_bin
 		end
+
+		# Set the local binary path
+		set PATH $PATH ~/.local/bin
 
 		# Set golang path
 		# Use "set -x" to create a environment variable

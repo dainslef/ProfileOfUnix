@@ -27,13 +27,12 @@ ca-certificates-utils
 cairo
 cairomm
 cantarell-fonts
-cargo
-cdparanoia
 clang
 cmake
 compositeproto
 coreutils
 cracklib
+cryptsetup
 ctags
 curl
 damageproto
@@ -85,7 +84,6 @@ gdb-common
 gdbm
 gdk-pixbuf2
 gettext
-ghc
 giblib
 giflib
 git
@@ -111,7 +109,6 @@ groff
 grub
 gsettings-desktop-schemas
 gsm
-gst-plugins-base
 gst-plugins-base-libs
 gstreamer
 gtk-update-icon-cache
@@ -120,7 +117,6 @@ gtk3
 gtkmm
 guile
 guile2.0
-gvfs
 gvim
 gzip
 harfbuzz
@@ -128,7 +124,6 @@ hicolor-icon-theme
 http-parser
 hunspell
 hwids
-hyphen
 iana-etc
 icu
 imlib2
@@ -163,14 +158,11 @@ libarchive
 libass
 libassuan
 libasyncns
-libatasmart
 libatomic_ops
 libavc1394
 libbluray
 libcap
-libcddb
-libcdio
-libcdio-paranoia
+libcap-ng
 libcroco
 libcups
 libdaemon
@@ -266,7 +258,6 @@ libutil-linux
 libuv
 libva
 libvdpau
-libvisual
 libvorbis
 libvpx
 libwacom
@@ -312,8 +303,8 @@ lightdm
 lightdm-gtk-greeter
 linux-api-headers
 linux-firmware
-linux-lily
-linux-lily-headers
+linux-zen
+linux-zen-headers
 lldb
 llvm-libs
 lm_sensors
@@ -385,7 +376,6 @@ postgresql
 postgresql-libs
 procps-ng
 protobuf
-psmisc
 pulseaudio
 python
 python2
@@ -398,11 +388,9 @@ qt5-location
 qt5-quickcontrols
 qt5-quickcontrols2
 qt5-script
-qt5-sensors
 qt5-tools
 qt5-webchannel
 qt5-webengine
-qt5-webkit
 qt5-x11extras
 qt5-xmlpatterns
 qtcreator
@@ -449,7 +437,6 @@ tree
 tslib
 ttf-dejavu
 tzdata
-udisks2
 util-linux
 v4l-utils
 vicious
@@ -458,7 +445,6 @@ videoproto
 vim-runtime
 virtualbox
 virtualbox-host-dkms
-visual-studio-code
 vlc
 vte
 vte-common
@@ -469,7 +455,7 @@ which
 wiredtiger
 wpa_supplicant
 wxgtk-common
-wxgtk2
+wxgtk3
 x265
 xcb-proto
 xcb-util
@@ -484,6 +470,7 @@ xdg-user-dirs
 xdg-utils
 xextproto
 xf86-input-libinput
+xf86-input-synaptics
 xf86-video-intel
 xf86miscproto
 xf86vidmodeproto

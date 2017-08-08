@@ -1,7 +1,6 @@
 aria2
 awesome
 boost
-cargo
 cmake
 ctags
 efibootmgr
@@ -13,7 +12,6 @@ fcitx-qt5
 filezilla
 fish
 gdb
-ghc
 git
 gnome-themes-standard
 go
@@ -26,8 +24,8 @@ iputils
 kotlin
 light-locker
 lightdm-gtk-greeter
-linux-lily
-linux-lily-headers
+linux-zen
+linux-zen-headers
 lldb
 man-db
 man-pages
@@ -47,10 +45,10 @@ p7zip
 postgresql
 pulseaudio
 qt5-doc
-qt5-webkit
 qtcreator
 ranger
 ruby
+rust
 sbt
 scala
 scrot
@@ -65,11 +63,11 @@ time
 tree
 vicious
 virtualbox
-visual-studio-code
 vlc
 vte
 xcompmgr
 xdg-user-dirs
+xf86-input-synaptics
 xf86-video-intel
 xorg-server
 xorg-xbacklight

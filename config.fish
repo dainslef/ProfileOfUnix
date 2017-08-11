@@ -1,3 +1,4 @@
+# Fish config should place in ~/.config/fish/config.fish
 # This fish config need to install Oh-My-Fish:
 # $ curl -L https://get.oh-my.fish | fish
 #
@@ -34,19 +35,24 @@ function env_config
 
 		else if [ (uname) = "Linux" ]
 
-			# Set haskell stack path
+			# Set haskell-stack and vscode path
 			set stack_path ~/Public/stack-linux-x86_64-static
+			set vs_code_path ~/Public/VSCode-linux-x64
+
+			# Set haskell-stack alias
+			if [ -e $stack_path ]
+				alias stack $stack_path/stack
+			end
+
+			# Set vscode alias
+			if [ -e $vs_code_path ]
+				function code; $vs_code_path/code $argv & end
+			end
 
 			# Remember "alias" is synatx candy for "function" in fish shell,
 			# alias command can not run at background like "xxx &".
 			function idea; ~/Public/idea-IU/bin/idea.sh $argv & end
-			function code; ~/Public/VSCode-linux-x64/code $argv & end
 
-		end
-
-		# Set haskell stack path
-		if [ -e $stack_path ]
-			set PATH $PATH $stack_path
 		end
 
 		# Set python pip package binary path
@@ -67,7 +73,7 @@ function env_config
 		set -xg LC_ALL en_US.UTF-8
 
 		# Preferred editor for local and remote sessions
-		if [ -n "$SSH_CONNECTION" ]
+		if [ -n $SSH_CONNECTION ]
 			set -xg EDITOR "nano"
 		else
 			set -xg EDITOR "vim"
@@ -81,7 +87,7 @@ end
 function theme_config
 
 	# Set the theme, only in Linux GUI and macOS
-	if [ -n "$DISPLAY" -o (uname) = "Darwin" ]
+	if [ -n $DISPLAY -o (uname) = "Darwin" ]
 		omf theme "bobthefish"
 	else # Use default in Non-GUI environment
 		omf theme "default"
@@ -100,7 +106,7 @@ function theme_config
 end
 
 # Call function if oh-my-fish is installed
-if [ -n "$OMF_PATH" ]
+if [ -n $OMF_PATH ]
 	set_default_user "dainslef"
 	env_config
 	theme_config

@@ -16,6 +16,8 @@ vicious.contrib = require("vicious.contrib")
 -- {{{ Init
 
 -- Custom init command
+awful.spawn.with_shell("xset +dpms") -- Use the power manager
+awful.spawn.with_shell("xset dpms 0 0 1800") -- Set the power manager timeout to 30 minutes
 awful.spawn.with_shell("xset s 1800") -- Set screensaver timeout to 30 mintues
 
 -- }}}
@@ -291,6 +293,8 @@ task_list.buttons = awful.util.table.join(
 
 -- Battery state
 local battery_widget = wibox.widget.textbox()
+local battery_fresh_span = 29 -- Time span for refresh battery widget (seconds)
+local battery_name = "BAT0"
 
 -- Register battery widget
 vicious.register(battery_widget, vicious.widgets.bat,
@@ -298,7 +302,7 @@ vicious.register(battery_widget, vicious.widgets.bat,
 		local status, percent = args[1], args[2]
 		local color = percent >= 60 and "green" or percent >= 20 and "yellow" or "red"
 		return "<span color='" .. color .. "'>" .. percent .. "%(" .. status .. ")</span> "
-	end, 29, "BAT0"
+	end, battery_fresh_span, battery_name
 )
 
 -- Volume state

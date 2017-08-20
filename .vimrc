@@ -5,7 +5,7 @@
 
 syntax enable " 显示语法高亮
 syntax on " 开启文件类型语法检测
-set shell=/usr/bin/bash " 设置默认 shell
+set shell=/bin/bash " 设置默认 shell
 set nocompatible " 关闭 vi 兼容模式
 set number " 显示行号
 set cursorline " 突出显示当前行
@@ -113,6 +113,7 @@ Plugin 'taglist.vim' " 来自github中vim-scripts收集的插件直接写名字,
 Plugin 'winmanager--Fox' " 窗口管理插件
 Plugin 'derekwyatt/vim-scala' " vim默认没有提供scala语言的支持，使用插件添加对scala语言支持
 Plugin 'fatih/vim-go' " golang插件，使用指令:GoInstallBinaries安装补全工具
+Plugin 'rust-lang/rust.vim' " rust插件
 Plugin 'vim-ruby/vim-ruby' " ruby插件
 Plugin 'tpope/vim-rails' " ROR插件
 Plugin 'plasticboy/vim-markdown' " markdown语法高亮插件

@@ -2,7 +2,7 @@
 {
 	"editor.fontFamily": "Monaco, Source Code Pro, Consolas",
 	"editor.rulers": [100],
-	"editor.fontSize": 13,
+	"editor.fontSize": 12,
 	"editor.tabSize": 4,
 	"editor.wordWrap": "on",
 	"editor.wrappingIndent": "same",
@@ -25,7 +25,7 @@
 	"editor.overviewRulerBorder": true,
 
 	"diffEditor.ignoreTrimWhitespace": false,
-	"emmet.triggerExpansionOnTab": false,
+	"emmet.showExpandedAbbreviation": "never",
 
 	"files.eol": "\n",
 	"files.encoding": "utf8",
@@ -44,14 +44,17 @@
 
 	// Update
 	"update.channel": "none",
+
+	// Extensions
 	"extensions.autoUpdate": true,
+	"extensions.ignoreRecommendations": true,
 
 	// Data report
 	"telemetry.enableCrashReporter": false,
 	"telemetry.enableTelemetry": false,
 
 	// Terminal
-	"terminal.integrated.fontSize": 13,
+	"terminal.integrated.fontSize": 12,
 	"terminal.integrated.shell.windows": "cmd.exe",
 	"terminal.integrated.shell.osx": "fish",
 	"terminal.integrated.shell.linux": "fish",
@@ -60,8 +63,8 @@
 	"markdown.previewFrontMatter": "show",
 
 	// C/C++ Configuration
+	"C_Cpp.formatting": "Disabled",
 	"C_Cpp.clang_format_sortIncludes": true,
-	"C_Cpp.clang_format_style": "",
 	"C_Cpp.intelliSenseEngine": "Default",
 
 	// C# Configuration

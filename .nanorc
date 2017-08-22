@@ -7,6 +7,6 @@ set multibuffer
 set nohelp
 set smooth
 
-# In OS X, these options are not be supported
+# In OS X, these options are not be supported, remove theme
 set functioncolor yellow
 include "/usr/share/nano/*.nanorc"

@@ -22,7 +22,7 @@ end
 # Check user, set the custom environment variables
 function env_config
 
-	if [ (whoami) = $default_user ]
+	if [ (whoami) = "$default_user" ]
 
 		# Check OS type and set the different environment variables
 		if [ (uname) = "Darwin" ] # Darwin kernel means in macOS
@@ -61,7 +61,9 @@ function env_config
 		end
 
 		# Set the local binary path
-		set PATH $PATH ~/.local/bin
+		if [ -e ~/.local/bin ]
+			set PATH $PATH ~/.local/bin
+		end
 
 		# Set golang path
 		# Use "set -x" to create a environment variable
@@ -87,20 +89,18 @@ end
 function theme_config
 
 	# Set the theme, only in Linux GUI and macOS
-	if [ -n $DISPLAY -o (uname) = "Darwin" ]
+	if [ -n "$DISPLAY" -o (uname) = "Darwin" ]
 		omf theme "bobthefish"
-	else # Use default in Non-GUI environment
-		omf theme "default"
-	end
-
-	# Check the current theme
-	if [ (cat $OMF_CONFIG/theme) = "bobthefish" ]
-
 		# Set theme color for bobthefish
 		# Override default greeting at ~/.config/fish/functions/fish_greeting.fish or refine function
-		set -g theme_color_scheme light
+		if [ (uname) = "Darwin" ]
+			set -g theme_color_scheme dark
+		else if [ (uname) = "Linux" ]
+			set -g theme_color_scheme light
+		end
 		set -g theme_date_format "+%b-%d [%a] %R:%S"
-
+	else # Use default in Non-GUI environment
+		omf theme "default"
 	end
 
 end
@@ -112,13 +112,6 @@ if [ -n $OMF_PATH ]
 	theme_config
 end
 
-# Delete defined functions and variables
-# Use "-e" means to erase a function/variable
-set -e DEFAULT_USER
-functions -e set_default_user
-functions -e env_config
-functions -e theme_config
-
 
 
 # ------------------------------------------------------------------------------
@@ -127,16 +120,16 @@ functions -e theme_config
 # In fish shell, function which named with "fish_greeting" will override default greeting
 function fish_greeting
 
-	if [ (id -u) -gt 0 ]
+	if [ (whoami) = "$default_user" ]
 		if [ (uname) = "Darwin" ]
 			set show_os_version (uname -srnm)
-		else if [ -n "$DISPLAY" ]
+		else if [ -n $DISPLAY ]
 			set show_os_version (uname -ornm)
 		end
 	end
 
 	# Print welcome message in macOS or Linux GUI
-	if [ -n "$show_os_version" ]
+	if [ -n $show_os_version ]
 		echo -ne "\033[1;30m" # Set greet color
 		echo (uptime)
 		echo " $show_os_version"
@@ -157,3 +150,14 @@ function fish_greeting
 	end
 
 end
+
+
+
+# ------------------------------------------------------------------------------
+# --- Environment clean ---
+
+# Delete defined functions and variables
+# Use "-e" means to erase a function/variable
+functions -e set_default_user
+functions -e env_config
+functions -e theme_config

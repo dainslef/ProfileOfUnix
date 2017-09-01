@@ -509,7 +509,7 @@ local global_keys = awful.util.table.join(
 
 	-- Screen shot key bindings
 	awful.key({ }, "Print", function()
-		awful.spawn.with_shell("scrot ~/Pictures/(date -Iseconds).png")
+		awful.spawn.with_shell("scrot ~/Pictures/(date -Ins).png")
 		naughty.notify({
 			title = " Screen Shot",
 			text = "Take the fullscreen screenshot success!\n"
@@ -517,7 +517,7 @@ local global_keys = awful.util.table.join(
 		})
 	end),
 	awful.key({ mod_key }, "Print", function()
-		awful.spawn.with_shell("scrot -u ~/Pictures/(date -Iseconds).png")
+		awful.spawn.with_shell("scrot -u ~/Pictures/(date -Ins).png")
 		naughty.notify({
 			title = " Screen Shot",
 			text = "Take the window screenshot success!\n"

@@ -3,12 +3,13 @@ boost
 fish
 gcc
 gdb
+go
 gradle
 haskell-stack
 kotlin
 mariadb
-mongodb
 mono
+neofetch
 nmap
 node
 p7zip
@@ -18,4 +19,3 @@ qt
 rust
 sbt
 scala
-screenfetch

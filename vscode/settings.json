@@ -70,12 +70,19 @@
 	// C# Configuration
 	"omnisharp.useMono": true,
 
+	// Golang Configuration
+	"go.formatTool": "gofmt",
+
 	// Language specific editor settings
 	"[scala]": {
 		"editor.insertSpaces": true,
 		"editor.tabSize": 2
 	},
 	"[ruby]": {
+		"editor.insertSpaces": true,
+		"editor.tabSize": 2
+	},
+	"[haskell]": {
 		"editor.insertSpaces": true,
 		"editor.tabSize": 2
 	},

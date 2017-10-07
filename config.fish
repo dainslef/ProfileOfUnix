@@ -40,12 +40,12 @@ function env_config
 			set vs_code_path ~/Public/VSCode-linux-x64
 
 			# Set haskell-stack alias
-			if [ -e $stack_path ]
+			if [ -e "$stack_path" ]
 				alias stack $stack_path/stack
 			end
 
 			# Set vscode alias
-			if [ -e $vs_code_path ]
+			if [ -e "$vs_code_path" ]
 				function code; $vs_code_path/code $argv & end
 			end
 
@@ -56,7 +56,7 @@ function env_config
 		end
 
 		# Set python pip package binary path
-		if [ -e $pip_bin ]
+		if [ -e "$pip_bin" ]
 			set PATH $PATH $pip_bin
 		end
 
@@ -75,7 +75,7 @@ function env_config
 		set -xg LC_ALL en_US.UTF-8
 
 		# Preferred editor for local and remote sessions
-		if [ -n $SSH_CONNECTION ]
+		if [ -n "$SSH_CONNECTION" ]
 			set -xg EDITOR "nano"
 		else
 			set -xg EDITOR "vim"
@@ -106,7 +106,7 @@ function theme_config
 end
 
 # Call function if oh-my-fish is installed
-if [ -n $OMF_PATH ]
+if [ -n "$OMF_PATH" ]
 	set_default_user "dainslef"
 	env_config
 	theme_config
@@ -123,13 +123,13 @@ function fish_greeting
 	if [ (whoami) = "$default_user" ]
 		if [ (uname) = "Darwin" ]
 			set show_os_version (uname -srnm)
-		else if [ -n $DISPLAY ]
+		else if [ -n "$DISPLAY" ]
 			set show_os_version (uname -ornm)
 		end
 	end
 
 	# Print welcome message in macOS or Linux GUI
-	if [ -n $show_os_version ]
+	if [ -n "$show_os_version" ]
 		echo -ne "\033[1;30m" # Set greet color
 		echo (uptime)
 		echo " $show_os_version"

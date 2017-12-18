@@ -3,6 +3,7 @@ awesome
 boost
 cmake
 ctags
+docker
 efibootmgr
 fcitx-anthy
 fcitx-configtool
@@ -30,13 +31,11 @@ lldb
 man-db
 man-pages
 mariadb
-mongodb
 mono
 nano
 nasm
 neofetch
 network-manager-applet
-networkmanager
 npm
 ntfs-3g
 openssh
@@ -49,7 +48,6 @@ qtcreator
 ranger
 ruby
 rust
-sbt
 scala
 scrot
 sed
@@ -63,11 +61,11 @@ time
 tree
 vicious
 virtualbox
+visual-studio-code
 vlc
 vte
 xcompmgr
 xdg-user-dirs
-xf86-input-synaptics
 xf86-video-intel
 xorg-server
 xorg-xbacklight

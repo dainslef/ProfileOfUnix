@@ -18,6 +18,7 @@ binutils
 bluez-libs
 boost
 boost-libs
+bridge-utils
 bzip2
 c-ares
 ca-certificates
@@ -29,6 +30,7 @@ cairomm
 cantarell-fonts
 clang
 cmake
+colord
 compositeproto
 coreutils
 cracklib
@@ -46,6 +48,7 @@ device-mapper
 diffutils
 dkms
 dnssec-anchors
+docker
 double-conversion
 e2fsprogs
 efibootmgr
@@ -99,7 +102,6 @@ go
 gobject-introspection-runtime
 google-chrome
 gparted
-gperftools
 gpgme
 gpm
 gradle
@@ -141,6 +143,7 @@ java-runtime-common
 jdk
 jemalloc
 js
+json-c
 json-glib
 jsoncpp
 kbd
@@ -161,6 +164,7 @@ libasyncns
 libatomic_ops
 libavc1394
 libbluray
+libcanberra
 libcap
 libcap-ng
 libcroco
@@ -187,9 +191,11 @@ libgdiplus
 libglvnd
 libgpg-error
 libgudev
+libgusb
 libice
 libid3tag
 libidn
+libidn2
 libiec61883
 libinput
 libjpeg-turbo
@@ -236,7 +242,6 @@ libsndfile
 libsodium
 libsoup
 libsoxr
-libsrtp
 libssh
 libssh2
 libsystemd
@@ -249,7 +254,6 @@ libtiff
 libtiger
 libtirpc
 libtool
-libtxc_dxtn
 libunistring
 libunwind
 libupnp
@@ -274,7 +278,6 @@ libxdg-basedir
 libxdmcp
 libxext
 libxfixes
-libxfont
 libxfont2
 libxft
 libxi
@@ -308,23 +311,21 @@ linux-zen-headers
 lldb
 llvm-libs
 lm_sensors
-lsb-release
 lua
 lua-lgi
 lz4
 lzo
+mailcap
 make
 man-db
 man-pages
 mariadb
 mariadb-clients
 mesa
-mime-types
 minizip
 mkinitcpio
 mkinitcpio-busybox
 mobile-broadband-provider-info
-mongodb
 mono
 mozilla-common
 mpfr
@@ -396,13 +397,15 @@ qt5-xmlpatterns
 qtcreator
 randrproto
 ranger
+re2
 readline
 recordproto
 renderproto
+rest
+rhash
 rtkit
 ruby
 rust
-sbt
 scala
 schroedinger
 scrnsaverproto
@@ -416,6 +419,7 @@ shadow
 shared-mime-info
 slang
 snappy
+sound-theme-freedesktop
 speex
 speexdsp
 sqlite
@@ -445,6 +449,7 @@ videoproto
 vim-runtime
 virtualbox
 virtualbox-host-dkms
+visual-studio-code
 vlc
 vte
 vte-common
@@ -452,7 +457,6 @@ wayland
 wayland-protocols
 webrtc-audio-processing
 which
-wiredtiger
 wpa_supplicant
 wxgtk-common
 wxgtk3
@@ -470,7 +474,6 @@ xdg-user-dirs
 xdg-utils
 xextproto
 xf86-input-libinput
-xf86-input-synaptics
 xf86-video-intel
 xf86miscproto
 xf86vidmodeproto
@@ -495,7 +498,6 @@ xproto
 xvidcore
 xz
 yajl
-yaml-cpp
 yaourt
 zeromq
 zita-alsa-pcmi

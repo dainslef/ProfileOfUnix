@@ -37,16 +37,10 @@ function env_config
 
 			# Set haskell-stack and vscode path
 			set stack_path ~/Public/stack-linux-x86_64-static
-			set vs_code_path ~/Public/VSCode-linux-x64
 
 			# Set haskell-stack alias
 			if [ -e "$stack_path" ]
 				alias stack $stack_path/stack
-			end
-
-			# Set vscode alias
-			if [ -e "$vs_code_path" ]
-				function code; $vs_code_path/code $argv & end
 			end
 
 			# Remember "alias" is synatx candy for "function" in fish shell,

@@ -59,6 +59,11 @@ function env_config
 			set PATH $PATH ~/.local/bin
 		end
 
+		# Set the rust binary path
+		if [ -e ~/.cargo/bin ]
+			set PATH $PATH ~/.cargo/bin
+		end
+
 		# Set golang path
 		# Use "set -x" to create a environment variable
 		# Use "-xg" to set this environment variable as a global environment variable

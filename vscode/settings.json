@@ -73,6 +73,9 @@
 	// Golang Configuration
 	"go.formatTool": "gofmt",
 
+	// Rust Configuration
+	"rust-client.channel": "stable",
+
 	// Language specific editor settings
 	"[scala]": {
 		"editor.insertSpaces": true,
@@ -81,6 +84,9 @@
 	"[ruby]": {
 		"editor.insertSpaces": true,
 		"editor.tabSize": 2
+	},
+	"[rust]": {
+		"editor.insertSpaces": true
 	},
 	"[haskell]": {
 		"editor.insertSpaces": true,

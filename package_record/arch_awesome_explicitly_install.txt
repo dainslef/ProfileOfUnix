@@ -1,6 +1,5 @@
 aria2
 awesome
-boost
 cmake
 ctags
 docker
@@ -47,7 +46,7 @@ qt5-doc
 qtcreator
 ranger
 ruby
-rust
+rustup
 scala
 scrot
 sed
@@ -61,7 +60,7 @@ time
 tree
 vicious
 virtualbox
-visual-studio-code
+visual-studio-code-bin
 vlc
 vte
 xcompmgr

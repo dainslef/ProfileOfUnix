@@ -35,8 +35,8 @@
 	// UI
 	"window.openFilesInNewWindow": "on",
 	"window.openFoldersInNewWindow": "on",
+	"window.newWindowDimensions": "inherit",
 	"window.menuBarVisibility": "toggle",
-	"workbench.activityBar.visible": true,
 	"workbench.sideBar.location": "right",
 	"workbench.editor.openPositioning": "last",
 	"workbench.iconTheme": "vs-minimal",
@@ -46,7 +46,7 @@
 	"update.channel": "none",
 
 	// Extensions
-	"extensions.autoUpdate": true,
+	"extensions.autoUpdate": false,
 	"extensions.ignoreRecommendations": true,
 
 	// Data report

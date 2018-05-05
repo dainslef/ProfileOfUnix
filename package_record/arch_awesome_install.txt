@@ -30,6 +30,7 @@ cantarell-fonts
 clang
 cmake
 colord
+compiler-rt
 coreutils
 cracklib
 cryptsetup
@@ -38,7 +39,6 @@ curl
 db
 dbus
 dbus-glib
-dcadec
 dconf
 desktop-file-utils
 device-mapper
@@ -59,7 +59,6 @@ fcitx-gtk2
 fcitx-gtk3
 fcitx-qt5
 ffmpeg
-ffmpeg2.8
 file
 filesystem
 filezilla
@@ -90,7 +89,7 @@ glib2
 glibc
 glibmm
 gmp
-gnome-themes-standard
+gnome-themes-extra
 gnupg
 gnutls
 go
@@ -134,9 +133,9 @@ jansson
 jasper
 java-environment-common
 java-runtime-common
-jdk
+jdk8
 jemalloc
-js
+js52
 json-c
 json-glib
 jsoncpp
@@ -167,8 +166,6 @@ libdatrie
 libdca
 libdrm
 libdvbpsi
-libdvdnav
-libdvdread
 libebml
 libedit
 libelf
@@ -185,6 +182,7 @@ libglvnd
 libgpg-error
 libgudev
 libgusb
+libibus
 libice
 libid3tag
 libidn
@@ -212,12 +210,14 @@ libnl
 libnm
 libnm-glib
 libnotify
+libnsl
 libogg
 libomxil-bellagio
 libpcap
 libpciaccess
 libpgm
 libpipeline
+libplacebo
 libpng
 libproxy
 libpsl
@@ -228,7 +228,6 @@ libsamplerate
 libsasl
 libseccomp
 libsecret
-libshout
 libsigc++
 libsm
 libsndfile
@@ -331,6 +330,7 @@ nettle
 network-manager-applet
 networkmanager
 nm-connection-editor
+node-gyp
 nodejs
 npm
 npth
@@ -338,7 +338,6 @@ nspr
 nss
 ntfs-3g
 opencore-amr
-openjpeg
 openjpeg2
 openssh
 openssl
@@ -362,6 +361,8 @@ pcre
 pcre2
 perl
 perl-error
+perl-mailtools
+perl-timedate
 pinentry
 pixman
 polkit
@@ -382,12 +383,15 @@ qt5-location
 qt5-quickcontrols
 qt5-quickcontrols2
 qt5-script
+qt5-svg
 qt5-tools
 qt5-webchannel
 qt5-webengine
 qt5-x11extras
 qt5-xmlpatterns
 qtcreator
+qterminal
+qtermwidget
 ranger
 re2
 readline
@@ -395,13 +399,13 @@ rest
 rhash
 rtkit
 ruby
+rubygems
 rustup
+sbt
 scala
-schroedinger
 scrot
 sdl
 sdl2
-sdl_image
 sed
 semver
 shadow
@@ -439,8 +443,7 @@ virtualbox
 virtualbox-host-dkms
 visual-studio-code-bin
 vlc
-vte
-vte-common
+vulkan-icd-loader
 wayland
 wayland-protocols
 webrtc-audio-processing
@@ -482,4 +485,3 @@ zeromq
 zita-alsa-pcmi
 zita-resampler
 zlib
-zvbi

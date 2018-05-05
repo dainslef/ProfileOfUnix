@@ -13,7 +13,7 @@ filezilla
 fish
 gdb
 git
-gnome-themes-standard
+gnome-themes-extra
 go
 google-chrome
 gparted
@@ -44,9 +44,10 @@ postgresql
 pulseaudio
 qt5-doc
 qtcreator
+qterminal
 ranger
-ruby
 rustup
+sbt
 scala
 scrot
 sed
@@ -62,7 +63,6 @@ vicious
 virtualbox
 visual-studio-code-bin
 vlc
-vte
 xcompmgr
 xdg-user-dirs
 xf86-video-intel

@@ -86,11 +86,12 @@ theme.notification_fg = theme.fg_focus
 
 -- This is used later as the default terminal and editor to run
 local mail = "thunderbird"
-local terminal = "vte"
 local browser = "google-chrome-stable"
 local dictionary = "stardict"
 local file_manager = "ranger"
-local terminal_args = " -W -P never -g 120x40 -f \"Monaco 10\" -n 5000 --reverse"
+local terminal = "qterminal"
+local terminal_instance = "qterminal" -- The instance name of qterminal is "qterminal"
+local terminal_args = " -qwindowgeometry 900x700+300+200 "
 
 -- Set default editor
 local editor = os.getenv("EDITOR") or "nano"
@@ -191,7 +192,7 @@ end
 local home_path = "/home/dainslef"
 local awesome_menu = {
 	{ "RestartWM", awesome.restart },
-	{ "QuitWM", awesome.quit },
+	{ "QuitWM", function() awesome.quit() end },
 	{ "Suspend", "systemctl suspend" },
 	{ "PowerOff", "poweroff" }
 }
@@ -204,13 +205,12 @@ local develop_menu = {
 	{ "IDEA", home_path .. "/Public/idea-IU/bin/idea.sh" }
 }
 local tools_menu = {
-	{ "Files", file_manager },
 	{ "Browser", browser },
 	{ "StarDict", dictionary },
 	{ "VLC", "vlc" }
 }
 local system_menu = {
-	{ "Terminal", terminal },
+	{ "Terminal", terminal .. terminal_args },
 	{ "VirtualBox", "virtualbox" },
 	{ "GParted", "gparted" }
 }
@@ -223,7 +223,7 @@ local main_menu = awful.menu({
 		{ "Tools", tools_menu },
 		{ "System", system_menu },
 		{ "Mail", mail },
-		{ "Files", terminal .. terminal_args  .. " -c " .. file_manager },
+		{ "Files", terminal .. terminal_args  .. " -e " .. file_manager },
 		{ "Browser", browser }
 	}
 })
@@ -462,7 +462,7 @@ local global_keys = awful.util.table.join(
 	-- Standard program
 	awful.key({ mod_key }, "Return", function()
 		awful.client.run_or_raise(terminal .. terminal_args, function(c)
-			return awful.rules.match(c, { instance = terminal }, true)
+			return awful.rules.match(c, { instance = terminal_instance }, true)
 		end)
 	end),
 	awful.key({ mod_key, "Control" }, "Return", function() awful.spawn(terminal .. terminal_args) end),
@@ -497,7 +497,7 @@ local global_keys = awful.util.table.join(
 	awful.key({ mod_key }, "b", function() awful.spawn(browser) end),
 	awful.key({ mod_key }, "d", function() awful.spawn(dictionary) end),
 	awful.key({ mod_key }, "f", function()
-		awful.spawn(terminal .. terminal_args  .. " -c " .. file_manager)
+		awful.spawn(terminal .. terminal_args  .. " -e " .. file_manager)
 	end),
 	awful.key({ mod_key, "Control" }, "n", function()
 		local c_restore = awful.client.restore() -- Restore the minimize window and focus it
@@ -615,6 +615,7 @@ local client_keys = awful.util.table.join(
 )
 
 -- Rules to apply to new clients (through the "manage" signal)
+-- Get X-Client props need to install tool "xorg-prop", use command "xprop" to check window props
 awful.rules.rules = {
 	{
 		-- All clients will match this rule
@@ -628,7 +629,7 @@ awful.rules.rules = {
 			buttons = client_buttons
 		}
 	}, {
-		rule = { instance = terminal },
+		rule = { instance = terminal_instance },
 		properties = { floating = true }
 	}, {
 		rule = { class = "jetbrains-idea" },

@@ -23,7 +23,7 @@ if [ "$NAME" ==  "Ubuntu" ]; then
 elif [ "$NAME" == "Arch Linux" ]; then
 	packages=`pacman -Qeq`
 	default_count=1
-	set_dep_cmd="pacman -S --asdeps"
+	set_dep_cmd="pacman -D --asdeps"
 	check_dep_cmd() {
 		pactree -r $1 | wc -l
 	}

@@ -7,11 +7,11 @@
 	"editor.wordWrap": "on",
 	"editor.wrappingIndent": "same",
 	"editor.quickSuggestionsDelay": 5,
-	"editor.insertSpaces": false,
-	"editor.detectIndentation": true,
 	"editor.folding": false,
 	"editor.glyphMargin": true,
 	"editor.formatOnType": true,
+	"editor.insertSpaces": false,
+	"editor.detectIndentation": false,
 	"editor.renderWhitespace": "all",
 	"editor.renderControlCharacters": true,
 	"editor.renderIndentGuides": true,
@@ -35,7 +35,7 @@
 	// UI
 	"window.openFilesInNewWindow": "on",
 	"window.openFoldersInNewWindow": "on",
-	"window.newWindowDimensions": "inherit",
+	"window.newWindowDimensions": "default",
 	"window.menuBarVisibility": "toggle",
 	"workbench.sideBar.location": "right",
 	"workbench.editor.openPositioning": "last",
@@ -61,14 +61,13 @@
 
 	// Markdown Configuration
 	"markdown.previewFrontMatter": "show",
+	"markdown.extension.orderedList.marker": "one",
+	"markdown.extension.toc.githubCompatibility": true,
 
 	// C/C++ Configuration
 	"C_Cpp.formatting": "Disabled",
 	"C_Cpp.clang_format_sortIncludes": true,
 	"C_Cpp.intelliSenseEngine": "Default",
-
-	// C# Configuration
-	"omnisharp.useMono": true,
 
 	// Golang Configuration
 	"go.formatTool": "gofmt",

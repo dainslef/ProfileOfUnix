@@ -7,11 +7,11 @@
 	"editor.wordWrap": "on",
 	"editor.wrappingIndent": "same",
 	"editor.quickSuggestionsDelay": 5,
+	"editor.insertSpaces": false,
+	"editor.detectIndentation": false,
 	"editor.folding": false,
 	"editor.glyphMargin": true,
 	"editor.formatOnType": true,
-	"editor.insertSpaces": false,
-	"editor.detectIndentation": false,
 	"editor.renderWhitespace": "all",
 	"editor.renderControlCharacters": true,
 	"editor.renderIndentGuides": true,
@@ -61,8 +61,15 @@
 
 	// Markdown Configuration
 	"markdown.previewFrontMatter": "show",
-	"markdown.extension.orderedList.marker": "one",
+	"markdown.preview.doubleClickToSwitchToEditor": false,
 	"markdown.extension.toc.githubCompatibility": true,
+	"markdown.extension.orderedList.marker": "one",
+
+	// Power Mode Configuration
+	"powermode.enabled": true,
+	"powermode.enableShake": false,
+	"powermode.enableStatusBarComboTimer": false,
+	"powermode.gifMode": "restart",
 
 	// C/C++ Configuration
 	"C_Cpp.formatting": "Disabled",

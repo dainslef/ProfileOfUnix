@@ -52,6 +52,7 @@ efibootmgr
 efivar
 expat
 faad2
+fakeroot
 fcitx
 fcitx-anthy
 fcitx-configtool
@@ -128,7 +129,6 @@ iproute2
 iptables
 iputils
 iso-codes
-jack
 jansson
 jasper
 java-environment-common
@@ -190,7 +190,6 @@ libidn2
 libiec61883
 libinput
 libjpeg-turbo
-libkate
 libksba
 libldap
 libmad
@@ -224,7 +223,6 @@ libpsl
 libpulse
 libraw1394
 librsvg
-libsamplerate
 libsasl
 libseccomp
 libsecret
@@ -243,7 +241,6 @@ libteam
 libthai
 libtheora
 libtiff
-libtiger
 libtirpc
 libtool
 libunistring
@@ -347,8 +344,8 @@ orc
 os-prober
 p11-kit
 p7zip
-package-query
 pacman
+pacman-contrib
 pacman-mirrorlist
 pam
 pambase
@@ -479,9 +476,6 @@ xorg-xset
 xorgproto
 xvidcore
 xz
-yajl
-yaourt
+yay
 zeromq
-zita-alsa-pcmi
-zita-resampler
 zlib

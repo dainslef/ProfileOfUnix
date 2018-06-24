@@ -2,6 +2,7 @@ aria2
 awesome
 cmake
 ctags
+diffutils
 docker
 efibootmgr
 fcitx-anthy
@@ -12,7 +13,6 @@ fcitx-qt5
 filezilla
 fish
 gdb
-git
 gnome-themes-extra
 go
 google-chrome
@@ -40,6 +40,7 @@ ntfs-3g
 openssh
 os-prober
 p7zip
+pacman-contrib
 postgresql
 pulseaudio
 qt5-doc
@@ -50,10 +51,8 @@ rustup
 sbt
 scala
 scrot
-sed
 stardict
 strace
-sudo
 systemd-sysvcompat
 tcpdump
 thunderbird
@@ -68,4 +67,4 @@ xdg-user-dirs
 xf86-video-intel
 xorg-server
 xorg-xbacklight
-yaourt
+yay

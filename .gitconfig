@@ -3,5 +3,5 @@
 	name = dainslef
 
 [core]
-	editor = nano
+	editor = vim
 	autocrlf = input

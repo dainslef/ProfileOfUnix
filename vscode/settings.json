@@ -69,7 +69,8 @@
 	"powermode.enabled": true,
 	"powermode.enableShake": false,
 	"powermode.enableStatusBarComboTimer": false,
-	"powermode.gifMode": "restart",
+	"powermode.enableStatusBarComboCounter": false,
+	"powermode.presets": "flames",
 
 	// C/C++ Configuration
 	"C_Cpp.formatting": "Disabled",

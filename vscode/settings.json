@@ -40,6 +40,7 @@
 	"workbench.sideBar.location": "right",
 	"workbench.editor.openPositioning": "last",
 	"workbench.iconTheme": "vs-minimal",
+	"workbench.colorTheme": "One Dark Pro",
 	"explorer.enableDragAndDrop": true,
 
 	// Update
@@ -48,6 +49,7 @@
 	// Extensions
 	"extensions.autoUpdate": false,
 	"extensions.ignoreRecommendations": true,
+	"extensions.showRecommendationsOnlyOnDemand": true,
 
 	// Data report
 	"telemetry.enableCrashReporter": false,

@@ -102,7 +102,7 @@
 		"editor.insertSpaces": true,
 		"editor.tabSize": 2
 	},
-	"[markdown]": {,
+	"[markdown]": {
 		"editor.quickSuggestions": false
 	}
 }

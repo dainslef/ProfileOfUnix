@@ -133,7 +133,7 @@ local auto_run_list = {
 	"fcitx", -- Use input method
 	"xcompmgr", -- For transparent support
 	"light-locker", -- Lock screen need to load it first
-	"nm-applet", -- Show network status
+	-- "nm-applet", -- Show network status
 	-- "blueman-applet", -- Use bluetooth
 }
 
@@ -201,7 +201,7 @@ local develop_menu = {
 	{ "QtAssistant", "assistant-qt5" },
 	{ "QtDesigner", "designer-qt5" },
 	{ "GVIM", "gvim" },
-	{ "VSCode", home_path .. "/Public/VSCode-linux-x64/code" },
+	{ "VSCode", "code" },
 	{ "IDEA", home_path .. "/Public/idea-IU/bin/idea.sh" }
 }
 local tools_menu = {
@@ -509,7 +509,7 @@ local global_keys = awful.util.table.join(
 
 	-- Screen shot key bindings
 	awful.key({ }, "Print", function()
-		awful.spawn.with_shell("scrot ~/Pictures/(date -Ins).png")
+		awful.spawn.with_shell("scrot ~/Pictures/screenshot-fullscreen-(date -Ins).png")
 		naughty.notify({
 			title = " Screen Shot",
 			text = "Take the fullscreen screenshot success!\n"
@@ -517,7 +517,7 @@ local global_keys = awful.util.table.join(
 		})
 	end),
 	awful.key({ mod_key }, "Print", function()
-		awful.spawn.with_shell("scrot -u ~/Pictures/(date -Ins).png")
+		awful.spawn.with_shell("scrot -u ~/Pictures/screenshot-window-(date -Ins).png")
 		naughty.notify({
 			title = " Screen Shot",
 			text = "Take the window screenshot success!\n"

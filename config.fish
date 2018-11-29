@@ -1,7 +1,9 @@
 # Fish config should place in ~/.config/fish/config.fish
-# This fish config need to install Oh-My-Fish:
+
+# This fish config need to install Oh-My-Fish and bobthefish theme:
 # $ curl -L https://get.oh-my.fish | fish
-#
+# $ omf install bobthefish
+
 # Fish shell and Oh-My-Fish file directory:
 # ~/.local/share/omf
 # ~/.local/share/fish

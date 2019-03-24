@@ -66,12 +66,9 @@ function env_config
 			set PATH $PATH ~/.cargo/bin
 		end
 
-		# Set golang path
+		# Set language environment
 		# Use "set -x" to create a environment variable
 		# Use "-xg" to set this environment variable as a global environment variable
-		set -xg GOPATH ~/Public/Go
-
-		# Set language environment
 		set -xg LANG en_US.UTF-8
 		set -xg LC_ALL en_US.UTF-8
 

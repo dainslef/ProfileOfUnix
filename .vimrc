@@ -3,91 +3,86 @@
 
 
 
-syntax enable " 显示语法高亮
-syntax on " 开启文件类型语法检测
-set shell=/bin/bash " 设置默认 shell
-set nocompatible " 关闭 vi 兼容模式
-set number " 显示行号
-set cursorline " 突出显示当前行
-set ruler " 打开状态栏标尺
-set shiftwidth=4 " 设定 << 和 >> 命令移动时的宽度为 4
-set softtabstop=4 " 使得按退格键时可以一次删掉 4 个空格
-set tabstop=4 " 设定 tab 长度为 4
-set nobackup " 覆盖文件时不备份
-set autochdir " 自动切换当前目录为当前文件所在的目录
-set backupcopy=yes " 设置备份时的行为为覆盖
-set ignorecase smartcase " 搜索时忽略大小写，但在有一个或以上大写字母时仍保持对大小写敏感
-set nowrapscan " 禁止在搜索到文件两端时重新搜索
-set incsearch " 输入搜索内容时就显示搜索结果
-set hlsearch " 搜索时高亮显示被找到的文本
-set noerrorbells " 关闭错误信息响铃
-set novisualbell " 关闭使用可视响铃代替呼叫
-set showmatch " 插入括号时，短暂地跳转到匹配的对应括号
-set matchtime=2 " 短暂跳转到匹配括号的时间
-set magic " 设置魔术
-set hidden " 允许在有未保存的修改时切换缓冲区，此时的修改由 vim 负责保存
-set smartindent " 开启新行时使用智能自动缩进
-set backspace=indent,eol,start " 不设定在插入状态无法用退格键和 Delete 键删除回车符
-set cmdheight=1 " 设定命令行的行数为 1
-set laststatus=2 " 显示状态栏 (默认值为 1, 无法显示状态栏)
-set wildmenu " 使用命令行补全
-set mouse=i " 在插入模式下支持鼠标点击定位，值为 a 时为任意模式支持鼠标定位
-set completeopt=longest,menu " 支持自动补全
-set scrolloff=4 " 光标移到buffer顶部或底部时保持4行距离(文本到达顶端或末尾时除外)
-set iskeyword+=_,$,@,%,#,- " 带有这些字符的内容不被自动换行分割
-set autoindent " 使用autoindent缩进结构，每一行的缩进与上一行类似
-set cindent " 使用C语言风格的cindent缩进结构
-set noexpandtab " 不要用空格代替制表符
-set smarttab " 在行和段开始处使用制表符
-set confirm " 处理只读或未保存文件时，弹出确认
-set showcmd " 在命令栏右侧显示输入的命令
-set linebreak " 使用整词换行
-set noswapfile " 打开文件时不生成以'swp'后缀的临时交换文件
-set lbr " 不在单词中间拆行
-set list " 显示特殊符号
-" set t_vb= " 置空错误铃声的终端代码
-" set guioptions-=T " 隐藏工具栏
-" set guioptions-=m " 隐藏菜单栏
-" set cursorcolumn " 打开纵向高亮对齐
+syntax enable " 顯示語法高亮
+syntax on " 開啓文件類型語法檢測
+set shell=/bin/bash " 設置默認 shell
+set nocompatible " 關閉 vi 兼容模式
+set number " 顯示行號
+set cursorline " 突出顯示當前行
+set ruler " 打開狀態欄標尺
+set shiftwidth=4 " 設定 << 和 >> 命令移動時的寬度爲 4
+set softtabstop=4 " 使得按退格鍵時可以一次刪掉 4 個空格
+set tabstop=4 " 設定 tab 長度爲 4
+set nobackup " 覆蓋文件時不備份
+set autochdir " 自動切換當前目錄爲當前文件所在的目錄
+set backupcopy=yes " 設置備份時的行爲爲覆蓋
+set ignorecase smartcase " 搜索時忽略大小寫，但在有一個或以上大寫字母時仍保持對大小寫敏感
+set nowrapscan " 禁止在搜索到文件兩端時重新搜索
+set incsearch " 輸入搜索內容時就顯示搜索結果
+set hlsearch " 搜索時高亮顯示被找到的文本
+set noerrorbells " 關閉錯誤信息響鈴
+set novisualbell " 關閉使用可視響鈴代替呼叫
+set showmatch " 插入括號時，短暫地跳轉到匹配的對應括號
+set matchtime=2 " 短暫跳轉到匹配括號的時間
+set magic " 設置魔術
+set hidden " 允許在有未保存的修改時切換緩衝區，此時的修改由 vim 負責保存
+set smartindent " 開啓新行時使用智能自動縮進
+set backspace=indent,eol,start " 不設定在插入狀態無法用退格鍵和 Delete 鍵刪除回車符
+set cmdheight=1 " 設定命令行的行數爲 1
+set laststatus=2 " 顯示狀態欄 (默認值爲 1, 無法顯示狀態欄)
+set wildmenu " 使用命令行補全
+set mouse=i " 在插入模式下支持鼠標點擊定位，值爲 a 時爲任意模式支持鼠標定位
+set completeopt=longest,menu " 支持自動補全
+set scrolloff=4 " 光標移到buffer頂部或底部時保持4行距離(文本到達頂端或末尾時除外)
+set iskeyword+=_,$,@,%,#,- " 帶有這些字符的內容不被自動換行分割
+set autoindent " 使用autoindent縮進結構，每一行的縮進與上一行類似
+set cindent " 使用C語言風格的cindent縮進結構
+set noexpandtab " 不要用空格代替製表符
+set smarttab " 在行和段開始處使用製表符
+set confirm " 處理只讀或未保存文件時，彈出確認
+set showcmd " 在命令欄右側顯示輸入的命令
+set linebreak " 使用整詞換行
+set noswapfile " 打開文件時不生成以'swp'後綴的臨時交換文件
+set lbr " 不在單詞中間拆行
+set list " 顯示特殊符號
+" set t_vb= " 置空錯誤鈴聲的終端代碼
+" set guioptions-=T " 隱藏工具欄
+" set guioptions-=m " 隱藏菜單欄
+" set cursorcolumn " 打開縱向高亮對齊
 
 
 
-" ------------------------------------------------------------------------------
-" --- 设置GUI模式下的额外配置 ---
+" --- 設置GUI模式下的額外配置 ---
 if has("gui_running")
-	set lines=50 columns=130 " 设置GUI模式下的宽高
+	set lines=50 columns=130 " 設置GUI模式下的寬高
 endif
 
 
 
-" ------------------------------------------------------------------------------
-" --- 设置快捷键 ---
-map <S-Left> :bp<CR> " shift + 左方向键 切换到前一个文件buffer
-map <S-Right> :bn<CR> " shift + 右方向键 切换到后一个文件buffer
+" --- 設置快捷鍵 ---
+map <S-Left> :bp<CR> " shift + 左方向鍵 切換到前一個文件buffer
+map <S-Right> :bn<CR> " shift + 右方向鍵 切換到後一個文件buffer
 
 
 
-" ------------------------------------------------------------------------------
-" --- 设置文件读取 ---
+" --- 設置文件讀取 ---
 autocmd BufNewFile,BufReadPost *.md set filetype=markdown
-autocmd BufNewFile,BufReadPost *.MD set filetype=markdown " 将*.md/MD格式的文件作为markdown文件进行语法解析
-autocmd BufNewFile,BufReadPost *.m set filetype=objc " 将*.m格式的文件作为Objective-C源码进行解析
-autocmd BufNewFile,BufReadPost *.mm set filetype=objcpp " 将*.mm格式的文件作为Objective-C++源码进行解析
+autocmd BufNewFile,BufReadPost *.MD set filetype=markdown " 將*.md/MD格式的文件作爲markdown文件進行語法解析
+autocmd BufNewFile,BufReadPost *.m set filetype=objc " 將*.m格式的文件作爲Objective-C源碼進行解析
+autocmd BufNewFile,BufReadPost *.mm set filetype=objcpp " 將*.mm格式的文件作爲Objective-C++源碼進行解析
 
 
 
-" ------------------------------------------------------------------------------
-" --- 括号自动补全 ---
 
-"->设置补全模式
-" 花括号的补全方式：输入'{'后按快速按下回车键后会按照c语言格式进行括号补全，如果未快速按下回车键则不进行补全操作
-" 其余符号补全功能由插件提供
+" --- 括號自動補全 ---
+" 設置補全模式
+" 花括號的補全方式：輸入'{'後按快速按下回車鍵後會按照c語言格式進行括號補全，如果未快速按下回車鍵則不進行補全操作
+" 其餘符號補全功能由插件提供
 :inoremap {<CR> {<CR>}<Esc>O
 
 
 
-" ------------------------------------------------------------------------------
-" --- 设置编码以及备选编码 ---
+" --- 設置編碼以及備選編碼 ---
 set termencoding=utf-8
 set encoding=utf-8
 let &termencoding=&encoding
@@ -95,40 +90,39 @@ set fileencodings=utf-8,gbk,gb2312,gb18030
 
 
 
-" ------------------------------------------------------------------------------
 " --- Vundle插件管理器 ---
 filetype off
-set rtp+=~/.vim/bundle/Vundle.vim " 设置Vundle插件的路径
+set rtp+=~/.vim/bundle/Vundle.vim " 設置Vundle插件的路徑
 call vundle#begin()
 
-"->安装插件列表
+" 插件列表
 Plugin 'gmarik/Vundle.vim' " let Vundle manage Vundle, required
-Plugin 'vim-airline/vim-airline' " 相比vim-powerline而言功能更加强大
-Plugin 'vim-airline/vim-airline-themes' " vim-airline的主题插件
-Plugin 'vim-syntastic/syntastic' " 语法检测插件
-Plugin 'flazz/vim-colorschemes' " vim主题配色集
-Plugin 'terryma/vim-multiple-cursors' " 多点编辑插件，选中目标后可以用ctrl+n键批量重构同名变量
-Plugin 'Shougo/neocomplcache.vim' " 轻量级的代码补全插件
-Plugin 'taglist.vim' " 来自github中vim-scripts收集的插件直接写名字,不过很可能获得的是旧版本
+Plugin 'vim-airline/vim-airline' " 相比vim-powerline而言功能更加強大
+Plugin 'vim-airline/vim-airline-themes' " vim-airline的主題插件
+Plugin 'vim-syntastic/syntastic' " 語法檢測插件
+Plugin 'flazz/vim-colorschemes' " vim主題配色集
+Plugin 'terryma/vim-multiple-cursors' " 多點編輯插件，選中目標後可以用ctrl+n鍵批量重構同名變量
+Plugin 'Shougo/neocomplcache.vim' " 輕量級的代碼補全插件
+Plugin 'taglist.vim' " 來自github中vim-scripts收集的插件直接寫名字,不過很可能獲得的是舊版本
 Plugin 'winmanager--Fox' " 窗口管理插件
-Plugin 'derekwyatt/vim-scala' " vim默认没有提供scala语言的支持，使用插件添加对scala语言支持
-Plugin 'fatih/vim-go' " golang插件，使用指令:GoInstallBinaries安装补全工具
+Plugin 'derekwyatt/vim-scala' " vim默認沒有提供scala語言的支持，使用插件添加對scala語言支持
 Plugin 'rust-lang/rust.vim' " rust插件
 Plugin 'vim-ruby/vim-ruby' " ruby插件
 Plugin 'tpope/vim-rails' " ROR插件
-Plugin 'plasticboy/vim-markdown' " markdown语法高亮插件
-Plugin 'Raimondi/delimitMate' " 符号智能补全插件
-Plugin 'udalov/kotlin-vim' " Kotlin语法高亮
+Plugin 'plasticboy/vim-markdown' " markdown語法高亮插件
+Plugin 'Raimondi/delimitMate' " 符號智能補全插件
+Plugin 'udalov/kotlin-vim' " Kotlin語法高亮
+" Plugin 'fatih/vim-go' " golang插件，使用指令:GoInstallBinaries安裝補全工具
 " Plugin 'klen/python-mode' " python插件
-" Plugin 'fholgado/minibufexpl.vim' " 窗口标签插件，功能已由vim-airline提供
-" Plugin 'Lokaltog/vim-powerline' " 来自github的vim插件，写成这样的格式
-" Plugin 'Valloric/YouCompleteMe' " 高级补全插件，支持语法补全
-" Plugin 'ervandew/eclim' " 类似eclipse的java插件
-" Plugin 'altercation/vim-colors-solarized' " solarized主题配色插件
+" Plugin 'fholgado/minibufexpl.vim' " 窗口標籤插件，功能已由vim-airline提供
+" Plugin 'Lokaltog/vim-powerline' " 來自github的vim插件，寫成這樣的格式
+" Plugin 'Valloric/YouCompleteMe' " 高級補全插件，支持語法補全
+" Plugin 'ervandew/eclim' " 類似eclipse的java插件
+" Plugin 'altercation/vim-colors-solarized' " solarized主題配色插件
 call vundle#end() " required
-filetype plugin indent on " 开启插件
+filetype plugin indent on " 開啓插件
 
-"->Vundle常用指令
+" Vundle常用指令
 " :PluginList       - lists configured plugins
 " :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
 " :PluginSearch foo - searches for foo; append `!` to refresh local cache
@@ -137,86 +131,81 @@ filetype plugin indent on " 开启插件
 
 
 
-" ------------------------------------------------------------------------------
 " --- WinManager配置 ---
-let g:winManagerWindowLayout = "TagList|FileExplorer" " 设置WinManager管理的插件
-let g:winManagerWidth = 35 " 设置WinManager侧边栏的大小
-let g:persistentBehaviour = 0 " 设置关闭所有文件时自动关闭WinManager
-nmap wm :WMToggle<cr> " 定义打开关闭WinManager快捷键为wm
+let g:winManagerWindowLayout = "TagList|FileExplorer" " 設置WinManager管理的插件
+let g:winManagerWidth = 35 " 設置WinManager側邊欄的大小
+let g:persistentBehaviour = 0 " 設置關閉所有文件時自動關閉WinManager
+nmap wm :WMToggle<cr> " 定義打開關閉WinManager快捷鍵爲wm
 
 
 
-" ------------------------------------------------------------------------------
 " --- Taglist 配置 ---
-let Tlist_Show_Menu = 1 " 显示taglist菜单
-let Tlist_Auto_Update = 1 " 默认更新taglist
-let Tlist_Exit_OnlyWindow = 1 " 关闭vim时关闭tag窗口
-" nmap tl :TlistToggle<cr> " 设置taglist的快捷键为tl。
-" let Tlist_Use_Horiz_Window = 1 " 设置tag窗口横向显示
-" let Tlist_Show_One_File = 1 " 不同时显示多个文件的tag，只显示当前文件的
-" let Tlist_Auto_Open = 1 " 打开vim时自动打开tag窗口
-" let Tlist_File_Fold_Auto_Close = 1 " 只显示当前文件的taglist，其它的taglist都被折叠
-" let Tlist_Use_SingleClick = 0 " 设置点击跳转tag的方式，0为双击跳转，1为单击跳转
-" let Tlist_Use_Right_Window = 1 " 设置tag窗口靠右显示（默认窗口靠左）
-" let Tlist_Process_File_Always = 1 " taglist始终解析文件中的tag，不管taglist窗口有没有打开
+let Tlist_Show_Menu = 1 " 顯示taglist菜單
+let Tlist_Auto_Update = 1 " 默認更新taglist
+let Tlist_Exit_OnlyWindow = 1 " 關閉vim時關閉tag窗口
+" nmap tl :TlistToggle<cr> " 設置taglist的快捷鍵爲tl。
+" let Tlist_Use_Horiz_Window = 1 " 設置tag窗口橫向顯示
+" let Tlist_Show_One_File = 1 " 不同時顯示多個文件的tag，只顯示當前文件的
+" let Tlist_Auto_Open = 1 " 打開vim時自動打開tag窗口
+" let Tlist_File_Fold_Auto_Close = 1 " 只顯示當前文件的taglist，其它的taglist都被摺疊
+" let Tlist_Use_SingleClick = 0 " 設置點擊跳轉tag的方式，0爲雙擊跳轉，1爲單擊跳轉
+" let Tlist_Use_Right_Window = 1 " 設置tag窗口靠右顯示（默認窗口靠左）
+" let Tlist_Process_File_Always = 1 " taglist始終解析文件中的tag，不管taglist窗口有沒有打開
 
 
 
-" ------------------------------------------------------------------------------
-" --- vim-arline配置 ---
-let g:airline#extensions#tabline#enabled = 1 " 显示标签栏
-" let g:airline_left_sep = '' " 设置下标签栏左分隔符
-" let g:airline_right_sep = '' " 设置下标签栏右分隔符
-" let g:airline#extensions#tabline#left_sep = '✎' " 设置上标签栏左前分隔符
-" let g:airline#extensions#tabline#left_alt_sep = '◀' " 设置上标签栏左后分隔符
-" let g:airline#extensions#tabline#right_sep = '☰' " 设置上标签栏右分隔符
-" let g:airline_symbols = {'crypt':'1', 'inenr':'¶', 'branch':'⎇', 'paste':'∥', 'whitespace':'Ξ'} " 自定义特殊符号集
+" --- vim-arline 配置 ---
+let g:airline#extensions#tabline#enabled = 1 " 顯示標籤欄
+" let g:airline_left_sep = '' " 設置下標籤欄左分隔符
+" let g:airline_right_sep = '' " 設置下標籤欄右分隔符
+" let g:airline#extensions#tabline#left_sep = '✎' " 設置上標籤欄左前分隔符
+" let g:airline#extensions#tabline#left_alt_sep = '◀' " 設置上標籤欄左後分隔符
+" let g:airline#extensions#tabline#right_sep = '☰' " 設置上標籤欄右分隔符
+" let g:airline_symbols = {'crypt':'1', 'inenr':'¶', 'branch':'⎇', 'paste':'∥', 'whitespace':'Ξ'} " 自定義特殊符號集
 
 
 
-" ------------------------------------------------------------------------------
 " --- vim-markdown 配置 ---
-let g:vim_markdown_folding_disabled = 1 " 关闭插件默认的语法折叠
-let g:vim_markdown_math = 1 " 开启LaTex数学公式解析
+let g:vim_markdown_folding_disabled = 1 " 關閉插件默認的語法摺疊
+let g:vim_markdown_math = 1 " 開啓LaTex數學公式解析
 
 
 
-" ------------------------------------------------------------------------------
 " --- neocomplcache配置 ---
-let g:neocomplcache_enable_at_startup = 1 " 在vim打开的时候启动
-let g:neocomplcache_enable_auto_select = 1 " 提示的时候默认选择地一个，否则需要手动选取
-let g:neocomplcache_enable_smart_case = 1 " 开启智能匹配
-let g:neocomplcache_min_syntax_length = 3 " 设置最小匹配长度
+let g:neocomplcache_enable_at_startup = 1 " 在vim打開的時候啓動
+let g:neocomplcache_enable_auto_select = 1 " 提示的時候默認選擇地一個，否則需要手動選取
+let g:neocomplcache_enable_smart_case = 1 " 開啓智能匹配
+let g:neocomplcache_min_syntax_length = 3 " 設置最小匹配長度
 let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
-let g:neocomplcache_enable_cursor_hold_i = 1 " 在输入模式下，移动光标时不会触发补全菜单
-let g:neocomplcache_enable_insert_char_pre = 1 " 快速匹配先前输入的内容，加快匹配速度
-let g:neocomplcache_enable_auto_select = 1 " 默认补全光标自动开启
+let g:neocomplcache_enable_cursor_hold_i = 1 " 在輸入模式下，移動光標時不會觸發補全菜單
+let g:neocomplcache_enable_insert_char_pre = 1 " 快速匹配先前輸入的內容，加快匹配速度
+let g:neocomplcache_enable_auto_select = 1 " 默認補全光標自動開啓
 
-"->定义补全字典
+" 定義補全字典
 let g:neocomplcache_dictionary_filetype_lists = {
 	\ 'default' : '',
 	\ 'vimshell' : $HOME.'/.vimshell_hist',
 	\ 'scheme' : $HOME.'/.gosh_completions'
 	\ }
 
-"->定义补全关键字
+" 定義補全關鍵字
 if !exists('g:neocomplcache_keyword_patterns')
 	let g:neocomplcache_keyword_patterns = {}
 endif
 let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 
-"->ctrl+z撤销已补全的内容再次匹配，ctrl+j主动弹出补全菜单
+" ctrl+z撤銷已補全的內容再次匹配，ctrl+j主動彈出補全菜單
 inoremap <expr><C-z> neocomplcache#undo_completion()
 inoremap <expr><C-j> neocomplcache#complete_common_string()
 
-"->启动vim自带的omni补全
+" 啓動vim自帶的omni補全
 autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
 autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
 autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
 autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
 autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 
-"->使用重度omni补全特性
+" 使用重度omni補全特性
 if !exists('g:neocomplcache_force_omni_patterns')
 	let g:neocomplcache_force_omni_patterns = {}
 endif
@@ -227,18 +216,16 @@ let g:neocomplcache_force_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\
 
 
 
-" ------------------------------------------------------------------------------
 " --- syntastic配置 ---
-let g:syntastic_check_on_open = 1 " 首次打开文件时即开始检测语法错误
-let g:syntastic_c_compiler_options = "-std=c11" " 检测c语法时使用c11语法
-let g:syntastic_cpp_compiler_options = "-std=c++1y" " 检测c++语法时支持c++1y的新特性
-let g:syntastic_ignore_files = [".*\.m$"] " 忽略objective-C语言的语法检测(objc的检测体验很差)
-let g:syntastic_python_python_exe = "python3" " 检查python语法时使用python3语法
+let g:syntastic_check_on_open = 1 " 首次打開文件時即開始檢測語法錯誤
+let g:syntastic_c_compiler_options = "-std=c11" " 檢測c語法時使用c11語法
+let g:syntastic_cpp_compiler_options = "-std=c++1y" " 檢測c++語法時支持c++1y的新特性
+let g:syntastic_ignore_files = [".*\.m$"] " 忽略objective-C語言的語法檢測(objc的檢測體驗很差)
+let g:syntastic_python_python_exe = "python3" " 檢查python語法時使用python3語法
 
 
 
-" ------------------------------------------------------------------------------
-" --- 常用的几个主题 ---
+" --- 常用的幾個主題 ---
 " colorschem molokai
 " colorschem materialbox
 " colorschem xterm16
@@ -246,27 +233,24 @@ let g:syntastic_python_python_exe = "python3" " 检查python语法时使用pytho
 
 
 
-" ------------------------------------------------------------------------------
-" --- 根据OS环境加载设置 ---
+" --- 根據OS環境加載設置 ---
 if has("win32unix")
-	set listchars=tab:›\ ,trail:•,extends:#,nbsp:.,eol:\ " 设置Windows环境下vim的tab、行尾等位置的特殊符号的显示
+	set listchars=tab:›\ ,trail:•,extends:#,nbsp:.,eol:\ " 設置Windows環境下vim的tab、行尾等位置的特殊符號的顯示
 
-	"->syntastic配置
-	let g:syntastic_error_symbol = "X" " 设置语法错误的提示
-	let g:syntastic_warning_symbol = "!" " 设置语法警告的提示
+	" syntastic配置
+	let g:syntastic_error_symbol = "X" " 設置語法錯誤的提示
+	let g:syntastic_warning_symbol = "!" " 設置語法警告的提示
 else
-	set t_Co=256 " 告知终端支持256色显示
-	set listchars=tab:➛\ ,trail:•,extends:#,nbsp:.,eol:\ " 设置Unix环境下vim的tab、行尾等位置的特殊符号的显示
+	set t_Co=256 " 告知終端支持256色顯示
+	set listchars=tab:➛\ ,trail:•,extends:#,nbsp:.,eol:\ " 設置Unix環境下vim的tab、行尾等位置的特殊符號的顯示
+	let g:syntastic_error_symbol = "✗" " 設置語法錯誤的提示
+	let g:syntastic_warning_symbol = "⚠" " 設置語法警告的提示
 
-	"->syntastic配置
-	let g:syntastic_error_symbol = "✗" " 设置语法错误的提示
-	let g:syntastic_warning_symbol = "⚠" " 设置语法警告的提示
+	" vim-arline配置
+	let g:airline_theme = 'powerlineish' " 設置主題
+	let g:airline_powerline_fonts = 1 " 使用powerline字體
 
-	"->vim-arline配置
-	let g:airline_theme = 'powerlineish' " 设置主题
-	let g:airline_powerline_fonts = 1 " 使用powerline字体
-
-	"->主题设置
+	" 主題設置
 	colorschem molokai
-	highlight Normal ctermbg=None " 强制设置主题背景透明
+	highlight Normal ctermbg=None " 強制設置主題背景透明
 endif

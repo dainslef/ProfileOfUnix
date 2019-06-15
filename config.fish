@@ -128,7 +128,7 @@ function fish_greeting
 
 	# Print welcome message in macOS or Linux GUI
 	if [ -n "$show_os_version" ]
-		echo -ne "\033[1;30m" # Set greet color
+		set_color $fish_color_autosuggestion # Set greet color
 		echo (uptime)
 		echo " $show_os_version"
 		echo --- Welcome, (whoami)! Today is (date +"%B %d %Y, %A"). ---
@@ -144,7 +144,7 @@ function fish_greeting
 			case 5
 				echo -e "--- あなたもきっと、誰かの奇跡。 ---\n"
 		end
-		echo -ne "\033[0m" # Reset color
+		set_color $fish_color_normal # Reset color
 	end
 
 end

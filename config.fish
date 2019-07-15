@@ -37,14 +37,6 @@ function env_config
 
 		else if [ (uname) = "Linux" ]
 
-			# Set haskell-stack and vscode path
-			set stack_path ~/Public/stack-linux-x86_64-static
-
-			# Set haskell-stack alias
-			if [ -e "$stack_path" ]
-				alias stack $stack_path/stack
-			end
-
 			# Remember "alias" is synatx candy for "function" in fish shell,
 			# alias command can not run at background like "xxx &".
 			function idea; ~/Public/idea-IU/bin/idea.sh $argv & end

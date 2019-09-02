@@ -7,4 +7,4 @@
 	autocrlf = input
 
 	# for Windows only when you installed Visual Studio Code
-	# editor = \"C:\\Users\\Dainslef Tei\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe\" --wait
+	# editor = \"C:/Users/{user}/AppData/Local/Programs/Microsoft VS Code/Code.exe\" --wait

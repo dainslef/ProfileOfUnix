@@ -1,4 +1,4 @@
--- Place this config in ~/.xmonad/xmonad.hs
+-- Configuration file for Xmonad Window Manager, place this file in ~/.xmonad/xmonad.hs
 
 import Data.Monoid
 import Data.Char (toLower)
@@ -31,8 +31,8 @@ myStatusBar = "xmobar"
 myTerminal = "vte"
 myTerminalCmd = myTerminal ++ " -W -P never -g 120x40 -n 5000 --reverse"
 
-myFocusFollowsMouse = True -- Whether focus follows the mouse pointer.
-myClickJustFocuses = True -- Whether clicking on a window to focus also passes the click to the window
+myFocusFollowsMouse = False -- Whether focus follows the mouse pointer
+myClickJustFocuses = False -- Whether clicking on a window to focus also passes the click to the window
 myBorderWidth = 2 -- Width of the window border in pixels.
 
 myModMask = mod4Mask -- Use "Win" as mod key
@@ -50,6 +50,7 @@ myKeys conf = Map.fromList $ [
   ((myModMask, xK_x), shellPrompt def),
   ((myModMask, xK_b), spawn browserCmd),
   ((myModMask, xK_w), kill), -- close focused window
+  ((myModMask, xK_h), withFocused hide), -- hide focused window
   ((myModMask, xK_space), sendMessage NextLayout), -- Rotate through the available layout algorithms
   ((myModMask .|. shiftMask, xK_space), setLayout $ XMonad.layoutHook conf), -- Reset the layouts on the current workspace to default
   ((myModMask, xK_l), spawn lockCmd), -- Use switch-to-greeter to LOCK SCREEN
@@ -127,6 +128,9 @@ myManageHook = composeAll [
   -- resource =? "kdesktop"--> doIgnore
   ]
 
+-- Start some applications when window manager start up
+myStartupHook = spawn "xcompmgr"
+
 -- Run xmonad with the settings you specify. No need to modify this.
 main = do
   (xmonad=<<) $ statusBar myStatusBar xmobarPP (const (myModMask .|. controlMask, xK_b)) $ ewmh $ def {
@@ -145,5 +149,6 @@ main = do
     -- hooks, layouts
     logHook = dynamicLog,
     layoutHook = myLayout,
+    startupHook = myStartupHook,
     manageHook = myManageHook
   }

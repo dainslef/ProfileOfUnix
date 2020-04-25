@@ -50,11 +50,12 @@
 
   # List packages installed in system profile. To search, run:
   environment.systemPackages = with pkgs; [
-    dotnet-sdk ntfs3g xorg.xbacklight
+    dotnet-sdk ntfs3g xorg.xbacklight xcompmgr
     openssh neofetch stack rustup git gcc gdb p7zip scala fcitx-configtool
     gnome2.vte ranger aria scrot
     vlc vscode google-chrome
     haskellPackages.xmobar
+    jetbrains.idea-ultimate
   ];
 
   # Enable feature

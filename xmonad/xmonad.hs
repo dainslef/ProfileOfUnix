@@ -5,6 +5,8 @@ import Data.Char (toLower)
 import System.Exit
 import qualified Data.Map as Map
 
+import Graphics.X11.ExtraTypes.XF86
+
 import XMonad
 import XMonad.Layout.Spacing
 import XMonad.Hooks.ManageDocks
@@ -46,6 +48,11 @@ myFocusedBorderColor = "#0000ff"
 myKeys conf = Map.fromList $ [
   ((myModMask, xK_Return), raiseMaybe (spawn myTerminalCmd) $ check myTerminal),
   ((myModMask .|. controlMask, xK_Return), spawn myTerminalCmd),
+  ((0, xF86XK_AudioMute), spawn "amixer set Master toggle"), -- change the sound volume
+  ((0, xF86XK_AudioLowerVolume), spawn "amixer set Master 5%-"),
+  ((0, xF86XK_AudioRaiseVolume), spawn "amixer set Master 5%+"),
+  ((controlMask, xF86XK_AudioLowerVolume), spawn "amixer set Master 1%-"),
+  ((controlMask, xF86XK_AudioRaiseVolume), spawn "amixer set Master 1%+"),
   ((myModMask, xK_p), windowMenu),
   ((myModMask, xK_x), shellPrompt def),
   ((myModMask, xK_b), spawn browserCmd),

@@ -29,6 +29,7 @@ function env_config
         # Check OS type and set the different environment variables
         if [ (uname) = "Darwin" ] # Darwin kernel means in macOS
 
+            set PATH $PATH /usr/local/sbin
             set python_version (python3 -V | awk -F' ' '{ print $2 }' | awk -F'.' '{ print $1 "." $2 }')
             set pip_bin ~/Library/Python/$python_version/bin
 
@@ -130,9 +131,9 @@ function fish_greeting
         echo (uptime)
         echo " $show_os_version"
         echo --- Welcome, (whoami)! Today is (date +"%B %d %Y, %A"). ---
-        switch (random 1 5)
+        switch (random 1 6)
             case 1
-                echo -e "--- 夢に描けることなら、実現できる。 ---\n"
+                echo -e "--- あなたもきっと、誰かの奇跡。 ---\n"
             case 2
                 echo -e "--- 一日は貴い一生である。これを空費してはならない。 ---\n"
             case 3
@@ -140,7 +141,9 @@ function fish_greeting
             case 4
                 echo -e "--- 春は夜桜、夏には星、秋に満月、冬には雪。 ---\n"
             case 5
-                echo -e "--- あなたもきっと、誰かの奇跡。 ---\n"
+                echo -e "--- 井の中の蛙大海を知らず、されど空の青さを知る。 ---\n"
+            case 6
+                echo -e "--- 前を向けばきっと会える。 ---\n"
         end
         set_color $fish_color_normal # Reset color
     end

@@ -1,0 +1,26 @@
+<!-- place the file at this path: ~/.m2/settings.xml -->
+<?xml version="1.0" encoding="UTF-8"?>
+ <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+	<mirrors>
+
+		<mirror>
+			<!-- Aliyun Maven Repo -->
+			<id>alimaven-public</id>
+			<name>aliyun maven public</name>
+			<mirrorOf>central</mirrorOf>
+			<url>https://maven.aliyun.com/repository/public</url>
+		</mirror>
+
+		<mirror>
+			<id>jahia</id>
+			<name>maven jahia</name>
+			<mirrorOf>central</mirrorOf>
+			<url>http://maven.jahia.org/maven2</url>
+		</mirror>
+
+	</mirrors>
+
+</settings>

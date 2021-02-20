@@ -1,3 +1,4 @@
+" Place this file at the place: ~/.vimrc
 " This vim config need to set up Vundle:
 " $ git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 

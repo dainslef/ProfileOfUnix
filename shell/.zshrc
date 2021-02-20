@@ -1,3 +1,5 @@
+# Place this file at the place: ~/.zshrc
+
 # This zsh config need to set up Oh-My-Zsh:
 # $ git clone git://github.com/robbyrussell/oh-my-zsh ~/.oh-my-zsh
 # $ git clone git://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions

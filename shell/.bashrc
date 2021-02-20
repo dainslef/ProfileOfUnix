@@ -1,6 +1,4 @@
-#
-# ~/.bashrc
-#
+# Place this file at the place:  ~/.bashrc
 
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return

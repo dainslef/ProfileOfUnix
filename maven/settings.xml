@@ -1,26 +1,35 @@
-<!-- place the file at this path: ~/.m2/settings.xml -->
 <?xml version="1.0" encoding="UTF-8"?>
- <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+<!-- Place this file at the path: ~/.m2/settings.xml -->
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
 
 	<mirrors>
-
 		<mirror>
 			<!-- Aliyun Maven Repo -->
 			<id>alimaven-public</id>
 			<name>aliyun maven public</name>
-			<mirrorOf>central</mirrorOf>
+			<mirrorOf>*</mirrorOf>
 			<url>https://maven.aliyun.com/repository/public</url>
 		</mirror>
-
-		<mirror>
-			<id>jahia</id>
-			<name>maven jahia</name>
-			<mirrorOf>central</mirrorOf>
-			<url>http://maven.jahia.org/maven2</url>
-		</mirror>
-
 	</mirrors>
+
+	<profiles>
+		<profile>
+			<id>custom-profile</id>
+			<repositories>
+				<!-- Add third party repository -->
+				<repository>
+					<id>jahia</id>
+					<name>maven jahia</name>
+					<url>http://maven.jahia.org/maven2</url>
+				</repository>
+			</repositories>
+		</profile>
+	</profiles>
+
+	<activeProfiles>
+		<activeProfile>custom-profile</activeProfile>
+	</activeProfiles>
 
 </settings>

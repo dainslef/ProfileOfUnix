@@ -1,6 +1,6 @@
-# Fish config should place in ~/.config/fish/config.fish
+# Place this file at the path: ~/.config/fish/config.fish
 
-# This fish config need to install Oh-My-Fish and bobthefish theme:
+# This fish config need to install "Oh-My-Fish" and "bobthefish" theme:
 # $ curl -L https://get.oh-my.fish | fish
 # $ omf install bobthefish
 
@@ -12,8 +12,7 @@
 
 
 
-# ------------------------------------------------------------------------------
-# --- Custom function define ---
+# --- Define custom functions---
 
 # Set the default user
 function set_default_user
@@ -60,7 +59,8 @@ function env_config
             set PATH $PATH ~/.local/bin
         end
 
-        # Set the rust binary path
+        # Set the rustup mirror and cargo binary path
+        set -xg RUSTUP_DIST_SERVER https://mirrors.tuna.tsinghua.edu.cn/rustup
         if [ -e ~/.cargo/bin ]
             set PATH $PATH ~/.cargo/bin
         end
@@ -89,7 +89,7 @@ function theme_config
     if [ -n "$DISPLAY" -o (uname) = "Darwin" ]
         omf theme "bobthefish"
         # Set theme color for bobthefish
-        # Override default greeting at ~/.config/fish/functions/fish_greeting.fish or refine function
+        # Override the default greeting at ~/.config/fish/functions/fish_greeting.fish or refine function
         if [ (uname) = "Darwin" ]
             set -g theme_color_scheme dark
         else if [ (uname) = "Linux" ]
@@ -111,8 +111,7 @@ end
 
 
 
-# ------------------------------------------------------------------------------
-# --- Function override ---
+# --- Override functions  ---
 
 # In fish shell, function which named with "fish_greeting" will override default greeting
 function fish_greeting
@@ -131,20 +130,23 @@ function fish_greeting
         echo (uptime)
         echo " $show_os_version"
         echo --- Welcome, (whoami)! Today is (date +"%B %d %Y, %A"). ---
-        switch (random 1 6)
+        switch (random 1 7)
             case 1
-                echo -e "--- あなたもきっと、誰かの奇跡。 ---\n"
+                echo "--- あなたもきっと、誰かの奇跡。 ---"
             case 2
-                echo -e "--- 一日は貴い一生である。これを空費してはならない。 ---\n"
+                echo "--- 一日は貴い一生である。これを空費してはならない。 ---"
             case 3
-                echo -e "--- 世界は美しくなんかない。そしてそれ故に、美しい。 ---\n"
+                echo "--- 世界は美しくなんかない。そしてそれ故に、美しい。 ---"
             case 4
-                echo -e "--- 春は夜桜、夏には星、秋に満月、冬には雪。 ---\n"
+                echo "--- 春は夜桜、夏には星、秋に満月、冬には雪。 ---"
             case 5
-                echo -e "--- 井の中の蛙大海を知らず、されど空の青さを知る。 ---\n"
+                echo "--- 井の中の蛙大海を知らず、されど空の青さを知る。 ---"
             case 6
-                echo -e "--- 前を向けばきっと会える。 ---\n"
+                echo "--- 前を向けばきっと会える。 ---"
+            case 7
+                echo "--- 周りの人や時代に流されず、自分らしく生きるだけでいい。 ---"
         end
+        echo "" # Add a empty new line
         set_color $fish_color_normal # Reset color
     end
 
@@ -152,8 +154,7 @@ end
 
 
 
-# ------------------------------------------------------------------------------
-# --- Environment clean ---
+# --- Clean the environment  ---
 
 # Delete defined functions and variables
 # Use "-e" means to erase a function/variable

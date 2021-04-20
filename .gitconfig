@@ -7,5 +7,10 @@
 	editor = vim
 	autocrlf = input
 
+	# don't change file permissions directly
+	# use the command "git update-index --chmod=xxx" to change file permissions
+	# use the command "git ls-files -s" to check file permissions
+	filemode = false
+
 	# for Windows only when you installed Visual Studio Code
 	# editor = \"C:/Users/{user}/AppData/Local/Programs/Microsoft VS Code/Code.exe\" --wait

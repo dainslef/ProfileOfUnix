@@ -26,17 +26,17 @@ function env_config
     if [ (whoami) = "$default_user" ]
 
         # Check OS type and set the different environment variables
-        if [ (uname) = "Darwin" ] # Darwin kernel means in macOS
+        if [ (uname) = Darwin ] # Darwin kernel means in macOS
 
             set PATH $PATH /usr/local/sbin
             set python_version (python3 -V | awk -F' ' '{ print $2 }' | awk -F'.' '{ print $1 "." $2 }')
             set pip_bin ~/Library/Python/$python_version/bin
 
-            # set -xg HOMEBREW_BOTTLE_DOMAIN https://mirrors.ustc.edu.cn/homebrew-bottles
             # Set environment variable for Homebrew Bottles mirror (use TUNA mirror)
-            set -xg HOMEBREW_BOTTLE_DOMAIN https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/
+            # set -xg HOMEBREW_BOTTLE_DOMAIN https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/
+            set -xg HOMEBREW_BOTTLE_DOMAIN https://mirrors.ustc.edu.cn/homebrew-bottles
 
-        else if [ (uname) = "Linux" ]
+        else if [ (uname) = Linux ]
 
             # Remember "alias" is synatx candy for "function" in fish shell,
             # alias command can not run at background like "xxx &".
@@ -60,7 +60,9 @@ function env_config
         end
 
         # Set the rustup mirror and cargo binary path
-        set -xg RUSTUP_DIST_SERVER https://mirrors.tuna.tsinghua.edu.cn/rustup
+        # set -xg RUSTUP_DIST_SERVER https://mirrors.tuna.tsinghua.edu.cn/rustup
+        set -xg RUSTUP_DIST_SERVER https://mirrors.ustc.edu.cn/rust-static
+
         if [ -e ~/.cargo/bin ]
             set PATH $PATH ~/.cargo/bin
         end
@@ -73,9 +75,9 @@ function env_config
 
         # Preferred editor for local and remote sessions
         if [ -n "$SSH_CONNECTION" ]
-            set -xg EDITOR "nano"
+            set -xg EDITOR nano
         else
-            set -xg EDITOR "vim"
+            set -xg EDITOR vim
         end
 
     end
@@ -86,25 +88,25 @@ end
 function theme_config
 
     # Set the theme, only in Linux GUI and macOS
-    if [ -n "$DISPLAY" -o (uname) = "Darwin" ]
-        omf theme "bobthefish"
+    if [ -n "$DISPLAY" -o (uname) = Darwin ]
+        omf theme bobthefish
         # Set theme color for bobthefish
         # Override the default greeting at ~/.config/fish/functions/fish_greeting.fish or refine function
-        if [ (uname) = "Darwin" ]
+        if [ (uname) = Darwin ]
             set -g theme_color_scheme dark
-        else if [ (uname) = "Linux" ]
+        else if [ (uname) = Linux ]
             set -g theme_color_scheme light
         end
         set -g theme_date_format "+%b-%d [%a] %R:%S"
     else # Use default in Non-GUI environment
-        omf theme "default"
+        omf theme default
     end
 
 end
 
 # Call function if oh-my-fish is installed
 if [ -n "$OMF_PATH" ]
-    set_default_user "dainslef"
+    set_default_user dainslef
     env_config
     theme_config
 end
@@ -117,7 +119,7 @@ end
 function fish_greeting
 
     if [ (whoami) = "$default_user" ]
-        if [ (uname) = "Darwin" ]
+        if [ (uname) = Darwin ]
             set show_os_version (uname -srnm)
         else if [ -n "$DISPLAY" ]
             set show_os_version (uname -ornm)

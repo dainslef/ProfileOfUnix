@@ -82,7 +82,7 @@
     enable = true;
     libinput = {
       enable = true; # Enable touchpad support.
-      naturalScrolling = true;
+      touchpad.naturalScrolling = true;
     };
     # displayManager.lightdm.autoLogin = {
     #  enable = true;

@@ -33,7 +33,7 @@ function env_config
             set pip_bin ~/Library/Python/$python_version/bin
 
             # Set environment variable for Homebrew Bottles mirror (use TUNA mirror)
-            # set -xg HOMEBREW_BOTTLE_DOMAIN https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/
+            # set -xg HOMEBREW_BOTTLE_DOMAIN https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/bottles
             set -xg HOMEBREW_BOTTLE_DOMAIN https://mirrors.ustc.edu.cn/homebrew-bottles
 
         else if [ (uname) = Linux ]

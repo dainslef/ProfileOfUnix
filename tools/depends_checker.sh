@@ -8,7 +8,7 @@ elif [ `uname -o` == "Msys" ]; then # MYSY doesn't need root permission and use 
 fi
 
 # Check OS type and use different command
-if [ "$NAME" ==  "Ubuntu" ]; then
+if [ "$NAME" == "Ubuntu" ]; then
 	packages=`apt-mark showmanual`
 	default_count=0
 	set_dep_cmd="apt-mark auto"

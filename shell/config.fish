@@ -23,12 +23,13 @@ end
 # Check user, set the custom environment variables
 function env_config
 
+    set PATH $PATH /usr/local/bin /usr/local/sbin
+
     if [ (whoami) = "$default_user" ]
 
         # Check OS type and set the different environment variables
         if [ (uname) = Darwin ] # Darwin kernel means in macOS
 
-            set PATH $PATH /usr/local/sbin
             set python_version (python3 -V | awk -F' ' '{ print $2 }' | awk -F'.' '{ print $1 "." $2 }')
             set pip_bin ~/Library/Python/$python_version/bin
 
@@ -97,7 +98,7 @@ function theme_config
         else if [ (uname) = Linux ]
             set -g theme_color_scheme light
         end
-        set -g theme_date_format "+%b-%d [%a] %R:%S"
+        set -g theme_date_format "+%b/%d/%Y [%a] %R:%S"
     else # Use default in Non-GUI environment
         omf theme default
     end

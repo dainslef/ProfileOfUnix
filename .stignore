@@ -1,9 +1,0 @@
-node_modules
-target
-dist
-out
-obj
-!.stignore
-!.git
-!.gitignore
-.*

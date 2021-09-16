@@ -1,0 +1,13 @@
+node_modules
+target
+dist
+bin
+out
+obj
+!.git
+!.gitignore
+!.stignore_synced
+.*
+
+// file ".stignore" can't be synced
+// use "#include .stignore_synced" to include this pattern in each device's ".stignore" file

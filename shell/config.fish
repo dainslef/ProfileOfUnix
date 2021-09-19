@@ -33,9 +33,9 @@ function env_config
             set python_version (python3 -V | awk -F' ' '{ print $2 }' | awk -F'.' '{ print $1 "." $2 }')
             set pip_bin ~/Library/Python/$python_version/bin
 
-            # Set environment variable for Homebrew Bottles mirror (use TUNA mirror)
+            # Set the environment variable for Homebrew Bottles mirror (no longer need when use clash tun)
             # set -xg HOMEBREW_BOTTLE_DOMAIN https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/bottles
-            set -xg HOMEBREW_BOTTLE_DOMAIN https://mirrors.ustc.edu.cn/homebrew-bottles
+            # set -xg HOMEBREW_BOTTLE_DOMAIN https://mirrors.ustc.edu.cn/homebrew-bottles
 
         else if [ (uname) = Linux ]
 
@@ -60,10 +60,11 @@ function env_config
             set PATH $PATH ~/.local/bin
         end
 
-        # Set the rustup mirror and cargo binary path
+        # Set the environment variable for rustup mirror (no longer need when use clash tun)
         # set -xg RUSTUP_DIST_SERVER https://mirrors.tuna.tsinghua.edu.cn/rustup
-        set -xg RUSTUP_DIST_SERVER https://mirrors.ustc.edu.cn/rust-static
+        # set -xg RUSTUP_DIST_SERVER https://mirrors.ustc.edu.cn/rust-static
 
+        # Set cargo binary path
         if [ -e ~/.cargo/bin ]
             set PATH $PATH ~/.cargo/bin
         end

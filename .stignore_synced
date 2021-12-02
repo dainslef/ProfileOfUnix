@@ -1,13 +1,21 @@
+// for nodejs
 node_modules
-target
 dist
+
+// for most IDE
+target
 bin
 out
 obj
+
+// need to sync git-releated files
 !.git
 !.gitignore
-!.stignore_synced
-.*
 
+// sync Syncthing rules
+!.stignore_synced
+
+// ignore the other hidden files
 // file ".stignore" can't be synced
 // use "#include .stignore_synced" to include this pattern in each device's ".stignore" file
+.*

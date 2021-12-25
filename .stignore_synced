@@ -4,6 +4,7 @@ dist
 
 // for most IDE
 target
+log
 bin
 out
 obj

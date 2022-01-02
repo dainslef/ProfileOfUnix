@@ -1,4 +1,4 @@
-# Place this file at the path: ~/.config/fish/config.fish
+# Place this file at the path '~/.config/fish/config.fish'
 
 # This fish config need to install "Oh-My-Fish" and "bobthefish" theme:
 # $ curl -L https://get.oh-my.fish | fish
@@ -30,6 +30,10 @@ function env_config
         # Check OS type and set the different environment variables
         if [ (uname) = Darwin ] # Darwin kernel means in macOS
 
+            # From macOS 12 (Monterey), command 'ls' don't print with color,
+            # need to set the 'CLICOLOR' for color output.
+            set -gx CLICOLOR 1 # Use ANSI color sequences to distinguish file types
+
             set python_version (python3 -V | awk -F' ' '{ print $2 }' | awk -F'.' '{ print $1 "." $2 }')
             set pip_bin ~/Library/Python/$python_version/bin
 
@@ -41,9 +45,9 @@ function env_config
 
             # Remember "alias" is synatx candy for "function" in fish shell,
             # alias command can not run at background like "xxx &".
-            function idea
-                ~/Public/idea-IU/bin/idea.sh $argv &
-            end
+            # function idea
+            #     ~/Public/idea-IU/bin/idea.sh $argv &
+            # end
 
         end
 

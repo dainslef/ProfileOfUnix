@@ -1,0 +1,129 @@
+# NixOS configuration, place this file in /etc/nixos/configuration.nix
+
+# Edit this configuration file to define what should be installed on
+# your system.  Help is available in the configuration.nix(5) man page
+# and in the NixOS manual (accessible by running ‘nixos-help’).
+
+{ config, pkgs, lib, ... }:
+
+{
+  imports =
+    [ # Include the results of the hardware scan.
+      ./hardware-configuration.nix
+    ];
+
+  nixpkgs.config.packageOverrides = pkgs: {
+    # Add NUR repo.
+    nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
+      inherit pkgs;
+    };
+  };
+
+  # Set boot loader.
+  boot.loader = {
+    systemd-boot.enable = true; # Use the default systemd-boot EFI boot loader. (No GRUB UI)
+    efi = {
+      canTouchEfiVariables = true;
+      efiSysMountPoint = "/boot/efi";
+    };
+  };
+
+  networking = {
+    hostName = "MI-AIR12"; # Define your hostname.
+    networkmanager.enable = true;
+  };
+
+  # Select internationalisation properties.
+  i18n.inputMethod = {
+    enabled = "fcitx";
+    fcitx.engines = with pkgs.fcitx-engines; [anthy];
+  };
+
+  # Set your time zone.
+  time = {
+    timeZone = "Asia/Taipei";
+    hardwareClockInLocalTime = true;
+  };
+
+  # List packages installed in system profile. To search, run:
+  environment.systemPackages = with pkgs; [
+    vte ranger aria scrot nmap openssh neofetch p7zip git file qemu opencc
+    stack rustup gcc gdb clang scala dotnet-sdk
+    xorg.xbacklight xdg-user-dirs xcompmgr awesome lightlocker networkmanagerapplet
+    fcitx-configtool vlc gparted vscode google-chrome wireshark
+    jetbrains.idea-ultimate syncthing thunderbird goldendict
+    nur.repos.linyinfeng.clash-premium
+  ];
+
+  # Enable feature
+  programs = {
+    vim.defaultEditor = true;
+    java.enable = true;
+    npm.enable = true;
+    wireshark = {
+      enable = true;
+      package = pkgs.wireshark-qt;
+    };
+  };
+
+  # Enable sound.
+  hardware.pulseaudio.enable = true;
+
+  # Config fonts.
+  fonts = {
+    enableDefaultFonts = true;
+    fonts = with pkgs; [noto-fonts-cjk powerline-fonts];
+    fontconfig = {
+      defaultFonts = {
+        serif = ["Noto Sans"];
+        sansSerif = ["Noto Sans"];
+        monospace = ["Ubuntu Mono"];
+      };
+    };
+  };
+
+  # Config the X11 windowing system.
+  services.xserver = {
+    enable = true;
+    libinput = {
+      enable = true; # Enable touchpad support.
+      touchpad.naturalScrolling = true;
+    };
+    # displayManager.lightdm.autoLogin = {
+    #  enable = true;
+    #  user = "dainslef";
+    # };
+    videoDrivers = ["intel"];
+    windowManager.awesome = {
+      enable = true;
+      luaModules = [pkgs.luaPackages.vicious];
+    };
+  };
+  systemd.services = {
+    nginx.wantedBy = lib.mkForce [];
+    redis.wantedBy = lib.mkForce [];
+    mysql.wantedBy = lib.mkForce [];
+  };
+  services = {
+    gnome.gnome-keyring.enable = true; # For syncing VSCode configuration.
+    redis.servers."".enable = true; # Use new options for redis service instead of 'redis-enable'
+    nginx.enable = true;
+    mysql = {
+      enable = true;
+      package = pkgs.mysql80;
+    };
+  };
+
+  # Define a user account. Don't forget to set a password with ‘passwd’.
+  users = {
+    defaultUserShell = pkgs.fish;
+    users.dainslef = {
+      isNormalUser = true;
+      extraGroups = ["wheel" "networkmanager"]; # Enable ‘sudo’ for the user.
+    };
+  };
+
+  nixpkgs.config.allowUnfree = true;
+  nix.binaryCaches = ["https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"];
+  system.autoUpgrade.channel = "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-unstable";
+}

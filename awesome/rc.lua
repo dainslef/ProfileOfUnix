@@ -66,7 +66,7 @@ beautiful.init(awful.util.get_themes_dir() .. "default/theme.lua")
 local theme = beautiful.get()
 
 -- Custom theme settings, border and font
-theme.border_width = 4
+theme.border_width = 2
 theme.font = "Dejavu Sans 10"
 theme.master_width_factor = 0.6 -- Set the master window percent
 theme.useless_gap = 5 -- Set the window gap
@@ -244,7 +244,10 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 
 -- Create a textclock widget
 local text_clock = wibox.widget.textclock("<span font='Dejavu Sans 10'>" ..
-	" %b/%d/%Y [<span color='red'>%a</span>] <span color='yellow'>%H:%M</span> </span>")
+	"[<span color='red'>%a</span>] %b/%d <span color='yellow'>%H:%M</span> </span>")
+local month_calendar = awful.widget.calendar_popup.month()
+month_calendar.bg = color_menu_bg
+month_calendar:attach(text_clock, "tr")
 
 -- Create widgetbox
 local widget_box = { }
@@ -256,22 +259,20 @@ local task_list = { }
 -- Set buttons in widgetbox
 tag_list.buttons = awful.util.table.join(
 	awful.button({ }, 1, awful.tag.viewonly),
-	awful.button({ mod_key }, 1, awful.client.movetotag),
 	awful.button({ }, 3, awful.tag.viewtoggle),
-	awful.button({ mod_key }, 3, awful.client.toggletag),
 	awful.button({ }, 4, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end),
-	awful.button({ }, 5, function(t) awful.tag.viewnext(awful.tag.getscreen(t)) end)
+	awful.button({ }, 5, function(t) awful.tag.viewnext(awful.tag.getscreen(t)) end),
+	awful.button({ mod_key }, 1, awful.client.movetotag),
+	awful.button({ mod_key }, 3, awful.client.toggletag)
 )
 task_list.buttons = awful.util.table.join(
 	awful.button({ }, 1, function(c)
 		if c == client.focus then
 			c.minimized = true
 		else
-			-- Without this, the following
 			c.minimized = false
 			if not c:isvisible() then c.first_tag:view_only() end
-			-- This will also un-minimize
-			-- the client, if needed
+			-- This will also un-minimize the client, if needed
 			client.focus = c
 		end
 	end),
@@ -279,7 +280,7 @@ task_list.buttons = awful.util.table.join(
 		if task_menu then
 			task_menu:hide()
 		else
-			task_menu = awful.menu.clients({ theme = { width = 250 } })
+			task_menu = awful.menu.clients { theme = { width = 250 } }
 		end
 	end),
 	awful.button({ }, 4, function() awful.client.focus.byidx(1) end),
@@ -326,10 +327,22 @@ for s = 1, screen.count() do
 	tag_list[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, tag_list.buttons)
 
 	-- Create a tasklist widget
-	task_list[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, task_list.buttons)
+	task_list[s] = awful.widget.tasklist {
+		screen = s,
+		filter = awful.widget.tasklist.filter.currenttags,
+		buttons = task_list.buttons,
+		style = { -- change the task list style
+			shape_border_width = 2,
+			shape = gears.shape.rounded_bar
+		},
+		layout = {
+			spacing = 10,
+			layout  = wibox.layout.flex.horizontal
+		}
+	}
 
 	-- Create the wibar
-	widget_box[s] = awful.wibar({ position = "top", screen = s, height = 25 })
+	widget_box[s] = awful.wibar { position = "top", screen = s, height = 35 }
 
 	-- Widgets that are aligned to the left
 	local left_layout = wibox.layout.fixed.horizontal()
@@ -341,16 +354,22 @@ for s = 1, screen.count() do
 	right_layout:add(tag_list[s])
 	right_layout:add(battery_widget)
 	right_layout:add(volume_widget)
-	right_layout:add(wibox.widget.systray())
 	right_layout:add(text_clock)
+	right_layout:add(wibox.widget.systray())
 
 	-- Now bring it all together (with the tasklist in the middle)
-	local layout = wibox.layout.align.horizontal()
-	layout.left = left_layout
-	layout.middle = task_list[s]
-	layout.right = right_layout
+	local middle_layout =
+		-- margin container args: widget, left padding, right padding
+		wibox.container.margin(
+			-- place container args: widget, horizontal alignment
+			wibox.container.place(task_list[s], "left"), 10, 10)
 
-	widget_box[s].widget = layout
+	widget_box[s].widget = wibox.container.margin(wibox.widget {
+		left_layout,
+		middle_layout,
+		right_layout,
+		layout = wibox.layout.align.horizontal
+	}, 10, 10, 10)
 
 end
 
@@ -529,12 +548,12 @@ local global_keys = awful.util.table.join(
 	awful.key({ }, "XF86AudioMute", function()
 		vicious.contrib.pulse.toggle()
 		naughty.destroy(volume_notify_id)
-		volume_notify_id = naughty.notify({
+		volume_notify_id = naughty.notify {
 			title = "🔈 Volume changed",
 			text = "Sound state has been changed ...\n"
 					.. "Current sound state is ["
 					.. (vicious.contrib.pulse()[1] > 0 and "🔊 ON" or "🔇 OFF") .. "] !"
-		})
+		}
 	end),
 	awful.key({ }, "XF86AudioRaiseVolume", function() volume_change(5) end),
 	awful.key({ }, "XF86AudioLowerVolume", function() volume_change(-5) end),

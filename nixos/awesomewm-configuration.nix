@@ -47,12 +47,12 @@
 
   # List packages installed in system profile. To search, run:
   environment.systemPackages = with pkgs; [
-    vte ranger aria scrot nmap openssh neofetch p7zip git file qemu opencc
+    vte ranger aria scrot nmap openssh neofetch p7zip git qemu opencc
     stack rustup gcc gdb clang scala dotnet-sdk
-    xorg.xbacklight xdg-user-dirs xcompmgr awesome lightlocker networkmanagerapplet
+    xorg.xbacklight xdg-user-dirs xcompmgr awesome networkmanagerapplet
     fcitx-configtool vlc gparted vscode google-chrome wireshark
     jetbrains.idea-ultimate syncthing thunderbird goldendict
-    nur.repos.linyinfeng.clash-premium
+    nur.repos.linyinfeng.clash-premium # nur.repos.linyinfeng.clash-for-windows
   ];
 
   # Enable feature
@@ -85,15 +85,15 @@
   # Config the X11 windowing system.
   services.xserver = {
     enable = true;
+    videoDrivers = ["intel"];
+    displayManager.lightdm = {
+      extraConfig = "[Seat:*]\ngreeter-hide-users=false";
+      greeters.gtk.extraConfig = "background=/boot/background.jpg\ntheme-name = Adwaita-dark";
+    };
     libinput = {
       enable = true; # Enable touchpad support.
       touchpad.naturalScrolling = true;
     };
-    # displayManager.lightdm.autoLogin = {
-    #  enable = true;
-    #  user = "dainslef";
-    # };
-    videoDrivers = ["intel"];
     windowManager.awesome = {
       enable = true;
       luaModules = [pkgs.luaPackages.vicious];
@@ -123,7 +123,9 @@
     };
   };
 
-  nixpkgs.config.allowUnfree = true;
+  # Replace custom nixos channel:
+  # sudo nix-channel --remove nixos
+  # sudo nix-channel --add https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-unstable
   nix.binaryCaches = ["https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"];
-  system.autoUpgrade.channel = "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-unstable";
+  nixpkgs.config.allowUnfree = true;
 }

@@ -19,9 +19,39 @@ vicious.contrib = require("vicious.contrib")
 -- {{{ Init
 
 -- Custom init command
+awful.spawn.with_shell("pulseaudio --start") -- NixOS won't auto start PulseAudio
 awful.spawn.with_shell("xset +dpms") -- Use the power manager
 awful.spawn.with_shell("xset dpms 0 0 1800") -- Set the power manager timeout to 30 minutes
 awful.spawn.with_shell("xset s 1800") -- Set screensaver timeout to 30 mintues
+
+local auto_run_list = {
+	"fcitx", -- Use input method
+	"xcompmgr", -- For transparent support
+	"light-locker", -- Lock screen need to load it first
+	"nm-applet", -- Show network status
+	-- "blueman-applet", -- Use bluetooth
+}
+
+function run_once(cmd)
+	awful.spawn.with_shell("pgrep -u $USER -x " .. cmd .. "; or " .. cmd)
+end
+
+for i = 1, #auto_run_list do
+	run_once(auto_run_list[i])
+end
+
+-- }}}
+
+
+
+-- {{{ Wallpaper
+
+local wall_paper = "/boot/background.jpg"
+if beautiful.wallpaper then
+	for s = 1, screen.count() do
+		gears.wallpaper.maximized(wall_paper, s, true)
+	end
+end
 
 -- }}}
 
@@ -121,41 +151,6 @@ local layouts = {
 	-- awful.layout.suit.max,
 	-- awful.layout.suit.max.fullscreen,
 }
-
--- }}}
-
-
-
--- {{{ Load auto run apps.
-
-function run_once(cmd)
-	awful.spawn.with_shell("pgrep -u $USER -x " .. cmd .. "; or " .. cmd)
-end
-
-local auto_run_list = {
-	"fcitx", -- Use input method
-	"xcompmgr", -- For transparent support
-	"light-locker", -- Lock screen need to load it first
-	"nm-applet", -- Show network status
-	-- "blueman-applet", -- Use bluetooth
-}
-
-for i = 1, #auto_run_list do
-	run_once(auto_run_list[i])
-end
-
--- }}}
-
-
-
--- {{{ Wallpaper
-
-local wall_paper = "/home/dainslef/Pictures/34844544_p0.jpg"
-if beautiful.wallpaper then
-	for s = 1, screen.count() do
-		gears.wallpaper.maximized(wall_paper, s, true)
-	end
-end
 
 -- }}}
 
@@ -476,9 +471,23 @@ local global_keys = awful.util.table.join(
 
 	-- Standard program
 	awful.key({ mod_key }, "Return", function()
-		awful.client.run_or_raise(terminal .. terminal_args, function(c)
-			return awful.rules.match(c, { instance = terminal_instance })
-		end)
+		local last_terminal, last_unfocus_terminal
+		for _, c in pairs(client.get()) do
+			-- find the last unfocused terminal window
+			if c.instance == terminal_instance then
+				last_terminal = c
+				if c ~= client.focus then
+					last_unfocus_terminal = c
+				end
+			end
+		end
+		if last_unfocus_terminal or last_terminal then
+			-- use the existed terminal if possible
+			client.focus = last_unfocus_terminal or last_terminal
+		else
+			-- create a terminal if there is no terminal
+			awful.spawn.spawn(terminal .. terminal_args)
+		end
 	end),
 	awful.key({ mod_key, "Control" }, "Return", function() awful.spawn(terminal .. terminal_args) end),
 	awful.key({ mod_key, "Control" }, "r", awesome.restart),
@@ -507,7 +516,7 @@ local global_keys = awful.util.table.join(
 	awful.key({ mod_key }, "l", function()
 		-- Lock screen when use AC Power, suspend system when use Battery
 		local power_status = vicious.call(vicious.widgets.bat, "$1", "BAT0")
-		awful.spawn(power_status == "−" and "systemctl suspend" or "xdg-screensaver lock")
+		awful.spawn(power_status == "−" and "systemctl suspend" or "dm-tool lock")
 	end),
 	awful.key({ mod_key }, "b", function() awful.spawn(browser) end),
 	awful.key({ mod_key }, "d", function() awful.spawn(dictionary) end),

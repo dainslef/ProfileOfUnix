@@ -27,7 +27,6 @@ awful.spawn.with_shell("xset s 1800") -- Set screensaver timeout to 30 mintues
 local auto_run_list = {
 	"fcitx", -- Use input method
 	"xcompmgr", -- For transparent support
-	"light-locker", -- Lock screen need to load it first
 	"nm-applet", -- Show network status
 	-- "blueman-applet", -- Use bluetooth
 }
@@ -472,8 +471,9 @@ local global_keys = awful.util.table.join(
 	-- Standard program
 	awful.key({ mod_key }, "Return", function()
 		local last_terminal, last_unfocus_terminal
-		for _, c in pairs(client.get()) do
-			-- find the last unfocused terminal window
+		-- Only find the terminal instance in current tag (workspace)
+		for _, c in pairs(awful.screen.focused().selected_tag:clients()) do
+			-- Find the last unfocused terminal window in current tag
 			if c.instance == terminal_instance then
 				last_terminal = c
 				if c ~= client.focus then
@@ -482,10 +482,10 @@ local global_keys = awful.util.table.join(
 			end
 		end
 		if last_unfocus_terminal or last_terminal then
-			-- use the existed terminal if possible
+			-- Use the existed terminal if possible
 			client.focus = last_unfocus_terminal or last_terminal
 		else
-			-- create a terminal if there is no terminal
+			-- Create a terminal if there is no terminal
 			awful.spawn.spawn(terminal .. terminal_args)
 		end
 	end),
@@ -518,10 +518,25 @@ local global_keys = awful.util.table.join(
 		local power_status = vicious.call(vicious.widgets.bat, "$1", "BAT0")
 		awful.spawn(power_status == "−" and "systemctl suspend" or "dm-tool lock")
 	end),
+	awful.key({ mod_key }, "h", function()
+		-- Minimize all floating windows
+		for _, c in pairs(awful.screen.focused().selected_tag:clients()) do
+			if c.floating then c.minimized = true end
+		end
+	end),
+	awful.key({ mod_key, "Control" }, "h", function()
+		-- Unminimize all floating windows
+		for _, c in pairs(awful.screen.focused().selected_tag:clients()) do
+			if c.floating then
+				c:raise()
+				c.minimized = false
+			 end
+		end
+	end),
 	awful.key({ mod_key }, "b", function() awful.spawn(browser) end),
 	awful.key({ mod_key }, "d", function() awful.spawn(dictionary) end),
 	awful.key({ mod_key }, "f", function()
-		awful.spawn(terminal .. terminal_args  .. " -e " .. file_manager)
+		awful.spawn(terminal .. terminal_args  .. " -c " .. file_manager)
 	end),
 	awful.key({ mod_key, "Control" }, "n", function()
 		local c_restore = awful.client.restore() -- Restore the minimize window and focus it
@@ -630,10 +645,9 @@ local client_buttons = awful.util.table.join(
 
 local client_keys = awful.util.table.join(
 	awful.key({ mod_key }, "w", function(c) c:kill() end),
-	awful.key({ mod_key }, "t", function(c) c.ontop = not c.ontop end),
-	awful.key({ mod_key }, "s", function(c) c.maximized = not c.maximized end),
 	awful.key({ mod_key }, "m", function(c) c.fullscreen = not c.fullscreen end),
 	awful.key({ mod_key }, "n", function(c) c.minimized = true end),
+	awful.key({ mod_key, "Control" }, "t", function(c) c.ontop = not c.ontop end),
 	awful.key({ mod_key, "Control" }, "m", function(c) awful.client.setmaster(c) end),
 	awful.key({ mod_key, "Control" }, "f", awful.client.floating.toggle)
 )

@@ -21,6 +21,7 @@
 
   # Set boot loader.
   boot.loader = {
+    timeout = 999999;
     systemd-boot.enable = true; # Use the default systemd-boot EFI boot loader. (No GRUB UI)
     efi = {
       canTouchEfiVariables = true;
@@ -48,8 +49,8 @@
   # List packages installed in system profile. To search, run:
   environment.systemPackages = with pkgs; [
     vte ranger aria scrot nmap openssh neofetch p7zip git qemu opencc
-    stack rustup gcc gdb clang scala dotnet-sdk
-    xorg.xbacklight xdg-user-dirs xcompmgr awesome networkmanagerapplet
+    stack rustup gcc gdb clang scala dotnet-sdk podman
+    xorg.xbacklight xdg-user-dirs xcompmgr networkmanagerapplet
     fcitx-configtool vlc gparted vscode google-chrome wireshark
     jetbrains.idea-ultimate syncthing thunderbird goldendict
     nur.repos.linyinfeng.clash-premium # nur.repos.linyinfeng.clash-for-windows

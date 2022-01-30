@@ -1,4 +1,9 @@
-// for nodejs
+// Notice: Syncthing rules can't add comment at line end, that may make the rule break down.
+
+// for macOS filesystem
+.DS_Store
+
+// for Node.js
 node_modules
 dist
 
@@ -8,10 +13,19 @@ log
 bin
 out
 obj
+*.lock
 
 // need to sync git-releated files
 !.git
 !.gitignore
+!.gitconfig
+
+// need to sync some unix configurations
+!.bashrc
+!.zshrc
+!.vimrc
+!.xprofile
+!.gtkrc-2.0
 
 // sync Syncthing rules
 !.stignore_synced

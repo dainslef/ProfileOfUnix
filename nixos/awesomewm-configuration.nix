@@ -19,13 +19,16 @@
     };
   };
 
-  # Set boot loader.
-  boot.loader = {
-    timeout = 999999;
-    systemd-boot.enable = true; # Use the default systemd-boot EFI boot loader. (No GRUB UI)
-    efi = {
-      canTouchEfiVariables = true;
-      efiSysMountPoint = "/boot/efi";
+  boot = {
+    kernelPackages = pkgs.linuxKernel.packages.linux_zen;
+    # Set boot loader.
+    loader = {
+      timeout = 999999;
+      systemd-boot.enable = true; # Use the default systemd-boot EFI boot loader. (No GRUB UI)
+      efi = {
+        canTouchEfiVariables = true;
+        efiSysMountPoint = "/boot/efi";
+      };
     };
   };
 
@@ -48,8 +51,9 @@
 
   # List packages installed in system profile. To search, run:
   environment.systemPackages = with pkgs; [
-    vte ranger aria scrot nmap openssh neofetch p7zip git qemu opencc
-    stack rustup gcc gdb clang scala dotnet-sdk podman
+    (python3.withPackages (p: [p.black p.ansible p.jupyter])) # In NixOS, pip can't install package
+    vte ranger aria scrot nmap openssh neofetch p7zip qemu opencc
+    git stack rustup gcc gdb clang scala dotnet-sdk podman
     xorg.xbacklight xdg-user-dirs xcompmgr networkmanagerapplet
     fcitx-configtool vlc gparted vscode google-chrome wireshark
     jetbrains.idea-ultimate syncthing thunderbird goldendict
@@ -73,12 +77,12 @@
   # Config fonts.
   fonts = {
     enableDefaultFonts = true;
-    fonts = with pkgs; [noto-fonts-cjk powerline-fonts];
+    fonts = with pkgs; [wqy_microhei noto-fonts powerline-fonts];
     fontconfig = {
       defaultFonts = {
         serif = ["Noto Sans"];
         sansSerif = ["Noto Sans"];
-        monospace = ["Ubuntu Mono"];
+        monospace = ["Noto Sans Mono"];
       };
     };
   };
@@ -127,6 +131,6 @@
   # Replace custom nixos channel:
   # sudo nix-channel --remove nixos
   # sudo nix-channel --add https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-unstable
-  nix.binaryCaches = ["https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"];
+  nix.settings.substituters = ["https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"];
   nixpkgs.config.allowUnfree = true;
 }

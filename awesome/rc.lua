@@ -28,6 +28,7 @@ local auto_run_list = {
 	"fcitx", -- Use input method
 	"xcompmgr", -- For transparent support
 	"nm-applet", -- Show network status
+	"clash-premium" -- clash proxy
 	-- "blueman-applet", -- Use bluetooth
 }
 
@@ -442,7 +443,7 @@ function layout_change(change)
 	awful.layout.inc(layouts, change)
 
 	layout_notify_id = naughty.notify {
-		title = "🖥 Layout Change",
+		title = "🔁 Layout Change",
 		text = "Layout has been changed ...\n"
 			.. "The current layout is [" .. awful.layout.getname() .. "]!",
 		replaces_id = layout_notify_id
@@ -470,14 +471,17 @@ local global_keys = awful.util.table.join(
 
 	-- Standard program
 	awful.key({ mod_key }, "Return", function()
-		local last_terminal, last_unfocus_terminal
+		local last_terminal, last_unfocus_terminal, find_last_unfocus_terminal
 		-- Only find the terminal instance in current tag (workspace)
 		for _, c in pairs(awful.screen.focused().selected_tag:clients()) do
 			-- Find the last unfocused terminal window in current tag
 			if c.instance == terminal_instance then
 				last_terminal = c
-				if c ~= client.focus then
+				-- The last unfocus window should before the current window
+				if c ~= client.focus and not find_last_unfocus_terminal then
 					last_unfocus_terminal = c
+				else
+					find_last_unfocus_terminal = true
 				end
 			end
 		end
@@ -519,7 +523,7 @@ local global_keys = awful.util.table.join(
 		awful.spawn(power_status == "−" and "systemctl suspend" or "dm-tool lock")
 	end),
 	awful.key({ mod_key }, "h", function()
-		-- Minimize all floating windows
+		-- Minimize all floating windows in current tag (workspace)
 		for _, c in pairs(awful.screen.focused().selected_tag:clients()) do
 			if c.floating then c.minimized = true end
 		end

@@ -19,7 +19,7 @@ import qualified XMonad.StackSet as W
 
 -- Check the app name (ignore the letter case)
 check :: String -> Query Bool
-check appName = (appName ==) . (map toLower) <$> className
+check appName = (appName ==) . map toLower <$> className
 
 -- Some user define commands
 toggleXmobarCmd =
@@ -44,7 +44,7 @@ myBorderWidth = 2 -- Width of the window border in pixels.
 
 myModMask = mod4Mask -- Use "Win" as mod key
 
-myWorkspaces = ["main"] ++ map show [2 .. 9]
+myWorkspaces = "main" : map show [2 .. 9]
 
 -- Border colors for unfocused and focused windows, respectively.
 myNormalBorderColor = "#dddddd"
@@ -98,7 +98,7 @@ myKeys conf =
 
 -- Mouse bindings: default actions bound to mouse events
 myMouseBindings _ =
-  Map.fromList $
+  Map.fromList
     [ -- button1 == mouse left click
       -- button2 == mouse middle click
       -- button3 == mouse right click

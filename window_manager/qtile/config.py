@@ -2,7 +2,7 @@
 # Place this file in the path ~/.config/qtile/config.py
 
 # Import library
-from libqtile import bar, layout, widget, hook, qtile
+from libqtile import bar, layout, widget, hook
 from libqtile.config import Click, Drag, Group, Key, Match, Screen
 from libqtile.backend.base import Window
 from libqtile.core.manager import Qtile
@@ -44,12 +44,11 @@ def send_notification(
 
 
 def get_pulse_volume() -> int:
-    sink = 0
     return int(
         # Get the command output
         subprocess.check_output(
             "pactl list sinks | grep '^[[:space:]]Volume:' |"
-            + f"head -n {sink + 1} | tail -n 1 | sed -e 's,.* \\([0-9][0-9]*\\)%.*,\\1,'",
+            + f"head -n 1 | tail -n 1 | sed -e 's,.* \\([0-9][0-9]*\\)%.*,\\1,'",
             shell=True,
             text=True,
         )
@@ -58,7 +57,7 @@ def get_pulse_volume() -> int:
 
 def is_pulse_mute() -> bool:
     status = subprocess.check_output(
-        "pacmd list-sinks | awk '/muted/ { print $2 }'",
+        "pactl list sinks | awk '/Mute/ { print $2 }'",
         shell=True,
         text=True,
     ).strip()  # Reponse content contains '\n', clear special charactor
@@ -88,7 +87,7 @@ def change_pulse_volume(_, volume: int, plus: bool = True):
     sink = 0
     op = "+" if plus else "-"
     # Prevent the volume break 100% limit
-    change = "100" if (plus and get_pulse_volume() + volume > 100) else f"{op}{volume}"
+    change = "100" if plus and get_pulse_volume() + volume > 100 else f"{op}{volume}"
     os.system(f"pactl set-sink-volume {sink} {change}%")
     volume_change = "rise up ⬆️" if plus else "lower ⬇️"
     volume_change_id = 1001
@@ -100,7 +99,6 @@ def change_pulse_volume(_, volume: int, plus: bool = True):
     )
 
 
-@lazy.function
 def change_pulse_mute(_):
     sink = 0
     state = "🔊 ON" if is_pulse_mute() else "🔇 OFF"
@@ -110,6 +108,19 @@ def change_pulse_mute(_):
         "🔈 Volume changed",
         f"Sound state has been changed ...\nCurrent sound state is [{state}]!",
         volume_change_id,
+    )
+
+
+def change_layout(qtile: Qtile, prev: bool = False):
+    layout_change_notification_id = 1000
+    if prev:
+        qtile.cmd_prev_layout()
+    else:
+        qtile.cmd_next_layout()
+    send_notification(
+        "🔁 Layout Change",
+        f"Layout has been changed ...\nThe current layout is [{qtile.current_layout.name}]!",
+        layout_change_notification_id,
     )
 
 
@@ -133,44 +144,66 @@ def open_terminal_by_need(qtile: Qtile):
 
 
 @lazy.function
-def change_layout(qtile: Qtile):
-    layout_change_notification_id = 1000
-    qtile.cmd_next_layout()
-    l = qtile.current_layout
-    send_notification(
-        "🔁 Layout Change",
-        f"Layout has been changed ...\nThe current layout is [{l.name}]!",
-        layout_change_notification_id,
-    )
-
-
-@lazy.function
 def minimize_window(qtile: Qtile):
     w = qtile.current_window
     if w:
-        w.cmd_toggle_minimize()
-        if is_terminal(w):
+        w.toggle_minimize()
+        if is_terminal(w) and not w.minimized:
             w.floating = True
+            # Place window to the screen center
+            screen = w.group.screen
+            x = (screen.width - w.width) // 2  # type: ignore
+            y = (screen.height - w.height) // 2  # type: ignore
+            w.place(
+                x,
+                y,
+                w.width,  # type: ignore
+                w.height,  # type: ignore
+                w.borderwidth,
+                w.bordercolor,  # type: ignore
+            )
 
 
 keys = [
-    # A list of available commands that can be bound to keys can be found
-    # at https://docs.qtile.org/en/latest/manual/config/lazy.html
-    # Switch between windows
-    Key([mod, "control"], "h", lazy.layout.left(), desc="Move focus to left"),
-    Key([mod, "control"], "l", lazy.layout.right(), desc="Move focus to right"),
-    Key([mod, "control"], "j", lazy.layout.down(), desc="Move focus down"),
-    Key([mod, "control"], "k", lazy.layout.up(), desc="Move focus up"),
+    # Move focus by arrow keys
+    Key([mod], "Left", lazy.layout.left(), desc="Move focus to left"),
+    Key([mod], "Right", lazy.layout.right(), desc="Move focus to right"),
+    Key([mod], "Up", lazy.layout.up(), desc="Move focus up"),
+    Key([mod], "Down", lazy.layout.down(), desc="Move focus down"),
     Key([mod], "Tab", lazy.group.next_window(), desc="Move focus to next window"),
+    Key(
+        [mod],
+        "quoteleft",
+        lazy.group.prev_window(),
+        desc="Move focus to prev window (mod + `)",
+    ),
     # Move windows between left/right columns or move up/down in current stack.
     # Moving out of range in Columns layout will create new column.
-    Key([mod, "shift"], "h", lazy.layout.shuffle_left(), desc="Move window to left"),
-    Key([mod, "shift"], "l", lazy.layout.shuffle_right(), desc="Move window to right"),
+    Key(
+        [mod, "control"], "Left", lazy.layout.shuffle_left(), desc="Move window to left"
+    ),
+    Key(
+        [mod, "control"],
+        "Right",
+        lazy.layout.shuffle_right(),
+        desc="Move window to right",
+    ),
+    Key([mod, "control"], "Up", lazy.layout.shuffle_up(), desc="Move window to up"),
+    Key(
+        [mod, "control"], "Down", lazy.layout.shuffle_down(), desc="Move window to down"
+    ),
     # Layout operation
     Key([mod, "control"], "n", lazy.layout.normalize(), desc="Reset all window sizes"),
-    Key([mod], "space", change_layout, desc="Toggle between layouts"),
+    Key([mod], "space", lazy.function(change_layout), desc="Toggle between layouts"),
+    Key(
+        [mod, "control"],
+        "space",
+        lazy.function(change_layout, True),
+        desc="Toggle between layouts",
+    ),
     # Window operation
     Key([mod], "w", lazy.window.kill(), desc="Kill focused window"),
+    Key([mod], "m", lazy.window.toggle_maximize(), desc="Maxmize the current window"),
     Key([mod], "n", minimize_window, desc="Minimize the current window"),
     Key(
         [mod, "control"],
@@ -215,14 +248,20 @@ keys = [
     # Special key bindings
     Key(
         [],
+        "XF86AudioMute",
+        change_pulse_mute,
+        desc="Change audio state",
+    ),
+    Key(
+        [],
         "XF86AudioRaiseVolume",
-        lazy.function(change_pulse_volume, 10),
+        lazy.function(change_pulse_volume, 5),
         desc="Change the volume",
     ),
     Key(
         [],
         "XF86AudioLowerVolume",
-        lazy.function(change_pulse_volume, 10, False),
+        lazy.function(change_pulse_volume, 5, False),
         desc="Change the volume",
     ),
     Key(
@@ -236,12 +275,6 @@ keys = [
         "XF86AudioLowerVolume",
         lazy.function(change_pulse_volume, 1, False),
         desc="Change the volume",
-    ),
-    Key(
-        [],
-        "XF86AudioMute",
-        change_pulse_mute,
-        desc="Change audio state",
     ),
 ]
 
@@ -270,20 +303,41 @@ for i in range(len(groups)):
             ]
         )
 
-margin, border_width = 10, 4
+margin, border_width = 5, 4
+screens = [
+    # By default, Qtile layout window margin will cause the gap between two window double size,
+    # should use Screen gap to fill the remaining width.
+    # Screen gap + Window margin == 2 * Window margin
+    Screen(
+        top=bar.Bar(
+            [
+                widget.CurrentLayoutIcon(scale=0.8),
+                widget.GroupBox(),
+                widget.Prompt(),
+                widget.WindowCount(text_format="[{num}]"),
+                widget.WindowTabs(),
+                widget.Net(format="🌐 {down}"),
+                widget.Battery(format="🔋 {percent:2.0%}({char})", update_interval=10),
+                widget.GenPollText(func=show_pulse_volume, update_interval=1),
+                widget.Systray(),
+                widget.Clock(format=" %Y-%m-%d %a %I:%M %p ", foreground="#d75f5f"),
+            ],
+            25,
+            opacity=0.5,
+            # [N E S W]
+            margin=[0, 0, margin, 0],
+            # Set up bar inner content gap
+            border_width=[5, 2 * margin, 5, 2 * margin],
+        ),
+        bottom=bar.Gap(margin),
+        left=bar.Gap(margin),
+        right=bar.Gap(margin),
+    )
+]
 layouts = [
+    layout.Bsp(margin=margin, border_width=border_width),
     layout.Columns(margin=margin, border_width=border_width),
-    # layout.Max(),
-    # layout.Stack(num_stacks=3, margin=5),
-    # layout.Bsp(),
-    # layout.Matrix(margin=5),
-    layout.MonadTall(margin=margin, border_width=border_width),
-    # layout.MonadWide(),
-    # layout.RatioTile(),
-    layout.Tile(margin=margin, border_width=border_width),
-    # layout.TreeTab(),
-    # layout.VerticalTile(),
-    # layout.Zoomy(),
+    layout.Max(),
 ]
 floating_layout = layout.Floating(
     border_width=border_width,
@@ -294,30 +348,6 @@ floating_layout = layout.Floating(
         Match(wm_class=terminal_wm_class),
     ],
 )
-
-screens = [
-    Screen(
-        top=bar.Bar(
-            [
-                widget.CurrentLayout(),
-                widget.GroupBox(),
-                widget.Prompt(),
-                widget.WindowTabs(),
-                widget.Net(format="🌐 {down}"),
-                # widget.TextBox("|"),
-                widget.Battery(format="🔋 {percent:2.0%}({char})"),
-                # widget.TextBox("|"),
-                widget.GenPollText(func=show_pulse_volume, update_interval=2),
-                widget.Systray(),
-                widget.Clock(format=" %Y-%m-%d %a %I:%M %p ", foreground="#d75f5f"),
-            ],
-            25,
-            opacity=0.6,
-            border_width=[5, 5, 5, 5],  # Draw top and bottom borders
-            # border_color=["ff00ff", "000000", "ff00ff", "000000"]  # Borders are magenta
-        )
-    )
-]
 
 # Drag floating layouts.
 mouse = [
@@ -333,18 +363,17 @@ mouse = [
         lazy.window.set_size_floating(),
         start=lazy.window.get_size(),
     ),
-    Click([mod], "Button2", lazy.window.bring_to_front()),
+    Click([mod], "Button3", lazy.window.bring_to_front()),
 ]
 
 # Set auto start commands
+# PulseAudio and Fcitx 5 can autorun by systemd service
 once_cmds = [
     "picom",  # Compositing manager, for transparent support
     "clash-premium",  # Clash proxy
-    "fctix",  # Use input methods
     "nm-applet",  # Show network status
 ]
 normal_cmds = [
-    # "pulseaudio --start",  # For sound system
     "xset +dpms",
     "xset dpms 0 0 1800",
     "xset s 1800",

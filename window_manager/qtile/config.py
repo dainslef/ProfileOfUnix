@@ -67,29 +67,31 @@ def is_pulse_mute() -> bool:
 # Generate the volume info
 def show_pulse_volume() -> str:
     percent = get_pulse_volume()
-    is_mute = is_pulse_mute()
-    status = "OFF" if is_mute else "ON"
+    not_mute = not is_pulse_mute()
+    status = "ON" if not_mute else "OFF"
     volume_emoji = (
-        "🔇"
-        if is_mute
-        else "🔊"
-        if percent >= 60
+        "🔊"
+        if percent >= 60 and not_mute
         else "🔉"
-        if percent >= 20
+        if percent >= 20 and not_mute
         else "🔈"
-        if percent > 0
+        if percent > 0 and not_mute
         else "🔇"
     )
     return f"{volume_emoji} {percent}%({status})"
 
 
-def change_pulse_volume(_, volume: int, plus: bool = True):
+@lazy.function
+def change_pulse_volume(_, volume: int):
     sink = 0
-    op = "+" if plus else "-"
-    # Prevent the volume break 100% limit
-    change = "100" if plus and get_pulse_volume() + volume > 100 else f"{op}{volume}"
+    if volume > 0:
+        op, volume_change = "+", "rise up ⬆️"
+        # Prevent the volume break 100% limit
+        change = "100" if get_pulse_volume() + volume > 100 else f"{op}{volume}"
+    else:
+        op, volume_change = "", "lower ⬇️"
+        change = volume
     os.system(f"pactl set-sink-volume {sink} {change}%")
-    volume_change = "rise up ⬆️" if plus else "lower ⬇️"
     volume_change_id = 1001
     send_notification(
         "🔈 Volume Change",
@@ -99,6 +101,7 @@ def change_pulse_volume(_, volume: int, plus: bool = True):
     )
 
 
+@lazy.function
 def change_pulse_mute(_):
     sink = 0
     state = "🔊 ON" if is_pulse_mute() else "🔇 OFF"
@@ -111,15 +114,37 @@ def change_pulse_mute(_):
     )
 
 
+@lazy.function
+def change_brightness(_, value: int):
+    if value > 0:
+        operate, content = "+", "up ⬆️"
+    else:
+        operate, content = "", "down ⬇️"
+    os.system(f"xbacklight {operate}{value}")
+    brightness = int(
+        float(subprocess.check_output("xbacklight", shell=True, text=True).strip())
+    )
+    brightness_change_id = 1002
+    send_notification(
+        "💡 Brightness Change",
+        f"Background brightness {content}: {brightness}%",
+        brightness_change_id,
+        brightness,
+    )
+
+
+@lazy.function
 def change_layout(qtile: Qtile, prev: bool = False):
-    layout_change_notification_id = 1000
     if prev:
+        state = "prev"
         qtile.cmd_prev_layout()
     else:
+        state = "next"
         qtile.cmd_next_layout()
+    layout_change_notification_id = 1000
     send_notification(
         "🔁 Layout Change",
-        f"Layout has been changed ...\nThe current layout is [{qtile.current_layout.name}]!",
+        f"Change to {state} layout ...\nThe current layout is [{qtile.current_layout.name}]!",
         layout_change_notification_id,
     )
 
@@ -141,6 +166,21 @@ def open_terminal_by_need(qtile: Qtile):
                 last_terminal = w
         if not last_terminal:
             os.system(terminal + terminal_args + " &")
+
+
+@lazy.function
+def take_screenshot(_, window: bool = False):
+    if window:
+        arg, desc = "", "window"
+    else:
+        arg, desc = "-u", "fullscreen"
+    os.system(f"scrot {arg} ~/Pictures/screenshot-{desc}-$(date -Ins).png")
+    screenshot_id = 1003
+    send_notification(
+        "📸 Screen Shot",
+        f"Take the {desc} screenshot success!\nScreenshot saved in dir ~/Pictures.",
+        screenshot_id,
+    )
 
 
 @lazy.function
@@ -194,11 +234,11 @@ keys = [
     ),
     # Layout operation
     Key([mod, "control"], "n", lazy.layout.normalize(), desc="Reset all window sizes"),
-    Key([mod], "space", lazy.function(change_layout), desc="Toggle between layouts"),
+    Key([mod], "space", change_layout, desc="Toggle between layouts"),
     Key(
         [mod, "control"],
         "space",
-        lazy.function(change_layout, True),
+        change_layout(True),
         desc="Toggle between layouts",
     ),
     # Window operation
@@ -245,6 +285,19 @@ keys = [
         lazy.spawn("dunstctl close-all"),
         desc="Close all notifications",
     ),
+    # Screenshot
+    Key(
+        [],
+        "Print",
+        take_screenshot,
+        desc="Take screenshot for full screen",
+    ),
+    Key(
+        [mod],
+        "Print",
+        take_screenshot(True),
+        desc="Take screenshot for current window",
+    ),
     # Special key bindings
     Key(
         [],
@@ -255,26 +308,50 @@ keys = [
     Key(
         [],
         "XF86AudioRaiseVolume",
-        lazy.function(change_pulse_volume, 5),
+        change_pulse_volume(5),
         desc="Change the volume",
     ),
     Key(
         [],
         "XF86AudioLowerVolume",
-        lazy.function(change_pulse_volume, 5, False),
+        change_pulse_volume(-5),
         desc="Change the volume",
     ),
     Key(
         [mod],
         "XF86AudioRaiseVolume",
-        lazy.function(change_pulse_volume, 1),
+        change_pulse_volume(1),
         desc="Change the volume",
     ),
     Key(
         [mod],
         "XF86AudioLowerVolume",
-        lazy.function(change_pulse_volume, 1, False),
+        change_pulse_volume(-1),
         desc="Change the volume",
+    ),
+    Key(
+        [],
+        "XF86MonBrightnessUp",
+        change_brightness(5),
+        desc="Change the brightness",
+    ),
+    Key(
+        [],
+        "XF86MonBrightnessDown",
+        change_brightness(-5),
+        desc="Change the brightness",
+    ),
+    Key(
+        [mod],
+        "XF86MonBrightnessUp",
+        change_brightness(1),
+        desc="Change the brightness",
+    ),
+    Key(
+        [mod],
+        "XF86MonBrightnessDown",
+        change_brightness(-1),
+        desc="Change the brightness",
     ),
 ]
 

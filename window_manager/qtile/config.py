@@ -7,7 +7,9 @@ from libqtile.config import Click, Drag, Group, Key, Match, Screen
 from libqtile.backend.base import Window
 from libqtile.core.manager import Qtile
 from libqtile.lazy import lazy
+
 import os, subprocess
+from enum import Enum, auto
 
 # Qtile pre-define config variables
 follow_mouse_focus = False
@@ -29,21 +31,31 @@ terminal_args = (
     " -W -P never -g 120x40 -n 5000 -T 20 --reverse --no-decorations --no-scrollbar"
 )
 
-# Utils function
-def is_terminal(c: Window):
-    return c and c.match(Match(wm_class=terminal_wm_class))
+# Add method to Window class
+Window.is_terminal = lambda c: c and c.match(Match(wm_class=terminal_wm_class))
+
+# Notification Types
+class NotificationType(Enum):
+    CHANGE_PLUSE_VOLUME = 1000
+    CHANGE_BRIGHTNESS = auto()
+    CHANGE_LAYOUT = auto()
+    TAKE_SCREENSHOT = auto()
 
 
 # Send the notification
 def send_notification(
-    title: str, content: str, replace_id: int = None, percent_value: int = None
+    title: str,
+    content: str,
+    replace_id: NotificationType = None,
+    percent_value: int = None,
 ):
-    replace = f"-r {replace_id}" if replace_id else ""
+    replace = f"-r {replace_id.value}" if replace_id else ""
     percent = f"-h int:value:{percent_value}" if percent_value else ""
     os.system(f"dunstify '{title}' '{content}' {replace} {percent}")
 
 
-def get_pulse_volume() -> int:
+# Util functions
+def pulse_volume() -> int:
     return int(
         # Get the command output
         subprocess.check_output(
@@ -65,8 +77,8 @@ def is_pulse_mute() -> bool:
 
 
 # Generate the volume info
-def show_pulse_volume() -> str:
-    percent = get_pulse_volume()
+def pulse_volume_text() -> str:
+    percent = pulse_volume()
     not_mute = not is_pulse_mute()
     status = "ON" if not_mute else "OFF"
     volume_emoji = (
@@ -87,17 +99,16 @@ def change_pulse_volume(_, volume: int):
     if volume > 0:
         op, volume_change = "+", "rise up ⬆️"
         # Prevent the volume break 100% limit
-        change = "100" if get_pulse_volume() + volume > 100 else f"{op}{volume}"
+        change = "100" if pulse_volume() + volume > 100 else f"{op}{volume}"
     else:
         op, volume_change = "", "lower ⬇️"
         change = volume
     os.system(f"pactl set-sink-volume {sink} {change}%")
-    volume_change_id = 1001
     send_notification(
         "🔈 Volume Change",
         f"Volume {volume_change}",
-        volume_change_id,
-        get_pulse_volume(),
+        NotificationType.CHANGE_PLUSE_VOLUME,
+        pulse_volume(),
     )
 
 
@@ -106,11 +117,10 @@ def change_pulse_mute(_):
     sink = 0
     state = "🔊 ON" if is_pulse_mute() else "🔇 OFF"
     os.system(f"pactl set-sink-mute {sink} toggle")
-    volume_change_id = 1001
     send_notification(
         "🔈 Volume changed",
         f"Sound state has been changed ...\nCurrent sound state is [{state}]!",
-        volume_change_id,
+        NotificationType.CHANGE_PLUSE_VOLUME,
     )
 
 
@@ -124,11 +134,10 @@ def change_brightness(_, value: int):
     brightness = int(
         float(subprocess.check_output("xbacklight", shell=True, text=True).strip())
     )
-    brightness_change_id = 1002
     send_notification(
         "💡 Brightness Change",
-        f"Background brightness {content}: {brightness}%",
-        brightness_change_id,
+        f"Background brightness {content} {brightness}%",
+        NotificationType.CHANGE_BRIGHTNESS,
         brightness,
     )
 
@@ -141,11 +150,10 @@ def change_layout(qtile: Qtile, prev: bool = False):
     else:
         state = "next"
         qtile.cmd_next_layout()
-    layout_change_notification_id = 1000
     send_notification(
         "🔁 Layout Change",
         f"Change to {state} layout ...\nThe current layout is [{qtile.current_layout.name}]!",
-        layout_change_notification_id,
+        NotificationType.CHANGE_LAYOUT,
     )
 
 
@@ -156,13 +164,13 @@ def open_terminal_by_need(qtile: Qtile):
     terminal_group = qtile.groups_map.get(terminal_group_name)
     last_terminal = None
     for w in terminal_group.windows:
-        if is_terminal(w):
+        if w.is_terminal():
             last_terminal = w
     if last_terminal:
         last_terminal.togroup(qtile.current_group.name, switch_group=True)
     else:
         for w in qtile.current_group.windows:
-            if is_terminal(w):
+            if w.is_terminal():
                 last_terminal = w
         if not last_terminal:
             os.system(terminal + terminal_args + " &")
@@ -188,7 +196,7 @@ def minimize_window(qtile: Qtile):
     w = qtile.current_window
     if w:
         w.toggle_minimize()
-        if is_terminal(w) and not w.minimized:
+        if w.is_terminal() and not w.minimized:
             w.floating = True
             # Place window to the screen center
             screen = w.group.screen
@@ -395,7 +403,7 @@ screens = [
                 widget.WindowTabs(),
                 widget.Net(format="🌐 {down}"),
                 widget.Battery(format="🔋 {percent:2.0%}({char})", update_interval=10),
-                widget.GenPollText(func=show_pulse_volume, update_interval=1),
+                widget.GenPollText(func=pulse_volume_text, update_interval=1),
                 widget.Systray(),
                 widget.Clock(format=" %Y-%m-%d %a %I:%M %p ", foreground="#d75f5f"),
             ],
@@ -467,5 +475,5 @@ def client_focus(c: Window):
         c.cmd_bring_to_front()  # Bring the floating focus window to front
     else:
         for w in c.group.windows:
-            if w.floating and is_terminal(w):
+            if w.floating and w.is_terminal():
                 w.togroup(terminal_group_name)

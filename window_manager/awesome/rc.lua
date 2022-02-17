@@ -19,24 +19,23 @@ vicious.contrib = require("vicious.contrib")
 -- {{{ Init
 
 -- Custom init command
-awful.spawn.with_shell("pulseaudio --start") -- NixOS won't auto start PulseAudio
+-- PulseAudio and Fcitx 5 can autorun by systemd service
+awful.spawn.with_shell("systemctl --user restart pulseaudio") -- In NixOS PulseAudio should restart during window manager startup, otherwise the PulseAudio plugin won't work
 awful.spawn.with_shell("xset +dpms") -- Use the power manager
 awful.spawn.with_shell("xset dpms 0 0 1800") -- Set the power manager timeout to 30 minutes
 awful.spawn.with_shell("xset s 1800") -- Set screensaver timeout to 30 mintues
 
 local auto_run_list = {
-	"fcitx", -- Use input method
-	"xcompmgr", -- For transparent support
+	"picom", -- For transparent support
 	"nm-applet", -- Show network status
 	"clash-premium" -- clash proxy
 	-- "blueman-applet", -- Use bluetooth
 }
 
-function run_once(cmd)
-	awful.spawn.with_shell("pgrep -u $USER -x " .. cmd .. "; or " .. cmd)
-end
-
 for i = 1, #auto_run_list do
+	function run_once(cmd)
+		awful.spawn.with_shell("pgrep -u $USER -x " .. cmd .. "; or " .. cmd)
+	end
 	run_once(auto_run_list[i])
 end
 
@@ -96,25 +95,26 @@ beautiful.init(awful.util.get_themes_dir() .. "default/theme.lua")
 local theme = beautiful.get()
 
 -- Custom theme settings, border and font
-theme.border_width = 2
+theme.border_width = 4
 theme.font = "Dejavu Sans 10"
 theme.master_width_factor = 0.6 -- Set the master window percent
-theme.useless_gap = 5 -- Set the window gap
+theme.useless_gap = 5 -- Set the window
 
 -- Color settings, the last two bits are alpha channels
-local color_transparent = "#00000000"
-local color_menu_bg = "#33445566"
-local color_task_tag_focus = "#55667788"
-local color_naughty_bg = "#00112288"
-
-theme.bg_normal = color_transparent -- Set background transparent
-theme.bg_minimize = color_transparent -- Set the minimize color of taskbar
-theme.menu_bg_normal = color_menu_bg
+theme.bg_normal = "#00000000" -- Set background transparent
+theme.bg_minimize = theme.bg_normal -- Set the minimize color of taskbar
+theme.fg_minimize = "#55555500"
+theme.bg_systray = "#999999"
+theme.border_focus = "#778899EE"
+theme.border_normal = "#00000022"
+theme.menu_bg_normal = "#33445566"
 theme.menu_fg_normal = theme.fg_focus
 theme.menu_border_color = theme.border_focus
-theme.taglist_bg_focus = color_task_tag_focus -- Set the focus color of taglist
-theme.tasklist_bg_focus = color_task_tag_focus -- Set the focus color of taskbar
-theme.notification_bg = color_naughty_bg
+theme.taglist_bg_focus = "#55667788"
+theme.tasklist_bg_focus = theme.taglist_bg_focus
+theme.tasklist_bg_normal = theme.bg_normal
+theme.tasklist_fg_normal = theme.fg_minimize
+theme.notification_bg = "#33445599"
 theme.notification_fg = theme.fg_focus
 
 -- This is used later as the default terminal and editor to run
@@ -159,7 +159,6 @@ local layouts = {
 -- {{{ Tags
 
 -- Define a tag table which hold all screen tags.
--- local tag_names = { "①", "②", "③", "④" }
 local tags = {}
 local tag_properties = {
 	{ "❶", layouts[1] },
@@ -186,46 +185,33 @@ end
 
 -- {{{ Menu
 
--- Create menu items
-local home_path = "/home/dainslef"
-local awesome_menu = {
-	{ "RestartWM", awesome.restart },
-	{ "QuitWM", function() awesome.quit() end },
-	{ "Suspend", "systemctl suspend" },
-	{ "PowerOff", "poweroff" }
-}
-local develop_menu = {
-	{ "VSCode", "code" },
-	{ "IDEA", "idea-ultimate" }
-}
-local tools_menu = {
-	{ "Browser", browser },
-	{ "Dictionary", dictionary },
-	{ "VLC", "vlc" }
-}
-local system_menu = {
-	{ "Terminal", terminal .. terminal_args },
-	{ "Top", terminal .. terminal_args .. " -k -- top" },
-	{ "GParted", "gparted" }
-}
-
 -- Add menu items to main menu
 local main_menu = awful.menu {
 	items = {
-		{ "Awesome", awesome_menu, beautiful.awesome_icon },
-		{ "Develop", develop_menu },
-		{ "Tools", tools_menu },
-		{ "System", system_menu },
+		{ "Awesome", {
+			{ "RestartWM", awesome.restart },
+			{ "QuitWM", function() awesome.quit() end },
+			{ "Suspend", "systemctl suspend" },
+			{ "PowerOff", "poweroff" }
+		}, beautiful.awesome_icon },
+		{ "Develop",  {
+			{ "VSCode", "code" },
+			{ "IDEA", "idea-ultimate" }
+		}},
+		{ "Tools", {
+			{ "Browser", browser },
+			{ "Dictionary", dictionary },
+			{ "VLC", "vlc" }
+		}},
+		{ "System", {
+			{ "Terminal", terminal .. terminal_args },
+			{ "Top", terminal .. terminal_args .. " -k -- top" },
+			{ "GParted", "gparted" }
+		}},
 		{ "Mail", mail },
 		{ "Files", terminal .. terminal_args  .. " -k -- " .. file_manager },
 		{ "Browser", browser }
 	}
-}
-
--- Create launcher and set menu
-local launcher = awful.widget.launcher {
-	image = beautiful.awesome_icon,
-	menu = main_menu
 }
 
 -- Menubar configuration
@@ -238,10 +224,11 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 -- {{{ Wibox
 
 -- Create a textclock widget
-local text_clock = wibox.widget.textclock("<span font='Dejavu Sans 10'>" ..
-	"[<span color='red'>%a</span>] %b/%d <span color='yellow'>%H:%M</span> </span>")
+local text_clock = wibox.widget.textclock("<span font='Dejavu Sans 10' color='white'>" ..
+	"[<span color='blue'>%a</span>] %b/%d <span color='cyan'>%H:%M</span> </span>")
 local month_calendar = awful.widget.calendar_popup.month()
-month_calendar.bg = color_menu_bg
+month_calendar.bg = theme.taglist_bg_focus
+month_calendar.fg = theme.fg_normal
 month_calendar:attach(text_clock, "tr")
 
 -- Create widgetbox
@@ -286,7 +273,7 @@ task_list.buttons = awful.util.table.join(
 
 -- Battery state
 local battery_widget = wibox.widget.textbox()
-local battery_fresh_span = 29 -- Time span for refresh battery widget (seconds)
+local battery_fresh_span = 10 -- Time span for refresh battery widget (seconds)
 local battery_name = "BAT0"
 
 -- Register battery widget
@@ -336,21 +323,22 @@ for s = 1, screen.count() do
 		}
 	}
 
-	-- Create the wibar
-	widget_box[s] = awful.wibar { position = "top", screen = s, height = 35 }
-
 	-- Widgets that are aligned to the left
-	local left_layout = wibox.layout.fixed.horizontal()
-	left_layout:add(layout_box[s])
-	left_layout:add(prompt_box[s])
+	local left_layout = wibox.container.background(wibox.container.margin(wibox.widget {
+		layout_box[s],
+		prompt_box[s],
+		tag_list[s],
+		layout = wibox.layout.fixed.horizontal
+	}, 10, 10), theme.menu_bg_normal, gears.shape.rounded_bar)
 
 	-- Widgets that are aligned to the right
-	local right_layout = wibox.layout.fixed.horizontal()
-	right_layout:add(tag_list[s])
-	right_layout:add(battery_widget)
-	right_layout:add(volume_widget)
-	right_layout:add(text_clock)
-	right_layout:add(wibox.widget.systray())
+	local right_layout = wibox.container.background(wibox.container.margin(wibox.widget {
+		battery_widget,
+		volume_widget,
+		wibox.widget.systray(),
+		text_clock,
+		layout = wibox.layout.fixed.horizontal
+	}, 10, 10), theme.menu_bg_normal, gears.shape.rounded_bar)
 
 	-- Now bring it all together (with the tasklist in the middle)
 	local middle_layout =
@@ -359,12 +347,18 @@ for s = 1, screen.count() do
 			-- place container args: widget, horizontal alignment
 			wibox.container.place(task_list[s], "left"), 10, 10)
 
-	widget_box[s].widget = wibox.container.margin(wibox.widget {
-		left_layout,
-		middle_layout,
-		right_layout,
-		layout = wibox.layout.align.horizontal
-	}, 10, 10, 10)
+	-- Create the wibar
+	widget_box[s] = awful.wibar {
+		position = "top",
+		screen = s,
+		height = 35,
+		widget = wibox.container.margin(wibox.widget {
+			left_layout,
+			middle_layout,
+			right_layout,
+			layout = wibox.layout.align.horizontal
+		}, 10, 10, 10)
+	}
 
 end
 
@@ -374,6 +368,7 @@ end
 
 -- {{{ Mouse bindings
 
+-- Mouse action on empty desktop
 root.buttons(
 	awful.util.table.join(
 		awful.button({ }, 3, function() main_menu:toggle() end),
@@ -453,21 +448,20 @@ end
 
 local global_keys = awful.util.table.join(
 
-	awful.key({ mod_key }, "Left", awful.tag.viewprev),
-	awful.key({ mod_key }, "Right", awful.tag.viewnext),
-	awful.key({ mod_key }, "Escape", awful.tag.history.restore),
-	awful.key({ mod_key }, "BackSpace", function() naughty.destroy_all_notifications() end),
+	awful.key({ mod_key }, "Left", function() awful.client.focus.bydirection("left") end),
+	awful.key({ mod_key }, "Right", function() awful.client.focus.bydirection("right") end),
+	awful.key({ mod_key }, "Up", function() awful.client.focus.bydirection("up") end),
+	awful.key({ mod_key }, "Down", function() awful.client.focus.bydirection("down") end),
+	awful.key({ mod_key, "Control"}, "Left", function() awful.client.swap.byidx(1) end),
+	awful.key({ mod_key, "Control"}, "Right", function() awful.client.swap.byidx(-1) end),
 
-	awful.key({ mod_key }, "j", function() awful.client.focus.byidx(1) end),
-	awful.key({ mod_key }, "k", function() awful.client.focus.byidx(-1) end),
+	awful.key({ mod_key }, "Escape", awful.tag.history.restore),
+	awful.key({ mod_key }, "BackSpace", naughty.destroy_all_notifications),
 
 	-- Layout manipulation
-	awful.key({ mod_key, "Shift" }, "j", function() awful.client.swap.byidx(1) end),
-	awful.key({ mod_key, "Shift" }, "k", function() awful.client.swap.byidx(-1) end),
-	awful.key({ mod_key, "Control" }, "j", function() awful.screen.focus_relative(1) end),
-	awful.key({ mod_key, "Control" }, "k", function() awful.screen.focus_relative(-1) end),
-	awful.key({ mod_key }, "u", awful.client.urgent.jumpto),
-	awful.key({ mod_key }, "Tab", function() awful.client.focus.history.previous() end),
+	awful.key({ mod_key }, "j", awful.client.urgent.jumpto),
+	awful.key({ mod_key }, "Tab", function() awful.client.focus.byidx(1) end),
+	awful.key({ mod_key }, "`", function() awful.client.focus.byidx(-1) end),
 
 	-- Standard program
 	awful.key({ mod_key }, "Return", function()
@@ -517,11 +511,7 @@ local global_keys = awful.util.table.join(
 	awful.key({ mod_key }, "p", function() menubar.show() end),
 
 	-- Custom key bindings
-	awful.key({ mod_key }, "l", function()
-		-- Lock screen when use AC Power, suspend system when use Battery
-		local power_status = vicious.call(vicious.widgets.bat, "$1", "BAT0")
-		awful.spawn(power_status == "−" and "systemctl suspend" or "dm-tool lock")
-	end),
+	awful.key({ mod_key }, "l", function() awful.spawn("dm-tool lock") end), -- Lock screen
 	awful.key({ mod_key }, "h", function()
 		-- Minimize all floating windows in current tag (workspace)
 		for _, c in pairs(awful.screen.focused().selected_tag:clients()) do
@@ -589,7 +579,7 @@ local global_keys = awful.util.table.join(
 	awful.key({ mod_key }, "XF86AudioLowerVolume", function() volume_change(-1) end)
 )
 
--- Bind all key numbers to tags
+-- Bind all key numbers to tags (Work Space)
 -- Be careful: we use keycodes to make it works on any keyboard layout
 -- This should map on the top row of your keyboard, usually 1 to 9
 for i = 1, #tags do
@@ -632,30 +622,6 @@ root.keys(global_keys)
 
 -- {{{ Rules
 
--- Use mod_key with mouse key to move/resize the window
-local client_buttons = awful.util.table.join(
-	awful.button({ }, 1, function(c) client.focus = c; c:raise() end),
-	awful.button({ mod_key }, 1, function(c)
-		c:raise()
-		client.focus = c
-		awful.mouse.client.move()
-	end),
-	awful.button({ mod_key, "Control" }, 1, function(c)
-		c:raise()
-		client.focus = c
-		awful.mouse.client.resize()
-	end)
-)
-
-local client_keys = awful.util.table.join(
-	awful.key({ mod_key }, "w", function(c) c:kill() end),
-	awful.key({ mod_key }, "m", function(c) c.fullscreen = not c.fullscreen end),
-	awful.key({ mod_key }, "n", function(c) c.minimized = true end),
-	awful.key({ mod_key, "Control" }, "t", function(c) c.ontop = not c.ontop end),
-	awful.key({ mod_key, "Control" }, "m", function(c) awful.client.setmaster(c) end),
-	awful.key({ mod_key, "Control" }, "f", awful.client.floating.toggle)
-)
-
 -- Rules to apply to new clients (through the "manage" signal)
 -- Get X-Client props need to install tool "xorg-prop", use command "xprop" to check window props
 awful.rules.rules = {
@@ -663,12 +629,32 @@ awful.rules.rules = {
 		-- All clients will match this rule
 		rule = { },
 		properties = {
+			raise = true,
 			border_width = beautiful.border_width,
 			border_color = beautiful.border_normal,
 			focus = awful.client.focus.filter,
-			raise = true,
-			keys = client_keys,
-			buttons = client_buttons
+			keys = awful.util.table.join(
+				awful.key({ mod_key }, "w", function(c) c:kill() end),
+				awful.key({ mod_key }, "m", function(c) c.fullscreen = not c.fullscreen end),
+				awful.key({ mod_key }, "n", function(c) c.minimized = true end),
+				awful.key({ mod_key, "Control" }, "t", function(c) c.ontop = not c.ontop end),
+				awful.key({ mod_key, "Control" }, "m", function(c) awful.client.setmaster(c) end),
+				awful.key({ mod_key, "Control" }, "f", awful.client.floating.toggle)
+			),
+			-- Use mod_key with mouse key to move/resize the window
+			buttons = awful.util.table.join(
+				awful.button({ }, 1, function(c) client.focus = c; c:raise() end),
+				awful.button({ mod_key }, 1, function(c)
+					c:raise()
+					client.focus = c
+					awful.mouse.client.move()
+				end),
+				awful.button({ mod_key, "Control" }, 1, function(c)
+					c:raise()
+					client.focus = c
+					awful.mouse.client.resize()
+				end)
+			)
 		}
 	}, {
 		rule = { instance = terminal_instance },

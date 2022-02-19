@@ -1,5 +1,6 @@
 # Qtile configuration
 # Place this file in the path ~/.config/qtile/config.py
+# Qtile will log in the path ~/.local/share/qtile/qtile.log
 
 # Import library
 from libqtile import bar, layout, widget, hook
@@ -40,6 +41,16 @@ class NotificationType(Enum):
     CHANGE_BRIGHTNESS = auto()
     CHANGE_LAYOUT = auto()
     TAKE_SCREENSHOT = auto()
+
+
+# Color settings
+class Color:
+    CLOCK = "#00FFFF"
+
+    class Border:
+        NORMAL = "#999999"
+        FOCUS = "#556677"
+        FLOATING_FOCUS = "#667788"
 
 
 # Send the notification
@@ -168,12 +179,8 @@ def open_terminal_by_need(qtile: Qtile):
             last_terminal = w
     if last_terminal:
         last_terminal.togroup(qtile.current_group.name, switch_group=True)
-    else:
-        for w in qtile.current_group.windows:
-            if w.is_terminal():
-                last_terminal = w
-        if not last_terminal:
-            os.system(terminal + terminal_args + " &")
+    elif not qtile.current_window.is_terminal():
+        os.system(terminal + terminal_args + " &")
 
 
 @lazy.function
@@ -405,14 +412,14 @@ screens = [
                 widget.Battery(format="🔋 {percent:2.0%}({char})", update_interval=10),
                 widget.GenPollText(func=pulse_volume_text, update_interval=1),
                 widget.Systray(),
-                widget.Clock(format=" %Y-%m-%d %a %I:%M %p ", foreground="#d75f5f"),
+                widget.Clock(format=" %Y-%m-%d %a %I:%M %p ", foreground=Color.CLOCK),
             ],
             25,
-            opacity=0.5,
+            opacity=0.6,
             # [N E S W]
             margin=[0, 0, margin, 0],
             # Set up bar inner content gap
-            border_width=[5, 2 * margin, 5, 2 * margin],
+            border_width=[margin, margin, margin, margin],
         ),
         bottom=bar.Gap(margin),
         left=bar.Gap(margin),
@@ -420,12 +427,18 @@ screens = [
     )
 ]
 layouts = [
-    layout.Bsp(margin=margin, border_width=border_width),
-    layout.Columns(margin=margin, border_width=border_width),
-    layout.Max(),
+    l(
+        margin=margin,
+        border_width=border_width,
+        border_focus=Color.Border.FOCUS,
+        border_normal=Color.Border.NORMAL,
+    )
+    for l in [layout.Bsp, layout.Columns, layout.Max]
 ]
 floating_layout = layout.Floating(
     border_width=border_width,
+    border_focus=Color.Border.FLOATING_FOCUS,
+    border_normal=Color.Border.NORMAL,
     float_rules=[
         # Run the utility of `xprop` to see the wm class and name of an X client.
         *layout.Floating.default_float_rules,

@@ -19,28 +19,30 @@
     };
   };
 
+  # Set up boot options.
   boot = {
+    # Set the custom linux kernel.
     kernelPackages = pkgs.linuxKernel.packages.linux_zen;
     # Set boot loader.
     loader = {
       timeout = 999999;
       systemd-boot.enable = true; # Use the default systemd-boot EFI boot loader. (No GRUB UI)
-      efi = {
-        canTouchEfiVariables = true;
-        efiSysMountPoint = "/boot/efi";
-      };
+      efi.canTouchEfiVariables = true;
     };
   };
 
+  # Set up networking.
   networking = {
     hostName = "MI-AIR12"; # Define your hostname.
     networkmanager.enable = true;
+    proxy.allProxy = "localhost:9999";
   };
 
-  # Select internationalisation properties.
+  # Config input method.
   i18n.inputMethod = {
-    enabled = "fcitx";
-    fcitx.engines = with pkgs.fcitx-engines; [anthy];
+    # Use ibus for Gnome, use fcitx5 for other desktop/wm.
+    enabled = "fcitx5";
+    fcitx5.addons = with pkgs; [fcitx5-chinese-addons fcitx5-mozc];
   };
 
   # Set your time zone.
@@ -49,50 +51,76 @@
     hardwareClockInLocalTime = true;
   };
 
-  # List packages installed in system profile. To search, run:
+  # Container and VM.
+  virtualisation = {
+    podman = {
+      # enable = true;
+      # dockerCompat = true; # Create a `docker` alias for podman
+    };
+  };
+
+  # Set up some programs' feature.
+  programs = {
+    vim.defaultEditor = true; # Set up default editor.
+    wireshark.enable = true; # Enable wireshark and create wireshark group.
+  };
+
+  # List packages installed in system profile.
   environment.systemPackages = with pkgs; [
-    (python3.withPackages (p: [p.black p.ansible p.jupyter])) # In NixOS, pip can't install package
-    vte ranger aria scrot nmap openssh neofetch p7zip qemu opencc
-    git stack rustup gcc gdb clang scala dotnet-sdk podman
-    xorg.xbacklight xdg-user-dirs xcompmgr networkmanagerapplet
-    fcitx-configtool vlc gparted vscode google-chrome wireshark
-    jetbrains.idea-ultimate syncthing thunderbird goldendict
+    # In NixOS, pip can't install package, set up pip package in configuration
+    (python3.withPackages (p: [p.black p.ansible p.jupyter]))
+    aria nmap openssh neofetch p7zip qemu opencc kubectl syncthing
+    stack rustup gcc gdb clang lldb scala nodejs dotnet-sdk jdk git
+    vlc gparted vscode google-chrome jetbrains.idea-ultimate thunderbird goldendict
     nur.repos.linyinfeng.clash-premium # nur.repos.linyinfeng.clash-for-windows
+    # For window manager
+    xorg.xbacklight xdg-user-dirs picom networkmanagerapplet scrot vte ranger
   ];
 
-  # Enable feature
-  programs = {
-    vim.defaultEditor = true;
-    java.enable = true;
-    npm.enable = true;
-    wireshark = {
+  # Config services.
+  services = {
+    gnome.gnome-keyring.enable = true; # For syncing VSCode configuration.
+    redis.servers."".enable = true; # Use new options for redis service instead of 'redis-enable'.
+    nginx.enable = true;
+    postgresql.enable = true;
+    mysql = {
       enable = true;
-      package = pkgs.wireshark-qt;
+      package = pkgs.mysql80;
+    };
+  };
+  systemd = {
+    extraConfig = "DefaultTimeoutStopSec=5s"; # Set shutdown max systemd service stop timeout.
+    # Disable autostart of some service
+    services = {
+      nginx.wantedBy = lib.mkForce [];
+      redis.wantedBy = lib.mkForce [];
+      mysql.wantedBy = lib.mkForce [];
+      postgresql.wantedBy = lib.mkForce [];
+    };
+  };
+
+  # Config fonts.
+  fonts = {
+    enableDefaultFonts = true;
+    fonts = with pkgs; [noto-fonts-cjk-sans powerline-fonts];
+    fontconfig = {
+      defaultFonts = {
+        serif = ["Noto Sans"];
+        sansSerif = ["Noto Sans"];
+        monospace = ["Source Code Pro for Powerline"];
+      };
     };
   };
 
   # Enable sound.
   hardware.pulseaudio.enable = true;
 
-  # Config fonts.
-  fonts = {
-    enableDefaultFonts = true;
-    fonts = with pkgs; [wqy_microhei noto-fonts powerline-fonts];
-    fontconfig = {
-      defaultFonts = {
-        serif = ["Noto Sans"];
-        sansSerif = ["Noto Sans"];
-        monospace = ["Noto Sans Mono"];
-      };
-    };
-  };
-
-  # Config the X11 windowing system.
+  # Enable GUI, config the X11 windowing system.
   services.xserver = {
     enable = true;
     videoDrivers = ["intel"];
     displayManager.lightdm = {
-      extraConfig = "[Seat:*]\ngreeter-hide-users=false";
+      extraConfig = "[Seat:*]\ngreeter-hide-users=false\nuser-session=dainslef";
       greeters.gtk.extraConfig = "background=/boot/background.jpg\ntheme-name = Adwaita-dark";
     };
     libinput = {
@@ -104,27 +132,15 @@
       luaModules = [pkgs.luaPackages.vicious];
     };
   };
-  systemd.services = {
-    nginx.wantedBy = lib.mkForce [];
-    redis.wantedBy = lib.mkForce [];
-    mysql.wantedBy = lib.mkForce [];
-  };
-  services = {
-    gnome.gnome-keyring.enable = true; # For syncing VSCode configuration.
-    redis.servers."".enable = true; # Use new options for redis service instead of 'redis-enable'
-    nginx.enable = true;
-    mysql = {
-      enable = true;
-      package = pkgs.mysql80;
-    };
-  };
+
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users = {
     defaultUserShell = pkgs.fish;
     users.dainslef = {
       isNormalUser = true;
-      extraGroups = ["wheel" "networkmanager"]; # Enable ‘sudo’ for the user.
+      # Enable sudo/network/wireshark permission for normal user.
+      extraGroups = ["wheel" "networkmanager" "wireshark"];
     };
   };
 

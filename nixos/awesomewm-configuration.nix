@@ -54,8 +54,8 @@
   # Container and VM.
   virtualisation = {
     podman = {
-      # enable = true;
-      # dockerCompat = true; # Create a `docker` alias for podman
+      enable = true;
+      dockerCompat = true; # Create a `docker` alias for podman
     };
   };
 
@@ -107,7 +107,7 @@
       defaultFonts = {
         serif = ["Noto Sans"];
         sansSerif = ["Noto Sans"];
-        monospace = ["Source Code Pro for Powerline"];
+        monospace = ["DejaVu Sans Mono"];
       };
     };
   };
@@ -119,14 +119,12 @@
   services.xserver = {
     enable = true;
     videoDrivers = ["intel"];
-    displayManager.lightdm = {
-      extraConfig = "[Seat:*]\ngreeter-hide-users=false\nuser-session=dainslef";
-      greeters.gtk.extraConfig = "background=/boot/background.jpg\ntheme-name = Adwaita-dark";
-    };
+    displayManager.lightdm.greeters.gtk.extraConfig = "background=/boot/background.jpg";
     libinput = {
       enable = true; # Enable touchpad support.
       touchpad.naturalScrolling = true;
     };
+    windowManager.qtile.enable = true;
     windowManager.awesome = {
       enable = true;
       luaModules = [pkgs.luaPackages.vicious];
@@ -144,9 +142,10 @@
     };
   };
 
-  # Replace custom nixos channel:
-  # sudo nix-channel --remove nixos
+  # Replace custom nixos channel with TUNA mirror:
   # sudo nix-channel --add https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-unstable
-  nix.settings.substituters = ["https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"];
+  # or use USTC Mirror:
+  # https://mirrors.ustc.edu.cn/nix-channels/nixos-unstable
+  nix.settings.substituters = ["https://mirrors.ustc.edu.cn/nix-channels/store"];
   nixpkgs.config.allowUnfree = true;
 }

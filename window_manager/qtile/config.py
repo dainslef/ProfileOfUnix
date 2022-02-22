@@ -4,7 +4,7 @@
 
 # Import library
 from libqtile import bar, layout, widget, hook
-from libqtile.config import Click, Drag, Group, Key, Match, Screen
+from libqtile.config import Click, Drag, Group, Key, Match, Screen, ScratchPad, DropDown
 from libqtile.backend.base import Window
 from libqtile.core.manager import Qtile
 from libqtile.lazy import lazy
@@ -21,19 +21,6 @@ focus_on_window_activation = "focus"
 
 # User custom variables
 mod = "mod4"
-mail = "thunderbird"
-browser = "google-chrome-stable"
-dictionary = "goldendict"
-file_manager = "ranger"
-terminal_group_name = "T"
-terminal = "vte-2.91"
-terminal_wm_class = "Terminal"
-terminal_args = (
-    " -W -P never -g 120x40 -n 5000 -T 20 --reverse --no-decorations --no-scrollbar"
-)
-
-# Add method to Window class
-Window.is_terminal = lambda c: c and c.match(Match(wm_class=terminal_wm_class))
 
 # Notification Types
 class NotificationType(Enum):
@@ -51,6 +38,33 @@ class Color:
         NORMAL = "#999999"
         FOCUS = "#556677"
         FLOATING_FOCUS = "#667788"
+
+
+# Application settings
+class Application:
+    MAIL = "thunderbird"
+    BROWSER = "google-chrome-stable"
+    DICTIONARY = "goldendict"
+    FILE_MANAGER = "ranger"
+    LOCK_SCREEN = "dm-tool lock"
+
+    class Terminal:
+        WM_CLASS = "Terminal"
+        GROUP_NAME = "T"
+        MATCH_RULE = Match(wm_class=WM_CLASS)
+        __command = "vte-2.91"
+        __args = " -W -P never -g 120x40 -n 5000 -T 20 --reverse --no-decorations --no-scrollbar"
+
+        # Add method to Window class
+        Window.is_terminal = lambda c: c and c.match(Application.Terminal.MATCH_RULE)
+
+        @staticmethod
+        def generate_command(
+            run_background: bool = False, run_other_command: str = None
+        ) -> str:
+            backgroud = "&" if run_background else ""
+            other_command = f"-c {run_other_command}" if run_other_command else ""
+            return f"{Application.Terminal.__command} {Application.Terminal.__args} {backgroud} {other_command}"
 
 
 # Send the notification
@@ -172,15 +186,15 @@ def change_layout(qtile: Qtile, prev: bool = False):
 @lazy.function
 def open_terminal_by_need(qtile: Qtile):
     # Don't use lazy api in lazy function
-    terminal_group = qtile.groups_map.get(terminal_group_name)
+    terminal_group = qtile.groups_map.get(Application.Terminal.GROUP_NAME)
     last_terminal = None
     for w in terminal_group.windows:
         if w.is_terminal():
             last_terminal = w
     if last_terminal:
         last_terminal.togroup(qtile.current_group.name, switch_group=True)
-    elif not qtile.current_window.is_terminal():
-        os.system(terminal + terminal_args + " &")
+    elif not qtile.current_window or not qtile.current_window.is_terminal():
+        os.system(Application.Terminal.generate_command(run_background=True))
 
 
 @lazy.function
@@ -248,7 +262,7 @@ keys = [
         [mod, "control"], "Down", lazy.layout.shuffle_down(), desc="Move window to down"
     ),
     # Layout operation
-    Key([mod, "control"], "n", lazy.layout.normalize(), desc="Reset all window sizes"),
+    Key([mod], "n", lazy.layout.normalize(), desc="Reset all window sizes"),
     Key([mod], "space", change_layout, desc="Toggle between layouts"),
     Key(
         [mod, "control"],
@@ -258,8 +272,13 @@ keys = [
     ),
     # Window operation
     Key([mod], "w", lazy.window.kill(), desc="Kill focused window"),
-    Key([mod], "m", lazy.window.toggle_maximize(), desc="Maxmize the current window"),
-    Key([mod], "n", minimize_window, desc="Minimize the current window"),
+    Key(
+        [mod, "control"],
+        "m",
+        lazy.window.toggle_fullscreen(),
+        desc="Maxmize the current window",
+    ),
+    Key([mod, "control"], "n", minimize_window, desc="Minimize the current window"),
     Key(
         [mod, "control"],
         "f",
@@ -273,13 +292,19 @@ keys = [
     Key([mod, "control"], "q", lazy.shutdown(), desc="Shutdown Qtile"),
     Key([mod], "r", lazy.spawncmd(), desc="Spawn a command using a procodmpt widget"),
     # Open custom apps
-    Key([mod], "b", lazy.spawn(browser), desc="Google Chrome Browser"),
-    Key([mod], "d", lazy.spawn(dictionary), desc="Golden Dict"),
-    Key([mod], "l", lazy.spawn("dm-tool lock"), desc="Lock Screen"),
+    Key([mod], "m", lazy.spawn(Application.MAIL), desc="Mail"),
+    Key([mod], "b", lazy.spawn(Application.BROWSER), desc="Google Chrome Browser"),
+    Key([mod], "d", lazy.spawn(Application.DICTIONARY), desc="Golden Dict"),
+    Key([mod], "l", lazy.spawn(Application.LOCK_SCREEN), desc="Lock Screen"),
+    Key([mod], "s", lazy.group["scratchpad"].dropdown_toggle("term")),
     Key(
         [mod],
         "f",
-        lazy.spawn(terminal + terminal_args + " -c " + file_manager),
+        lazy.spawn(
+            Application.Terminal.generate_command(
+                run_other_command=Application.FILE_MANAGER
+            )
+        ),
         desc="Ranger file manager",
     ),
     Key(
@@ -291,7 +316,7 @@ keys = [
     Key(
         [mod, "control"],  # Launch a new terminal
         "Return",
-        lazy.spawn(terminal + terminal_args),
+        lazy.spawn(Application.Terminal.generate_command()),
         desc="Launch terminal",
     ),
     Key(
@@ -313,87 +338,78 @@ keys = [
         take_screenshot(True),
         desc="Take screenshot for current window",
     ),
-    # Special key bindings
+    # Volume keybings
     Key(
         [],
         "XF86AudioMute",
         change_pulse_mute,
         desc="Change audio state",
     ),
-    Key(
-        [],
-        "XF86AudioRaiseVolume",
-        change_pulse_volume(5),
-        desc="Change the volume",
-    ),
-    Key(
-        [],
-        "XF86AudioLowerVolume",
-        change_pulse_volume(-5),
-        desc="Change the volume",
-    ),
-    Key(
-        [mod],
-        "XF86AudioRaiseVolume",
-        change_pulse_volume(1),
-        desc="Change the volume",
-    ),
-    Key(
-        [mod],
-        "XF86AudioLowerVolume",
-        change_pulse_volume(-1),
-        desc="Change the volume",
-    ),
-    Key(
-        [],
-        "XF86MonBrightnessUp",
-        change_brightness(5),
-        desc="Change the brightness",
-    ),
-    Key(
-        [],
-        "XF86MonBrightnessDown",
-        change_brightness(-5),
-        desc="Change the brightness",
-    ),
-    Key(
-        [mod],
-        "XF86MonBrightnessUp",
-        change_brightness(1),
-        desc="Change the brightness",
-    ),
-    Key(
-        [mod],
-        "XF86MonBrightnessDown",
-        change_brightness(-1),
-        desc="Change the brightness",
-    ),
+    *[
+        Key(
+            m,
+            f"XF86Audio{d}Volume",
+            change_pulse_volume(v),
+            desc="Change the volume",
+        )
+        for (m, d, v) in [
+            ([], "Raise", 5),
+            ([], "Lower", -5),
+            ([mod], "Raise", 1),
+            ([mod], "Lower", -1),
+        ]
+    ],
+    # Brightness key bindings
+    *[
+        Key(
+            m,
+            f"XF86MonBrightness{d}",
+            change_brightness(v),
+            desc="Change the brightness",
+        )
+        for (m, d, v) in [
+            ([], "Up", 5),
+            ([], "Down", -5),
+            ([mod], "Up", 1),
+            ([mod], "Down", -1),
+        ]
+    ],
 ]
 
 # Add groups
-groups = [Group(i) for i in f"❶❷❸❹{terminal_group_name}"]
+groups = [Group(i) for i in f"❶❷❸❹"]
 # Set up group keys
 for i in range(len(groups)):
     group_key, group_name = str(i + 1), groups[i].name
-    if group_name != terminal_group_name:
-        keys.extend(
-            [
-                # mod1 + letter of group = switch to group
-                Key(
-                    [mod],
-                    group_key,
-                    lazy.group[group_name].toscreen(),
-                    desc=f"Switch to group {group_name}",
-                ),
-                # mod1 + shift + letter of group = switch to & move focused window to group
-                Key(
-                    [mod, "control"],
-                    group_key,
-                    lazy.window.togroup(group_name, switch_group=True),
-                    desc=f"Switch to & move focused window to group {group_name}",
-                ),
-            ]
-        )
+    keys.extend(
+        [
+            # mod1 + letter of group = switch to group
+            Key(
+                [mod],
+                group_key,
+                lazy.group[group_name].toscreen(),
+                desc=f"Switch to group {group_name}",
+            ),
+            # mod1 + shift + letter of group = switch to & move focused window to group
+            Key(
+                [mod, "control"],
+                group_key,
+                lazy.window.togroup(group_name, switch_group=True),
+                desc=f"Switch to & move focused window to group {group_name}",
+            ),
+        ]
+    )
+groups.extend(
+    [
+        Group(Application.Terminal.GROUP_NAME),
+        ScratchPad(
+            "scratchpad",
+            # define a drop down terminal.
+            # it is placed in the upper third of screen by default.
+            [DropDown("term", Application.Terminal.generate_command(), height=0.5)],
+        ),
+    ]
+)
 
 margin, border_width = 5, 4
 screens = [
@@ -443,7 +459,7 @@ floating_layout = layout.Floating(
         # Run the utility of `xprop` to see the wm class and name of an X client.
         *layout.Floating.default_float_rules,
         # Custom rules
-        Match(wm_class=terminal_wm_class),
+        Application.Terminal.MATCH_RULE,
     ],
 )
 
@@ -489,4 +505,4 @@ def client_focus(c: Window):
     else:
         for w in c.group.windows:
             if w.floating and w.is_terminal():
-                w.togroup(terminal_group_name)
+                w.togroup(Application.Terminal.GROUP_NAME)

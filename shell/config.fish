@@ -51,9 +51,6 @@ function env_config
 
         end
 
-        # Set haskell stack GHC compiler path
-        set PATH $PATH (stack path --compiler-bin)
-
         # Set python pip package binary path
         if [ -e "$pip_bin" ]
             set PATH $PATH $pip_bin

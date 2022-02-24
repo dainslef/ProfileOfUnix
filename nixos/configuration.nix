@@ -4,42 +4,49 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   imports =
     [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
+      /etc/nixos/hardware-configuration.nix
     ];
 
-  # Set boot loader.
-  boot.loader = {
-    # systemd-boot.enable = true; # Use the default systemd-boot EFI boot loader. (No GRUB UI)
-    efi = {
-      canTouchEfiVariables = true;
-      efiSysMountPoint = "/boot/efi";
-    };
-    grub = {
-      efiSupport = true;
-      useOSProber = true;
-      device = "nodev";
+  nixpkgs.config.packageOverrides = pkgs: {
+    # Add NUR repo.
+    nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
+      inherit pkgs;
     };
   };
 
+  # Set up boot options.
+  boot = {
+    # Set the custom linux kernel.
+    kernelPackages = pkgs.linuxKernel.packages.linux_zen;
+    # Set boot loader.
+    loader = {
+      timeout = 999999;
+      systemd-boot.enable = true; # Use the default systemd-boot EFI boot loader. (No GRUB UI)
+      efi.canTouchEfiVariables = true;
+    };
+  };
+
+  # Set up networking.
   networking = {
     hostName = "MI-AIR12"; # Define your hostname.
     networkmanager.enable = true;
-    # wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-    # proxy.default = "http://user:password@proxy:port/";  # Configure network proxy if necessary
-    # proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-    # useDHCP = false;
-    # interfaces.wlp1s0.useDHCP = true;
+    proxy = {
+      allProxy = "localhost:9999";
+      httpProxy = "localhost:9999";
+      httpsProxy = "localhost:9999";
+    };
   };
 
-  # Select internationalisation properties.
+  # Config input method.
   i18n.inputMethod = {
-    enabled = "fcitx";
-    fcitx.engines = with pkgs.fcitx-engines; [anthy];
+    # Use ibus for Gnome, use fcitx5 for other desktop/wm.
+    enabled = "fcitx5";
+    fcitx5.addons = with pkgs; [fcitx5-chinese-addons fcitx5-mozc];
   };
 
   # Set your time zone.
@@ -48,47 +55,91 @@
     hardwareClockInLocalTime = true;
   };
 
-  # List packages installed in system profile. To search, run:
+  # Container and VM.
+  virtualisation = {
+    podman = {
+      enable = true;
+      dockerCompat = true; # Create a `docker` alias for podman
+    };
+  };
+
+  # Set up some programs' feature.
+  programs = {
+    vim.defaultEditor = true; # Set up default editor.
+    wireshark.enable = true; # Enable wireshark and create wireshark group (Let normal user can use wireshark).
+  };
+
+  # List packages installed in system profile.
   environment.systemPackages = with pkgs; [
-    dotnet-sdk ntfs3g xorg.xbacklight xcompmgr
-    openssh neofetch stack rustup git gcc gdb p7zip scala fcitx-configtool
-    gnome2.vte ranger aria scrot
-    vlc vscode google-chrome
-    haskellPackages.xmobar
-    jetbrains.idea-ultimate
+    # In NixOS, pip can't install package, set up pip package in configuration
+    (python3.withPackages (p: [p.black p.ansible p.jupyter]))
+    # Developer tools
+    git kubectl stack rustup gcc gdb clang lldb scala nodejs dotnet-sdk jdk android-tools
+    vscode jetbrains.idea-ultimate
+    # Normal tools
+    aria nmap openssh neofetch p7zip qemu opencc syncthing
+    vlc gparted google-chrome thunderbird goldendict
+    nur.repos.linyinfeng.clash-premium # nur.repos.linyinfeng.clash-for-windows
+    # For window manager
+    xorg.xbacklight xdg-user-dirs picom networkmanagerapplet scrot vte ranger
+    dunst # Provide notification (some WM like Qtile and XMonad don't have a built-in notification service)
   ];
 
-  # Enable feature
-  programs = {
-    java.enable = true;
-    npm.enable = true;
-    wireshark = {
+  # Config services.
+  services = {
+    gnome.gnome-keyring.enable = true; # For syncing VSCode configuration.
+    redis.servers."".enable = true; # Use new options for redis service instead of 'redis-enable'.
+    nginx.enable = true;
+    postgresql.enable = true;
+    mysql = {
       enable = true;
-      package = pkgs.wireshark-qt;
+      package = pkgs.mysql80;
     };
-    vim.defaultEditor = true;
+  };
+  systemd = {
+    extraConfig = "DefaultTimeoutStopSec=5s"; # Set shutdown max systemd service stop timeout.
+    # Disable autostart of some service
+    services = {
+      nginx.wantedBy = lib.mkForce [];
+      redis.wantedBy = lib.mkForce [];
+      mysql.wantedBy = lib.mkForce [];
+      postgresql.wantedBy = lib.mkForce [];
+    };
+  };
+
+  # Config fonts.
+  fonts = {
+    enableDefaultFonts = true;
+    fonts = with pkgs; [noto-fonts-cjk-sans powerline-fonts];
+    fontconfig = {
+      defaultFonts = {
+        serif = ["Noto Sans"];
+        sansSerif = ["Noto Sans"];
+        monospace = ["DejaVu Sans Mono"];
+      };
+    };
   };
 
   # Enable sound.
   hardware.pulseaudio.enable = true;
 
-  # Enable the X11 windowing system.
-  # services.xserver.layout = "us";
-  # services.xserver.xkbOptions = "eurosign:e";
-
-  # Enable the X11 windowing system.
-  # Enable Desktop Environment.
+  # Enable GUI, config the X11 windowing system.
   services.xserver = {
     enable = true;
+    videoDrivers = ["intel"];
+    displayManager.lightdm.greeters.gtk.extraConfig = "background=/boot/background.jpg";
     libinput = {
       enable = true; # Enable touchpad support.
       touchpad.naturalScrolling = true;
     };
-    # displayManager.lightdm.autoLogin = {
-    #  enable = true;
-    #  user = "dainslef";
-    # };
-    videoDrivers = ["intel"];
+    # Enable Qtile
+    windowManager.qtile.enable = true;
+    # Enable AwesomeWM
+    windowManager.awesome = {
+      enable = true;
+      luaModules = [pkgs.luaPackages.vicious];
+    };
+    # Enable XMonad
     windowManager.xmonad = {
       enable = true;
       enableContribAndExtras = true;
@@ -101,13 +152,21 @@
     defaultUserShell = pkgs.fish;
     users.dainslef = {
       isNormalUser = true;
-      extraGroups = ["wheel" "networkmanager"]; # Enable ‘sudo’ for the user.
+      # Enable sudo/network/wireshark permission for normal user.
+      extraGroups = ["wheel" "networkmanager" "wireshark"];
     };
   };
 
-  # This value determines the NixOS release from which the default settings for stateful data.
-  # system.stateVersion = "20.03"; # Did you read the comment?
-
+  # Replace custom nixos channel with TUNA mirror:
+  # sudo nix-channel --add https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-unstable
+  # or use USTC Mirror:
+  # https://mirrors.ustc.edu.cn/nix-channels/nixos-unstable
+  nix.settings.substituters = ["https://mirrors.ustc.edu.cn/nix-channels/store"];
   nixpkgs.config.allowUnfree = true;
-  nix.binaryCaches = ["https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"];
+
+  # Execute custom scripts when rebuild NixOS configuration.
+  system.activationScripts.text = "
+    # Create custom bash symbol link (/bin/bash) for compatibility with most Linux scripts.
+    ln -sf /bin/sh /bin/bash
+  ";
 }

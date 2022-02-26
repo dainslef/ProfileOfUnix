@@ -35,7 +35,7 @@
   networking = {
     hostName = "MI-AIR12"; # Define your hostname.
     networkmanager.enable = true;
-    proxy = {
+    proxy = { # Set up proxy (for Clash).
       allProxy = "localhost:9999";
       httpProxy = "localhost:9999";
       httpsProxy = "localhost:9999";

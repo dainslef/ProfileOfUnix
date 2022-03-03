@@ -183,18 +183,38 @@ def change_layout(qtile: Qtile, prev: bool = False):
 
 
 # Custom functions for key bindings
+# Don't use lazy api in lazy function
 @lazy.function
 def open_terminal_by_need(qtile: Qtile):
-    # Don't use lazy api in lazy function
-    terminal_group = qtile.groups_map.get(Application.Terminal.GROUP_NAME)
-    last_terminal = None
-    for w in terminal_group.windows:
+    next_terminal = None
+    # First try to get terminal window from terminal group
+    for w in qtile.groups_map.get(Application.Terminal.GROUP_NAME).windows:
         if w.is_terminal():
-            last_terminal = w
-    if last_terminal:
-        last_terminal.togroup(qtile.current_group.name, switch_group=True)
-    elif not qtile.current_window or not qtile.current_window.is_terminal():
-        os.system(Application.Terminal.generate_command(run_background=True))
+            next_terminal = w
+    if next_terminal:
+        # Move terminal window from terminal group to current group
+        next_terminal.togroup(qtile.current_group.name, switch_group=True)
+    else:
+        first_other_terminal, after_current = None, False
+        # If no terminal window in terminal group, then try to find window in current group
+        for w in qtile.current_group.windows:
+            if w.is_terminal():
+                if after_current:
+                    next_terminal = w
+                    break
+                if w != qtile.current_window:
+                    if not first_other_terminal:
+                        # Backup the first other terminal window
+                        first_other_terminal = w
+                else:
+                    # Mark if the index is after current terminal window
+                    after_current = True
+        if next_terminal or first_other_terminal:
+            # Should use Group API to change the window focus,
+            # change focus with Window API won't change window border color
+            qtile.current_group.focus(next_terminal or first_other_terminal, True)
+        elif not qtile.current_window or not qtile.current_window.is_terminal():
+            os.system(Application.Terminal.generate_command(run_background=True))
 
 
 @lazy.function
@@ -233,19 +253,29 @@ def minimize_window(qtile: Qtile):
             )
 
 
+@lazy.function
+def next_window(qtile: Qtile):
+    w = qtile.current_window
+    if w and not w.fullscreen:
+        # Only switch window when the current window isn't fullscreen
+        qtile.current_group.cmd_next_window()
+
+
+@lazy.function
+def prev_window(qtile: Qtile):
+    w = qtile.current_window
+    if w and not w.fullscreen:
+        qtile.current_group.cmd_prev_window()
+
+
 keys = [
     # Move focus by arrow keys
     Key([mod], "Left", lazy.layout.left(), desc="Move focus to left"),
     Key([mod], "Right", lazy.layout.right(), desc="Move focus to right"),
     Key([mod], "Up", lazy.layout.up(), desc="Move focus up"),
     Key([mod], "Down", lazy.layout.down(), desc="Move focus down"),
-    Key([mod], "Tab", lazy.group.next_window(), desc="Move focus to next window"),
-    Key(
-        [mod],
-        "quoteleft",
-        lazy.group.prev_window(),
-        desc="Move focus to prev window (mod + `)",
-    ),
+    Key([mod], "Tab", next_window, desc="Move focus to next window"),
+    Key([mod], "quoteleft", prev_window, desc="Move focus to prev window (mod + `)"),
     # Move windows between left/right columns or move up/down in current stack.
     # Moving out of range in Columns layout will create new column.
     Key(
@@ -296,7 +326,6 @@ keys = [
     Key([mod], "b", lazy.spawn(Application.BROWSER), desc="Google Chrome Browser"),
     Key([mod], "d", lazy.spawn(Application.DICTIONARY), desc="Golden Dict"),
     Key([mod], "l", lazy.spawn(Application.LOCK_SCREEN), desc="Lock Screen"),
-    Key([mod], "s", lazy.group["scratchpad"].dropdown_toggle("term")),
     Key(
         [mod],
         "f",
@@ -403,13 +432,14 @@ groups.extend(
     [
         Group(Application.Terminal.GROUP_NAME),
         ScratchPad(
-            "scratchpad",
+            "Scratchpad",
             # define a drop down terminal.
             # it is placed in the upper third of screen by default.
-            [DropDown("term", Application.Terminal.generate_command(), height=0.5)],
+            [DropDown("DropDown", Application.Terminal.generate_command(), height=0.5)],
         ),
     ]
 )
+keys.extend([Key([mod], "s", lazy.group["Scratchpad"].dropdown_toggle("DropDown"))])
 
 margin, border_width = 5, 4
 screens = [
@@ -425,7 +455,11 @@ screens = [
                 widget.WindowCount(text_format="[{num}]"),
                 widget.WindowTabs(),
                 widget.Net(format="🌐 {down}"),
-                widget.Battery(format="🔋 {percent:2.0%}({char})", update_interval=10),
+                widget.Battery(
+                    format="🔋 {percent:2.0%}({char})",
+                    update_interval=10,
+                    show_short_text=False,  # Make battery plugin show full format text in Full/Empty status
+                ),
                 widget.GenPollText(func=pulse_volume_text, update_interval=1),
                 widget.Systray(),
                 widget.Clock(format=" %Y-%m-%d %a %I:%M %p ", foreground=Color.CLOCK),
@@ -503,6 +537,6 @@ def client_focus(c: Window):
     if c.floating:
         c.cmd_bring_to_front()  # Bring the floating focus window to front
     else:
-        for w in c.group.windows:
-            if w.floating and w.is_terminal():
-                w.togroup(Application.Terminal.GROUP_NAME)
+        terminals = [w for w in c.group.windows if w.floating and w.is_terminal()]
+        terminals.reverse()  # Reverse terminal windows' order, then move to terminal group
+        [w.togroup(Application.Terminal.GROUP_NAME) for w in terminals]

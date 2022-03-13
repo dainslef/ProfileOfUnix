@@ -44,7 +44,7 @@
 
   # Config input method.
   i18n.inputMethod = {
-    # Use ibus for Gnome, use fcitx5 for other desktop/wm.
+    # Use ibus for Gnome and Pantheon, use fcitx5 for other desktop/wm.
     enabled = "fcitx5";
     fcitx5.addons = with pkgs; [fcitx5-chinese-addons fcitx5-mozc];
   };
@@ -59,29 +59,33 @@
   virtualisation = {
     podman = {
       enable = true;
-      dockerCompat = true; # Create a `docker` alias for podman
+      dockerCompat = true; # Create a `docker` alias for podman.
     };
   };
 
   # Set up some programs' feature.
   programs = {
+    fish.enable = true; # Enable fish feature will set up environment shells (/etc/shells) for Account Service.
     vim.defaultEditor = true; # Set up default editor.
     wireshark.enable = true; # Enable wireshark and create wireshark group (Let normal user can use wireshark).
   };
 
   # List packages installed in system profile.
   environment.systemPackages = with pkgs; [
-    # In NixOS, pip can't install package, set up pip package in configuration
+    # In NixOS, pip can't install package, set up pip package in configuration.
     (python3.withPackages (p: [p.black p.ansible p.jupyter]))
     # Developer tools
     git kubectl stack rustup gcc gdb clang lldb scala nodejs dotnet-sdk jdk android-tools
     vscode jetbrains.idea-ultimate
     # Normal tools
-    aria nmap openssh neofetch p7zip qemu opencc syncthing
+    aria nmap openssh neofetch p7zip qemu opencc syncthing wine
     vlc gparted google-chrome thunderbird goldendict
+    # Man pages (POSIX API and C++ dev doc)
+    man-pages-posix stdmanpages
+    # Clash
     nur.repos.linyinfeng.clash-premium # nur.repos.linyinfeng.clash-for-windows
     # For window manager
-    xorg.xbacklight xdg-user-dirs picom networkmanagerapplet scrot vte ranger
+    xorg.xbacklight xdg-user-dirs picom networkmanagerapplet scrot vte ranger ueberzug
     dunst # Provide notification (some WM like Qtile and XMonad don't have a built-in notification service)
   ];
 
@@ -97,8 +101,9 @@
     };
   };
   systemd = {
-    extraConfig = "DefaultTimeoutStopSec=5s"; # Set shutdown max systemd service stop timeout.
-    # Disable autostart of some service
+    # Set shutdown max systemd service stop timeout.
+    extraConfig = "DefaultTimeoutStopSec=5s";
+    # Disable autostart of some service.
     services = {
       nginx.wantedBy = lib.mkForce [];
       redis.wantedBy = lib.mkForce [];
@@ -139,12 +144,6 @@
       enable = true;
       luaModules = [pkgs.luaPackages.vicious];
     };
-    # Enable XMonad
-    windowManager.xmonad = {
-      enable = true;
-      enableContribAndExtras = true;
-      extraPackages = p: [p.xmobar];
-    };
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
@@ -157,16 +156,16 @@
     };
   };
 
+  # Execute custom scripts when rebuild NixOS configuration.
+  system.activationScripts.text = "
+    # Create custom bash symbol link (/bin/bash) for compatibility with most Linux scripts.
+    ln -sf /bin/sh /bin/bash
+  ";
+
   # Replace custom nixos channel with TUNA mirror:
   # sudo nix-channel --add https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-unstable
   # or use USTC Mirror:
   # https://mirrors.ustc.edu.cn/nix-channels/nixos-unstable
   nix.settings.substituters = ["https://mirrors.ustc.edu.cn/nix-channels/store"];
   nixpkgs.config.allowUnfree = true;
-
-  # Execute custom scripts when rebuild NixOS configuration.
-  system.activationScripts.text = "
-    # Create custom bash symbol link (/bin/bash) for compatibility with most Linux scripts.
-    ln -sf /bin/sh /bin/bash
-  ";
 }

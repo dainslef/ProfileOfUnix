@@ -3,11 +3,18 @@
 // for macOS filesystem
 .DS_Store
 
+// for C/C++ develop and CMake
+*.o
+*.a
+*.so
+CMakeFiles
+
 // for Node.js
 node_modules
 dist
 
 // for most IDE
+build
 target
 log
 bin

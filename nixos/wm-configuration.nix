@@ -67,7 +67,10 @@
   programs = {
     fish.enable = true; # Enable fish feature will set up environment shells (/etc/shells) for Account Service.
     vim.defaultEditor = true; # Set up default editor.
-    wireshark.enable = true; # Enable wireshark and create wireshark group (Let normal user can use wireshark).
+    wireshark = {
+      enable = true; # Enable wireshark and create wireshark group (Let normal user can use wireshark).
+      package = pkgs.wireshark; # Use wireshark-qt as wireshark package (Default package is wireshark-cli).
+    };
   };
 
   # List packages installed in system profile.
@@ -75,11 +78,13 @@
     # In NixOS, pip can't install package, set up pip package in configuration.
     (python3.withPackages (p: [p.black p.ansible p.jupyter]))
     # Developer tools
-    git kubectl stack rustup gcc gdb clang lldb scala nodejs dotnet-sdk jdk android-tools
-    vscode jetbrains.idea-ultimate
+    gcc gdb clang lldb cmake rustup # C/C++/Rust compiler and build tools
+    jdk scala android-tools dotnet-sdk # Java and .Net SDK
+    git kubectl stack nodejs # Other develop tools
+    vscode jetbrains.idea-ultimate # IDE/Editor
     # Normal tools
-    aria nmap openssh neofetch p7zip qemu opencc syncthing wine
-    vlc gparted google-chrome thunderbird goldendict
+    aria nmap openssh neofetch p7zip qemu opencc syncthing wine # Service and command line tools
+    vlc gparted google-chrome thunderbird goldendict # GUI tools
     # Man pages (POSIX API and C++ dev doc)
     man-pages-posix stdmanpages
     # Clash

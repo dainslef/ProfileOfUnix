@@ -84,7 +84,7 @@
     vscode jetbrains.idea-ultimate # IDE/Editor
     # Normal tools
     aria nmap openssh neofetch p7zip qemu opencc syncthing wine # Service and command line tools
-    vlc gparted google-chrome thunderbird goldendict # GUI tools
+    vlc gparted gimp google-chrome thunderbird goldendict blender # GUI tools
     # Man pages (POSIX API and C++ dev doc)
     man-pages-posix stdmanpages
     # Clash

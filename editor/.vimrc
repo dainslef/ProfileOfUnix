@@ -104,15 +104,14 @@ Plugin 'vim-syntastic/syntastic' " 語法檢測插件
 Plugin 'flazz/vim-colorschemes' " vim主題配色集
 Plugin 'terryma/vim-multiple-cursors' " 多點編輯插件，選中目標後可以用ctrl+n鍵批量重構同名變量
 Plugin 'Shougo/neocomplcache.vim' " 輕量級的代碼補全插件
-Plugin 'taglist.vim' " 來自github中vim-scripts收集的插件直接寫名字,不過很可能獲得的是舊版本
 Plugin 'winmanager--Fox' " 窗口管理插件
 Plugin 'derekwyatt/vim-scala' " vim默認沒有提供scala語言的支持，使用插件添加對scala語言支持
 Plugin 'rust-lang/rust.vim' " rust插件
 Plugin 'vim-ruby/vim-ruby' " ruby插件
-Plugin 'tpope/vim-rails' " ROR插件
 Plugin 'plasticboy/vim-markdown' " markdown語法高亮插件
 Plugin 'Raimondi/delimitMate' " 符號智能補全插件
 Plugin 'udalov/kotlin-vim' " Kotlin語法高亮
+" Plugin 'taglist.vim' " 來自github中vim-scripts收集的插件直接寫名字,不過很可能獲得的是舊版本
 " Plugin 'fatih/vim-go' " golang插件，使用指令:GoInstallBinaries安裝補全工具
 " Plugin 'klen/python-mode' " python插件
 " Plugin 'fholgado/minibufexpl.vim' " 窗口標籤插件，功能已由vim-airline提供
@@ -120,6 +119,7 @@ Plugin 'udalov/kotlin-vim' " Kotlin語法高亮
 " Plugin 'Valloric/YouCompleteMe' " 高級補全插件，支持語法補全
 " Plugin 'ervandew/eclim' " 類似eclipse的java插件
 " Plugin 'altercation/vim-colors-solarized' " solarized主題配色插件
+" Plugin 'tpope/vim-rails' " ROR插件
 call vundle#end() " required
 filetype plugin indent on " 開啓插件
 
@@ -220,7 +220,7 @@ let g:neocomplcache_force_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\
 " --- syntastic配置 ---
 let g:syntastic_check_on_open = 1 " 首次打開文件時即開始檢測語法錯誤
 let g:syntastic_c_compiler_options = "-std=c11" " 檢測c語法時使用c11語法
-let g:syntastic_cpp_compiler_options = "-std=c++1y" " 檢測c++語法時支持c++1y的新特性
+let g:syntastic_cpp_compiler_options = "-std=c++17" " 檢測c++語法時支持c++1y的新特性
 let g:syntastic_ignore_files = [".*\.m$"] " 忽略objective-C語言的語法檢測(objc的檢測體驗很差)
 let g:syntastic_python_python_exe = "python3" " 檢查python語法時使用python3語法
 

@@ -1,4 +1,4 @@
-# NixOS configuration, place this file in /etc/nixos/configuration.nix
+# NixOS main configuration, LINK this file to /etc/nixos/configuration.nix
 
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
@@ -10,6 +10,8 @@
   imports =
     [ # Include the results of the hardware scan.
       /etc/nixos/hardware-configuration.nix
+      /etc/nixos/custom-configuration.nix
+      ./custom-definition.nix
     ];
 
   nixpkgs.config.packageOverrides = pkgs: {
@@ -40,13 +42,6 @@
       httpProxy = "localhost:9999";
       httpsProxy = "localhost:9999";
     };
-  };
-
-  # Config input method.
-  i18n.inputMethod = {
-    # Use ibus for Gnome and Pantheon, use fcitx5 for other desktop/wm.
-    enabled = "fcitx5";
-    fcitx5.addons = with pkgs; [fcitx5-chinese-addons fcitx5-mozc];
   };
 
   # Set your time zone.
@@ -89,20 +84,24 @@
     man-pages-posix stdmanpages
     # Clash
     nur.repos.linyinfeng.clash-premium # nur.repos.linyinfeng.clash-for-windows
-    # For window manager
-    xorg.xbacklight xdg-user-dirs picom networkmanagerapplet scrot vte ranger ueberzug
-    dunst # Provide notification (some WM like Qtile and XMonad don't have a built-in notification service)
-  ];
+  ] ++ config.custom.extraPackages;
 
   # Config services.
   services = {
-    gnome.gnome-keyring.enable = true; # For syncing VSCode configuration.
     redis.servers."".enable = true; # Use new options for redis service instead of 'redis-enable'.
     nginx.enable = true;
     postgresql.enable = true;
     mysql = {
       enable = true;
       package = pkgs.mysql80;
+    };
+    # Enable GUI, config the X11 windowing system.
+    xserver = {
+      enable = true;
+      libinput = {
+        enable = true; # Enable touchpad support.
+        touchpad.naturalScrolling = true;
+      };
     };
   };
   systemd = {
@@ -132,24 +131,6 @@
 
   # Enable sound.
   hardware.pulseaudio.enable = true;
-
-  # Enable GUI, config the X11 windowing system.
-  services.xserver = {
-    enable = true;
-    videoDrivers = ["intel"];
-    displayManager.lightdm.greeters.gtk.extraConfig = "background=/boot/background.jpg";
-    libinput = {
-      enable = true; # Enable touchpad support.
-      touchpad.naturalScrolling = true;
-    };
-    # Enable Qtile
-    windowManager.qtile.enable = true;
-    # Enable AwesomeWM
-    windowManager.awesome = {
-      enable = true;
-      luaModules = [pkgs.luaPackages.vicious];
-    };
-  };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users = {

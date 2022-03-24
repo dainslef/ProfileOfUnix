@@ -35,7 +35,6 @@
 
   # Set up networking.
   networking = {
-    hostName = "MI-AIR12"; # Define your hostname.
     networkmanager.enable = true;
     proxy = { # Set up proxy (for Clash).
       allProxy = "localhost:9999";
@@ -97,7 +96,7 @@
     };
     # Enable GUI, config the X11 windowing system.
     xserver = {
-      enable = true;
+      enable = true; # Must enable xserver for desktop environments.
       libinput = {
         enable = true; # Enable touchpad support.
         touchpad.naturalScrolling = true;

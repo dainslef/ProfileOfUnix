@@ -32,7 +32,7 @@ with lib; {
       services.xserver.videoDrivers = ["amdgpu"];
     })
     (mkIf (config.custom.desktop.gnome || config.custom.desktop.pantheon) {
-      # Config input method.
+      # Set up the input method.
       i18n.inputMethod = {
         # Use ibus for Gnome and Pantheon
         enabled = "ibus";
@@ -41,7 +41,6 @@ with lib; {
     })
     (mkIf (!(config.custom.desktop.gnome || config.custom.desktop.pantheon)) {
       services.gnome.gnome-keyring.enable = true; # For syncing VSCode configuration.
-      # Config input method.
       i18n.inputMethod = {
         # Use fcitx5 for most desktop/wm.
         enabled = "fcitx5";
@@ -49,8 +48,8 @@ with lib; {
       };
     })
     (mkIf config.custom.desktop.wm {
+      # Csutom packages for window manager
       custom.extraPackages = with pkgs; [
-        # For window manager
         xorg.xbacklight xdg-user-dirs picom networkmanagerapplet scrot vte ranger ueberzug
         dunst # Provide notification (some WM like Qtile and XMonad don't have a built-in notification service)
       ];
@@ -63,6 +62,19 @@ with lib; {
         windowManager.awesome = {
           enable = true;
           luaModules = [pkgs.luaPackages.vicious];
+        };
+      };
+    })
+    (mkIf config.custom.desktop.kde {
+      # Custom packages for KDE
+      custom.extraPackages = with pkgs; [
+        libsForQt5.yakuake libsForQt5.sddm-kcm
+      ];
+      services.xserver = {
+        displayManager.sddm.enable = true; # Plasma use SDDM
+        desktopManager.plasma5 = {
+          enable = true;
+          phononBackend = "vlc"; # Use VLC as media backend.
         };
       };
     })

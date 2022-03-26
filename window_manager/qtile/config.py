@@ -1,5 +1,5 @@
 # Qtile configuration
-# Place this file in the path ~/.config/qtile/config.py
+# Link this file to the path ~/.config/qtile/config.py
 # Qtile will log in the path ~/.local/share/qtile/qtile.log
 
 # Import library
@@ -92,6 +92,17 @@ def pulse_volume() -> int:
     )
 
 
+def alsa_volume() -> int:
+    return int(
+        # Get the command output
+        subprocess.check_output(
+            "amixer get Master | grep -P '\d+%' -o | sed  's/\%//'",
+            shell=True,
+            text=True,
+        )
+    )
+
+
 def is_pulse_mute() -> bool:
     status = subprocess.check_output(
         "pactl list sinks | awk '/Mute/ { print $2 }'",
@@ -101,21 +112,13 @@ def is_pulse_mute() -> bool:
     return status == "yes"
 
 
-# Generate the volume info
-def pulse_volume_text() -> str:
-    percent = pulse_volume()
-    not_mute = not is_pulse_mute()
-    status = "ON" if not_mute else "OFF"
-    volume_emoji = (
-        "🔊"
-        if percent >= 60 and not_mute
-        else "🔉"
-        if percent >= 20 and not_mute
-        else "🔈"
-        if percent > 0 and not_mute
-        else "🔇"
-    )
-    return f"{volume_emoji} {percent}%({status})"
+def is_alsa_mute() -> bool:
+    status = subprocess.check_output(
+        "amixer get Master | grep -P '\[(o|n|f)+\]' -o",
+        shell=True,
+        text=True,
+    ).strip()  # Reponse content contains '\n', clear special charactor
+    return status == "[off]"
 
 
 @lazy.function
@@ -138,6 +141,27 @@ def change_pulse_volume(_, volume: int):
 
 
 @lazy.function
+def change_alsa_volume(_, volume: int):
+    # new_volume = alsa_volume() + volume
+    # new_volume = 100 if new_volume > 100 else 0 if new_volume < 0 else new_volume
+    if volume > 0:
+        op = "+"
+        volume_change = "rise up ⬆️"
+    else:
+        op = "-"
+        volume_change = "lower ⬇️"
+    # Prevent the volume break 100% limit
+    os.system(f"amixer set Master {abs(volume)}%{op}")
+    new_volume = alsa_volume()
+    send_notification(
+        "🔈 Volume Change",
+        f"Volume {volume_change} {new_volume}%",
+        NotificationType.CHANGE_PLUSE_VOLUME,
+        new_volume,
+    )
+
+
+@lazy.function
 def change_pulse_mute(_):
     sink = 0
     state = "🔊 ON" if is_pulse_mute() else "🔇 OFF"
@@ -147,6 +171,50 @@ def change_pulse_mute(_):
         f"Sound state has been changed ...\nCurrent sound state is [{state}]!",
         NotificationType.CHANGE_PLUSE_VOLUME,
     )
+
+
+@lazy.function
+def change_alsa_mute(_):
+    state = "🔊 ON" if is_alsa_mute() else "🔇 OFF"
+    os.system("amixer set Master toggle")
+    send_notification(
+        "🔈 Volume changed",
+        f"Sound state has been changed ...\nCurrent sound state is [{state}]!",
+        NotificationType.CHANGE_PLUSE_VOLUME,
+    )
+
+
+# Generate the volume info
+def pulse_volume_text() -> str:
+    percent = pulse_volume()
+    not_mute = not is_pulse_mute()
+    status = "ON" if not_mute else "OFF"
+    volume_emoji = (
+        "🔊"
+        if percent >= 60 and not_mute
+        else "🔉"
+        if percent >= 20 and not_mute
+        else "🔈"
+        if percent > 0 and not_mute
+        else "🔇"
+    )
+    return f"{volume_emoji} {percent}%({status})"
+
+
+def alsa_volume_text() -> str:
+    percent = alsa_volume()
+    not_mute = not is_alsa_mute()
+    status = "ON" if not_mute else "OFF"
+    volume_emoji = (
+        "🔊"
+        if percent >= 60 and not_mute
+        else "🔉"
+        if percent >= 20 and not_mute
+        else "🔈"
+        if percent > 0 and not_mute
+        else "🔇"
+    )
+    return f"{volume_emoji} {percent}%({status})"
 
 
 @lazy.function
@@ -224,11 +292,10 @@ def take_screenshot(_, window: bool = False):
     else:
         arg, desc = "-u", "fullscreen"
     os.system(f"scrot {arg} ~/Pictures/screenshot-{desc}-$(date -Ins).png")
-    screenshot_id = 1003
     send_notification(
         "📸 Screen Shot",
         f"Take the {desc} screenshot success!\nScreenshot saved in dir ~/Pictures.",
-        screenshot_id,
+        NotificationType.TAKE_SCREENSHOT,
     )
 
 
@@ -367,18 +434,39 @@ keys = [
         take_screenshot(True),
         desc="Take screenshot for current window",
     ),
-    # Volume keybings
+    # # Volume keybings for PulseAudio
+    # Key(
+    #     [],
+    #     "XF86AudioMute",
+    #     change_pulse_mute,
+    #     desc="Change audio state",
+    # ),
+    # *[
+    #     Key(
+    #         m,
+    #         f"XF86Audio{d}Volume",
+    #         change_pulse_volume(v),
+    #         desc="Change the volume",
+    #     )
+    #     for (m, d, v) in [
+    #         ([], "Raise", 5),
+    #         ([], "Lower", -5),
+    #         ([mod], "Raise", 1),
+    #         ([mod], "Lower", -1),
+    #     ]
+    # ],
+    # Volume keybings for ALSA
     Key(
         [],
         "XF86AudioMute",
-        change_pulse_mute,
+        change_alsa_mute,
         desc="Change audio state",
     ),
     *[
         Key(
             m,
             f"XF86Audio{d}Volume",
-            change_pulse_volume(v),
+            change_alsa_volume(v),
             desc="Change the volume",
         )
         for (m, d, v) in [
@@ -460,7 +548,8 @@ screens = [
                     update_interval=10,
                     show_short_text=False,  # Make battery plugin show full format text in Full/Empty status
                 ),
-                widget.GenPollText(func=pulse_volume_text, update_interval=1),
+                # widget.GenPollText(func=pulse_volume_text, update_interval=1),
+                widget.GenPollText(func=alsa_volume_text, update_interval=1),
                 widget.Systray(),
                 widget.Clock(format=" %Y-%m-%d %a %I:%M %p ", foreground=Color.CLOCK),
             ],

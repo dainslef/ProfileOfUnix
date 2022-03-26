@@ -1,8 +1,7 @@
 -- AwesomeWM configuration
--- Place this file in the path ~/.config/awesome/rc.lua
+-- Link this file to the path ~/.config/awesome/rc.lua
 
 -- Load library
-require("awful.autofocus")
 local awful = require("awful")
 local gears = require("gears")
 local wibox = require("wibox")
@@ -18,26 +17,34 @@ vicious.contrib = require("vicious.contrib")
 
 -- {{{ Init
 
--- Custom init command
--- PulseAudio and Fcitx 5 can autorun by systemd service
-awful.spawn.with_shell("systemctl --user restart pulseaudio") -- In NixOS PulseAudio should restart during window manager startup, otherwise the PulseAudio plugin won't work
-awful.spawn.with_shell("xset +dpms") -- Use the power manager
-awful.spawn.with_shell("xset dpms 0 0 1800") -- Set the power manager timeout to 30 minutes
-awful.spawn.with_shell("xset s 1800") -- Set screensaver timeout to 30 mintues
+function auto_run(tasks, once)
 
-local auto_run_list = {
+	function run_once(cmd)
+		awful.spawn.with_shell("pgrep -u $USER -x " .. cmd .. "; or " .. cmd)
+	end
+
+	local once = once or true
+	for i = 1, #tasks do
+		if once then run_once(tasks[i]) else awful.spawn.with_shell(tasks[i]) end
+	end
+
+end
+
+auto_run({
+	"systemctl --user restart pulseaudio", -- In NixOS PulseAudio should restart during window manager startup, otherwise the PulseAudio plugin won't work
+	"xset +dpms", -- Use the power manager
+	"xset dpms 0 0 1800", -- Set the power manager timeout to 30 minutes
+	"xset s 1800" -- Set screensaver timeout to 30 mintues
+}, false)
+
+-- These service should only run once
+auto_run {
+	-- PulseAudio and Fcitx 5 can auto_run by systemd service
 	"picom", -- For transparent support
 	"nm-applet", -- Show network status
 	"clash-premium" -- clash proxy
 	-- "blueman-applet", -- Use bluetooth
 }
-
-for i = 1, #auto_run_list do
-	function run_once(cmd)
-		awful.spawn.with_shell("pgrep -u $USER -x " .. cmd .. "; or " .. cmd)
-	end
-	run_once(auto_run_list[i])
-end
 
 -- }}}
 
@@ -92,30 +99,29 @@ end
 
 -- Init theme
 beautiful.init(awful.util.get_themes_dir() .. "default/theme.lua")
-local theme = beautiful.get()
 
 -- Custom theme settings, border and font
-theme.border_width = 4
-theme.font = "Dejavu Sans 10"
-theme.master_width_factor = 0.6 -- Set the master window percent
-theme.useless_gap = 5 -- Set the window
+beautiful.font = "DejaVu Sans 10"
+beautiful.border_width = 4
+beautiful.master_width_factor = 0.6 -- Set the master window percent
+beautiful.useless_gap = 5 -- Set the window Gap size
 
 -- Color settings, the last two bits are alpha channels
-theme.bg_normal = "#00000000" -- Set background transparent
-theme.bg_minimize = theme.bg_normal -- Set the minimize color of taskbar
-theme.fg_minimize = "#55555500"
-theme.bg_systray = "#999999"
-theme.border_focus = "#778899EE"
-theme.border_normal = "#00000022"
-theme.menu_bg_normal = "#33445566"
-theme.menu_fg_normal = theme.fg_focus
-theme.menu_border_color = theme.border_focus
-theme.taglist_bg_focus = "#55667788"
-theme.tasklist_bg_focus = theme.taglist_bg_focus
-theme.tasklist_bg_normal = theme.bg_normal
-theme.tasklist_fg_normal = theme.fg_minimize
-theme.notification_bg = "#33445599"
-theme.notification_fg = theme.fg_focus
+beautiful.bg_normal = "#00000000" -- Set background transparent
+beautiful.bg_minimize = beautiful.bg_normal -- Set the minimize color of taskbar
+beautiful.fg_normal = "#FFFFFF99"
+beautiful.fg_minimize = "#55555500"
+beautiful.bg_systray = "#AAAAAA00"
+beautiful.border_focus = "#778899EE"
+beautiful.border_normal = "#00000022"
+beautiful.menu_bg_normal = "#33445566"
+beautiful.menu_fg_normal = beautiful.fg_focus
+beautiful.menu_border_color = beautiful.border_focus
+beautiful.taglist_bg_focus = "#55667788"
+beautiful.tasklist_bg_focus = beautiful.taglist_bg_focus
+beautiful.tasklist_bg_normal = beautiful.bg_normal
+beautiful.tasklist_fg_normal = beautiful.fg_minimize
+beautiful.notification_bg = "#33445599"
 
 -- This is used later as the default terminal and editor to run
 local mail = "thunderbird"
@@ -124,7 +130,7 @@ local dictionary = "goldendict"
 local file_manager = "ranger"
 local terminal = "vte-2.91"
 local terminal_instance = "Terminal" -- Set the instance name of Terminal App, use xprop WM_CLASS
-local terminal_args = " -W -P never -g 120x40 -n 5000 -T 20 --reverse --no-decorations --no-scrollbar" -- -f 'Source Code Pro for Powerline 10'
+local terminal_args = " -W -P never -g 120x40 -n 5000 -T 20 --reverse --no-decorations --no-scrollbar" --  -f 'DejaVu Sans Mono 10'
 
 -- Set default editor
 local editor = os.getenv("EDITOR") or "nano"
@@ -225,10 +231,9 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 
 -- Create a textclock widget
 local text_clock = wibox.widget.textclock("<span font='Dejavu Sans 10' color='white'>" ..
-	"[<span color='blue'>%a</span>] %b/%d <span color='cyan'>%H:%M</span> </span>")
+	"[<span color='yellow'>%a</span>] %b/%d <span color='cyan'>%H:%M</span> </span>")
 local month_calendar = awful.widget.calendar_popup.month()
-month_calendar.bg = theme.taglist_bg_focus
-month_calendar.fg = theme.fg_normal
+month_calendar.bg = beautiful.taglist_bg_focus
 month_calendar:attach(text_clock, "tr")
 
 -- Create widgetbox
@@ -290,7 +295,7 @@ local volume_widget = wibox.widget.textbox()
 vicious.register(volume_widget, vicious.contrib.pulse, function(_, args)
 	local percent, status = args[1], args[2]
 	local emoji = percent >= 60 and "🔊" or percent >= 20 and "🔉" or percent > 0 and "🔈" or "🔇"
-	return emoji .. "<span color='white'>" .. percent .. "%(" .. status .. ")</span> "
+	return emoji .. "<span color='brown'>" .. percent .. "%(" .. status .. ")</span> "
 end)
 
 -- }}
@@ -323,22 +328,23 @@ for s = 1, screen.count() do
 		}
 	}
 
+	function create_bar_layout(widget)
+		return wibox.container.background(
+			wibox.container.margin(widget, 10, 10),
+			beautiful.menu_bg_normal, gears.shape.rounded_bar)
+	end
+
 	-- Widgets that are aligned to the left
-	local left_layout = wibox.container.background(wibox.container.margin(wibox.widget {
-		layout_box[s],
-		prompt_box[s],
-		tag_list[s],
+	local left_layout = create_bar_layout(wibox.widget {
+		layout_box[s], prompt_box[s], tag_list[s],
 		layout = wibox.layout.fixed.horizontal
-	}, 10, 10), theme.menu_bg_normal, gears.shape.rounded_bar)
+	})
 
 	-- Widgets that are aligned to the right
-	local right_layout = wibox.container.background(wibox.container.margin(wibox.widget {
-		battery_widget,
-		volume_widget,
-		wibox.widget.systray(),
-		text_clock,
+	local right_layout = create_bar_layout(wibox.widget {
+		battery_widget, volume_widget, wibox.widget.systray(), text_clock,
 		layout = wibox.layout.fixed.horizontal
-	}, 10, 10), theme.menu_bg_normal, gears.shape.rounded_bar)
+	})
 
 	-- Now bring it all together (with the tasklist in the middle)
 	local middle_layout =
@@ -353,9 +359,7 @@ for s = 1, screen.count() do
 		screen = s,
 		height = 35,
 		widget = wibox.container.margin(wibox.widget {
-			left_layout,
-			middle_layout,
-			right_layout,
+			left_layout, middle_layout, right_layout,
 			layout = wibox.layout.align.horizontal
 		}, 10, 10, 10)
 	}
@@ -521,10 +525,7 @@ local global_keys = awful.util.table.join(
 	awful.key({ mod_key, "Control" }, "h", function()
 		-- Unminimize all floating windows
 		for _, c in pairs(awful.screen.focused().selected_tag:clients()) do
-			if c.floating then
-				c:raise()
-				c.minimized = false
-			 end
+			if c.floating then c.minimized = false; client.focus = c end
 		end
 	end),
 	awful.key({ mod_key }, "b", function() awful.spawn(browser) end),
@@ -534,10 +535,7 @@ local global_keys = awful.util.table.join(
 	end),
 	awful.key({ mod_key, "Control" }, "n", function()
 		local c_restore = awful.client.restore() -- Restore the minimize window and focus it
-		if c_restore then
-			client.focus = c_restore
-			c_restore:raise()
-		end
+		if c_restore then client.focus = c_restore; c_restore:raise() end
 	end),
 
 	-- Screen shot key bindings
@@ -561,6 +559,8 @@ local global_keys = awful.util.table.join(
 	-- Brightness key bindings
 	awful.key({ }, "XF86MonBrightnessUp", function() brightness_change(5) end),
 	awful.key({ }, "XF86MonBrightnessDown", function() brightness_change(-5) end),
+	awful.key({ mod_key }, "XF86MonBrightnessUp", function() brightness_change(1) end),
+	awful.key({ mod_key }, "XF86MonBrightnessDown", function() brightness_change(-1) end),
 
 	-- Volume key bindings
 	awful.key({ }, "XF86AudioMute", function()

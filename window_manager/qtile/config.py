@@ -8,8 +8,10 @@ from libqtile.config import Click, Drag, Group, Key, Match, Screen, ScratchPad, 
 from libqtile.backend.base import Window
 from libqtile.core.manager import Qtile
 from libqtile.lazy import lazy
+from libqtile.log_utils import logger
 
 import os, subprocess
+from typing import Callable
 from enum import Enum, auto
 
 # Qtile pre-define config variables
@@ -22,12 +24,37 @@ focus_on_window_activation = "focus"
 # User custom variables
 mod = "mod4"
 
+# log start message
+# logger for debug, logger level should large than "warnning")
+logger.warning("Qtile start ...")
+
 # Notification Types
 class NotificationType(Enum):
-    CHANGE_PLUSE_VOLUME = 1000
+    CHANGE_VOLUME = 1000
     CHANGE_BRIGHTNESS = auto()
     CHANGE_LAYOUT = auto()
     TAKE_SCREENSHOT = auto()
+
+
+# Send the notification
+def send_notification(
+    title: str,
+    content: str,
+    replace_id: NotificationType = None,
+    percent_value: int = None,
+):
+    replace = f"-r {replace_id.value}" if replace_id else ""
+    percent = f"-h int:value:{percent_value}" if percent_value else ""
+    os.system(f"dunstify '{title}' '{content}' {replace} {percent}")
+
+
+# Get command ouput
+def get_command_output(command: str) -> str:
+    return subprocess.check_output(
+        command,
+        shell=True,
+        text=True,
+    ).strip()  # Some reponse content contains '\n', clear special charactor
 
 
 # Color settings
@@ -53,7 +80,9 @@ class Application:
         GROUP_NAME = "T"
         MATCH_RULE = Match(wm_class=WM_CLASS)
         __command = "vte-2.91"
-        __args = " -W -P never -g 120x40 -n 5000 -T 20 --reverse --no-decorations --no-scrollbar"
+        __args = (
+            " -g 120x40 -n 5000 -T 20  --no-decorations --no-scrollbar"  # --reverse
+        )
 
         # Add method to Window class
         Window.is_terminal = lambda c: c and c.match(Application.Terminal.MATCH_RULE)
@@ -67,169 +96,111 @@ class Application:
             return f"{Application.Terminal.__command} {Application.Terminal.__args} {backgroud} {other_command}"
 
 
-# Send the notification
-def send_notification(
-    title: str,
-    content: str,
-    replace_id: NotificationType = None,
-    percent_value: int = None,
-):
-    replace = f"-r {replace_id.value}" if replace_id else ""
-    percent = f"-h int:value:{percent_value}" if percent_value else ""
-    os.system(f"dunstify '{title}' '{content}' {replace} {percent}")
+# Sound control settings
+class VolumeControl:
+    # Check if system enabled PulseAudio.
+    IS_PULSE_AUDIO_ENABLED = os.system("pactl stat") == 0
 
-
-# Util functions
-def pulse_volume() -> int:
-    return int(
-        # Get the command output
-        subprocess.check_output(
-            "pactl list sinks | grep '^[[:space:]]Volume:' |"
-            + f"head -n 1 | tail -n 1 | sed -e 's,.* \\([0-9][0-9]*\\)%.*,\\1,'",
-            shell=True,
-            text=True,
+    # Set up the commands
+    if IS_PULSE_AUDIO_ENABLED:
+        # PulseAudio commands
+        SINK = (
+            int(
+                # Get the SINK count.
+                get_command_output(
+                    "pactl list sinks | grep '^[[:space:]]Volume:' | wc -l"
+                )
+            )
+            - 1
+        )  # Get the last SINK index
+        GET_VOLUME = (
+            # Get the last SINK (when a computer has multi sinks, usually the last sink is the TRUE output sink)
+            "pactl list sinks | grep '^[[:space:]]Volume:' "
+            + "| tail -n 1 | sed -e 's,.* \\([0-9][0-9]*\\)%.*,\\1,'"
         )
-    )
+        CHECK_MUTE = "pactl list sinks | awk '/Mute/ { print $2 }' | tail -n 1"
+        MUTE_STATUS = "yes"
+        MUTE_TOGGLE = f"pactl set-sink-mute {SINK} toggle"
+    else:
+        # ALSA commands
+        GET_VOLUME = "amixer get Master | grep -P '\d+%' -o | sed  's/\%//'"
+        CHECK_MUTE = "amixer get Master | grep -P '\[(o|n|f)+\]' -o"
+        MUTE_STATUS = "[off]"
+        MUTE_TOGGLE = "amixer set Master toggle"
 
+    def __get_volume() -> int:
+        return int(get_command_output(VolumeControl.GET_VOLUME))
 
-def alsa_volume() -> int:
-    return int(
-        # Get the command output
-        subprocess.check_output(
-            "amixer get Master | grep -P '\d+%' -o | sed  's/\%//'",
-            shell=True,
-            text=True,
+    def __is_mute() -> bool:
+        status = get_command_output(VolumeControl.CHECK_MUTE)
+        return status == VolumeControl.MUTE_STATUS
+
+    @staticmethod
+    def get_volume_text() -> str:
+        percent = VolumeControl.__get_volume()
+        not_mute = not VolumeControl.__is_mute()
+        status = "ON" if not_mute else "OFF"
+        volume_emoji = (
+            "🔊"
+            if percent >= 60 and not_mute
+            else "🔉"
+            if percent >= 20 and not_mute
+            else "🔈"
+            if percent > 0 and not_mute
+            else "🔇"
         )
-    )
+        return f"{volume_emoji} {percent}%({status})"
 
+    @staticmethod
+    @lazy.function
+    def change_mute(_):
+        state = "🔊 ON" if VolumeControl.__is_mute() else "🔇 OFF"
+        os.system(VolumeControl.MUTE_TOGGLE)
+        send_notification(
+            "🔈 Volume State Changed",
+            f"Sound state has been changed ...\nCurrent sound state is [{state}]!",
+            NotificationType.CHANGE_VOLUME,
+        )
 
-def is_pulse_mute() -> bool:
-    status = subprocess.check_output(
-        "pactl list sinks | awk '/Mute/ { print $2 }'",
-        shell=True,
-        text=True,
-    ).strip()  # Reponse content contains '\n', clear special charactor
-    return status == "yes"
-
-
-def is_alsa_mute() -> bool:
-    status = subprocess.check_output(
-        "amixer get Master | grep -P '\[(o|n|f)+\]' -o",
-        shell=True,
-        text=True,
-    ).strip()  # Reponse content contains '\n', clear special charactor
-    return status == "[off]"
-
-
-@lazy.function
-def change_pulse_volume(_, volume: int):
-    sink = 0
-    if volume > 0:
-        op, volume_change = "+", "rise up ⬆️"
-        # Prevent the volume break 100% limit
-        change = "100" if pulse_volume() + volume > 100 else f"{op}{volume}"
-    else:
-        op, volume_change = "", "lower ⬇️"
-        change = volume
-    os.system(f"pactl set-sink-volume {sink} {change}%")
-    send_notification(
-        "🔈 Volume Change",
-        f"Volume {volume_change}",
-        NotificationType.CHANGE_PLUSE_VOLUME,
-        pulse_volume(),
-    )
-
-
-@lazy.function
-def change_alsa_volume(_, volume: int):
-    # new_volume = alsa_volume() + volume
-    # new_volume = 100 if new_volume > 100 else 0 if new_volume < 0 else new_volume
-    if volume > 0:
-        op = "+"
-        volume_change = "rise up ⬆️"
-    else:
-        op = "-"
-        volume_change = "lower ⬇️"
-    # Prevent the volume break 100% limit
-    os.system(f"amixer set Master {abs(volume)}%{op}")
-    new_volume = alsa_volume()
-    send_notification(
-        "🔈 Volume Change",
-        f"Volume {volume_change} {new_volume}%",
-        NotificationType.CHANGE_PLUSE_VOLUME,
-        new_volume,
-    )
-
-
-@lazy.function
-def change_pulse_mute(_):
-    sink = 0
-    state = "🔊 ON" if is_pulse_mute() else "🔇 OFF"
-    os.system(f"pactl set-sink-mute {sink} toggle")
-    send_notification(
-        "🔈 Volume changed",
-        f"Sound state has been changed ...\nCurrent sound state is [{state}]!",
-        NotificationType.CHANGE_PLUSE_VOLUME,
-    )
-
-
-@lazy.function
-def change_alsa_mute(_):
-    state = "🔊 ON" if is_alsa_mute() else "🔇 OFF"
-    os.system("amixer set Master toggle")
-    send_notification(
-        "🔈 Volume changed",
-        f"Sound state has been changed ...\nCurrent sound state is [{state}]!",
-        NotificationType.CHANGE_PLUSE_VOLUME,
-    )
-
-
-# Generate the volume info
-def pulse_volume_text() -> str:
-    percent = pulse_volume()
-    not_mute = not is_pulse_mute()
-    status = "ON" if not_mute else "OFF"
-    volume_emoji = (
-        "🔊"
-        if percent >= 60 and not_mute
-        else "🔉"
-        if percent >= 20 and not_mute
-        else "🔈"
-        if percent > 0 and not_mute
-        else "🔇"
-    )
-    return f"{volume_emoji} {percent}%({status})"
-
-
-def alsa_volume_text() -> str:
-    percent = alsa_volume()
-    not_mute = not is_alsa_mute()
-    status = "ON" if not_mute else "OFF"
-    volume_emoji = (
-        "🔊"
-        if percent >= 60 and not_mute
-        else "🔉"
-        if percent >= 20 and not_mute
-        else "🔈"
-        if percent > 0 and not_mute
-        else "🔇"
-    )
-    return f"{volume_emoji} {percent}%({status})"
+    @staticmethod
+    @lazy.function
+    def change_volume(_, volume: int):
+        op, volume_change = ("+", "rise up ⬆️") if volume > 0 else ("-", "lower ⬇️")
+        if VolumeControl.IS_PULSE_AUDIO_ENABLED:
+            if volume > 0:
+                change = (
+                    "100"
+                    if VolumeControl.__get_volume() + volume > 100
+                    else f"{op}{volume}"
+                )  # Prevent the volume break 100% limit
+            else:
+                change = volume
+                op = ""
+            os.system(f"pactl set-sink-volume {VolumeControl.SINK} {change}%")
+        else:
+            os.system(f"amixer set Master {abs(volume)}%{op}")
+        new_volume = VolumeControl.__get_volume()
+        send_notification(
+            "🔈 Volume Changed",
+            f"Volume {volume_change} ({new_volume}%)",
+            NotificationType.CHANGE_VOLUME,
+            new_volume,
+        )
 
 
 @lazy.function
 def change_brightness(_, value: int):
     if value > 0:
-        operate, content = "+", "up ⬆️"
+        prefix, suffix, content = "+", "", "up ⬆️"
     else:
-        operate, content = "", "down ⬇️"
-    os.system(f"xbacklight {operate}{value}")
+        prefix, suffix, content = "", "-", "down ⬇️"
+    os.system(f"brightnessctl set {prefix}{abs(value)}%{suffix}")
     brightness = int(
-        float(subprocess.check_output("xbacklight", shell=True, text=True).strip())
+        get_command_output("brightnessctl | grep -P '\d+%' -o | sed  's/\%//'")
     )
     send_notification(
-        "💡 Brightness Change",
-        f"Background brightness {content} {brightness}%",
+        "💡 Brightness Changed",
+        f"Background brightness {content} ({brightness}%)",
         NotificationType.CHANGE_BRIGHTNESS,
         brightness,
     )
@@ -244,7 +215,7 @@ def change_layout(qtile: Qtile, prev: bool = False):
         state = "next"
         qtile.cmd_next_layout()
     send_notification(
-        "🔁 Layout Change",
+        "🔁 Layout Changed",
         f"Change to {state} layout ...\nThe current layout is [{qtile.current_layout.name}]!",
         NotificationType.CHANGE_LAYOUT,
     )
@@ -300,24 +271,20 @@ def take_screenshot(_, window: bool = False):
 
 
 @lazy.function
-def minimize_window(qtile: Qtile):
+def toggle_window(
+    qtile: Qtile,
+    operate: Callable[[Window], None],
+    check_state: Callable[[Window], bool],
+):
     w = qtile.current_window
     if w:
-        w.toggle_minimize()
-        if w.is_terminal() and not w.minimized:
+        # The default toggle operation (like fullscreen/minimize) will make floating mark useless.
+        operate(w)
+        if w.is_terminal() and not check_state(w):
             w.floating = True
-            # Place window to the screen center
-            screen = w.group.screen
-            x = (screen.width - w.width) // 2  # type: ignore
-            y = (screen.height - w.height) // 2  # type: ignore
-            w.place(
-                x,
-                y,
-                w.width,  # type: ignore
-                w.height,  # type: ignore
-                w.borderwidth,
-                w.bordercolor,  # type: ignore
-            )
+            # Qtile has been started to provide the cmd_center() method in Window class since v0.21.0
+            # In Qtile early version, you need impelement center window function manually.
+            w.cmd_center()  # Put the terminal window back to the screen center.
 
 
 @lazy.function
@@ -372,10 +339,15 @@ keys = [
     Key(
         [mod, "control"],
         "m",
-        lazy.window.toggle_fullscreen(),
+        toggle_window(lambda w: w.toggle_fullscreen(), lambda w: w.fullscreen),
         desc="Maxmize the current window",
     ),
-    Key([mod, "control"], "n", minimize_window, desc="Minimize the current window"),
+    Key(
+        [mod, "control"],
+        "n",
+        toggle_window(lambda w: w.toggle_minimize(), lambda w: w.minimized),
+        desc="Minimize the current window",
+    ),
     Key(
         [mod, "control"],
         "f",
@@ -434,39 +406,18 @@ keys = [
         take_screenshot(True),
         desc="Take screenshot for current window",
     ),
-    # # Volume keybings for PulseAudio
-    # Key(
-    #     [],
-    #     "XF86AudioMute",
-    #     change_pulse_mute,
-    #     desc="Change audio state",
-    # ),
-    # *[
-    #     Key(
-    #         m,
-    #         f"XF86Audio{d}Volume",
-    #         change_pulse_volume(v),
-    #         desc="Change the volume",
-    #     )
-    #     for (m, d, v) in [
-    #         ([], "Raise", 5),
-    #         ([], "Lower", -5),
-    #         ([mod], "Raise", 1),
-    #         ([mod], "Lower", -1),
-    #     ]
-    # ],
-    # Volume keybings for ALSA
+    # Volume keybings
     Key(
         [],
         "XF86AudioMute",
-        change_alsa_mute,
+        VolumeControl.change_mute,
         desc="Change audio state",
     ),
     *[
         Key(
             m,
             f"XF86Audio{d}Volume",
-            change_alsa_volume(v),
+            VolumeControl.change_volume(v),
             desc="Change the volume",
         )
         for (m, d, v) in [
@@ -548,8 +499,9 @@ screens = [
                     update_interval=10,
                     show_short_text=False,  # Make battery plugin show full format text in Full/Empty status
                 ),
-                # widget.GenPollText(func=pulse_volume_text, update_interval=1),
-                widget.GenPollText(func=alsa_volume_text, update_interval=1),
+                widget.GenPollText(
+                    func=VolumeControl.get_volume_text, update_interval=1
+                ),
                 widget.Systray(),
                 widget.Clock(format=" %Y-%m-%d %a %I:%M %p ", foreground=Color.CLOCK),
             ],
@@ -572,7 +524,7 @@ layouts = [
         border_focus=Color.Border.FOCUS,
         border_normal=Color.Border.NORMAL,
     )
-    for l in [layout.Bsp, layout.Columns, layout.Max]
+    for l in [layout.Columns, layout.Bsp, layout.Max]
 ]
 floating_layout = layout.Floating(
     border_width=border_width,
@@ -606,9 +558,9 @@ mouse = [
 # Set auto start commands
 # PulseAudio and Fcitx 5 can autorun by systemd service
 once_cmds = [
-    "picom",  # Compositing manager, for transparent support
-    "clash-premium",  # Clash proxy
-    "nm-applet",  # Show network status
+    "picom",  # Compositing manager, for transparent support.
+    "nm-applet",  # Show network status.
+    # "clash-premium",  # Clash proxy provide by systemd service.
 ]
 normal_cmds = [
     "xset +dpms",

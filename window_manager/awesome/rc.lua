@@ -1,6 +1,7 @@
 -- AwesomeWM configuration
 -- Link this file to the path ~/.config/awesome/rc.lua
 
+
 -- Load library
 local awful = require("awful")
 local gears = require("gears")
@@ -15,68 +16,68 @@ vicious.contrib = require("vicious.contrib")
 
 
 
--- {{{ Init
+-- Utils function
 
-function auto_run(tasks, once)
-
-	function run_once(cmd)
-		awful.spawn.with_shell("pgrep -u $USER -x " .. cmd .. "; or " .. cmd)
-	end
-
-	local once = once or true
-	for i = 1, #tasks do
-		if once then run_once(tasks[i]) else awful.spawn.with_shell(tasks[i]) end
-	end
-
+-- Run command sync, and get command shell output.
+function get_command_output(command)
+	local command_pipe = io.popen(command) -- Create a pipe
+	local command_output = command_pipe:read("*all"):gsub("%s+", "") -- Get output
+	command_pipe:close() -- Close the pipe
+	return command_output
 end
 
-auto_run({
-	"systemctl --user restart pulseaudio", -- In NixOS PulseAudio should restart during window manager startup, otherwise the PulseAudio plugin won't work
-	"xset +dpms", -- Use the power manager
-	"xset dpms 0 0 1800", -- Set the power manager timeout to 30 minutes
-	"xset s 1800" -- Set screensaver timeout to 30 mintues
-}, false)
-
--- These service should only run once
-auto_run {
-	-- PulseAudio and Fcitx 5 can auto_run by systemd service
-	"picom", -- For transparent support
-	"nm-applet", -- Show network status
-	"clash-premium" -- clash proxy
-	-- "blueman-applet", -- Use bluetooth
-}
-
--- }}}
 
 
-
--- {{{ Wallpaper
-
-local wall_paper = "/boot/background.jpg"
-if beautiful.wallpaper then
-	for s = 1, screen.count() do
-		gears.wallpaper.maximized(wall_paper, s, true)
-	end
-end
-
--- }}}
-
-
-
--- {{{ Error handling
-
--- Check if awesome encountered an error during startup and fell back to
--- another config (This code will only ever execute for the fallback config)
-if awesome.startup_errors then
-	naughty.notify {
-		preset = naughty.config.presets.critical,
-		title = "Oops, there were errors during startup!",
-		text = awesome.startup_errors
-	}
-end
-
--- Handle runtime errors after startup
+-- Init
 do
+
+	function auto_run(tasks, once)
+
+		function run_once(cmd)
+			awful.spawn.with_shell("pgrep -u $USER -x " .. cmd .. "; or " .. cmd)
+		end
+
+		local once = once or true
+		for i = 1, #tasks do
+			if once then run_once(tasks[i]) else awful.spawn.with_shell(tasks[i]) end
+		end
+
+	end
+
+	auto_run({
+		"systemctl --user restart pulseaudio", -- In NixOS PulseAudio should restart during window manager startup, otherwise the PulseAudio plugin won't work
+		"xset +dpms", -- Use the power manager
+		"xset dpms 0 0 1800", -- Set the power manager timeout to 30 minutes
+		"xset s 1800" -- Set screensaver timeout to 30 mintues
+	}, false)
+
+	-- These service should only run once
+	auto_run {
+		-- PulseAudio and Fcitx 5 can auto_run by systemd service
+		"picom", -- For transparent support
+		"nm-applet", -- Show network status
+		"clash-premium" -- clash proxy
+		-- "blueman-applet", -- Use bluetooth
+	}
+
+end
+
+
+
+-- Error handling
+do
+
+	-- Check if awesome encountered an error during startup and fell back to
+	-- another config (This code will only ever execute for the fallback config)
+	if awesome.startup_errors then
+		naughty.notify {
+			preset = naughty.config.presets.critical,
+			title = "Oops, there were errors during startup!",
+			text = awesome.startup_errors
+		}
+	end
+
+	-- Handle runtime errors after startup
 	local in_error = false
 	awesome.connect_signal("debug::error", function(err)
 		-- Make sure we don't go into an endless error loop
@@ -89,39 +90,50 @@ do
 		}
 		in_error = false
 	end)
+
 end
 
--- }}}
 
 
 
--- {{{ Variable definitions
+-- Variable definitions
 
--- Init theme
-beautiful.init(awful.util.get_themes_dir() .. "default/theme.lua")
+-- Theme config
+do
 
--- Custom theme settings, border and font
-beautiful.font = "DejaVu Sans 10"
-beautiful.border_width = 4
-beautiful.master_width_factor = 0.6 -- Set the master window percent
-beautiful.useless_gap = 5 -- Set the window Gap size
+	-- Init theme
+	beautiful.init(awful.util.get_themes_dir() .. "default/theme.lua")
 
--- Color settings, the last two bits are alpha channels
-beautiful.bg_normal = "#00000000" -- Set background transparent
-beautiful.bg_minimize = beautiful.bg_normal -- Set the minimize color of taskbar
-beautiful.fg_normal = "#FFFFFF99"
-beautiful.fg_minimize = "#55555500"
-beautiful.bg_systray = "#AAAAAA00"
-beautiful.border_focus = "#778899EE"
-beautiful.border_normal = "#00000022"
-beautiful.menu_bg_normal = "#33445566"
-beautiful.menu_fg_normal = beautiful.fg_focus
-beautiful.menu_border_color = beautiful.border_focus
-beautiful.taglist_bg_focus = "#55667788"
-beautiful.tasklist_bg_focus = beautiful.taglist_bg_focus
-beautiful.tasklist_bg_normal = beautiful.bg_normal
-beautiful.tasklist_fg_normal = beautiful.fg_minimize
-beautiful.notification_bg = "#33445599"
+	-- Custom theme settings, border and font
+	beautiful.font = "DejaVu Sans 10"
+	beautiful.border_width = 4
+	beautiful.master_width_factor = 0.6 -- Set the master window percent
+	beautiful.useless_gap = 5 -- Set the window Gap size
+
+	-- Color settings, the last two bits are alpha channels
+	beautiful.bg_normal = "#00000000" -- Set background transparent
+	beautiful.bg_minimize = beautiful.bg_normal -- Set the minimize color of taskbar
+	beautiful.fg_normal = "#FFFFFF99"
+	beautiful.fg_minimize = "#55555500"
+	beautiful.bg_systray = "#AAAAAA00"
+	beautiful.border_focus = "#778899EE"
+	beautiful.border_normal = "#00000022"
+	beautiful.menu_bg_normal = "#33445566"
+	beautiful.menu_fg_normal = beautiful.fg_focus
+	beautiful.menu_border_color = beautiful.border_focus
+	beautiful.taglist_bg_focus = "#55667788"
+	beautiful.tasklist_bg_focus = beautiful.taglist_bg_focus
+	beautiful.tasklist_bg_normal = beautiful.bg_normal
+	beautiful.tasklist_fg_normal = beautiful.fg_minimize
+	beautiful.notification_bg = "#33445599"
+
+	-- Wallpaper
+	local wall_paper = "/boot/background.jpg"
+	for s = 1, screen.count() do
+		gears.wallpaper.maximized(wall_paper, s, true)
+	end
+
+end
 
 -- This is used later as the default terminal and editor to run
 local mail = "thunderbird"
@@ -130,10 +142,10 @@ local dictionary = "goldendict"
 local file_manager = "ranger"
 local terminal = "vte-2.91"
 local terminal_instance = "Terminal" -- Set the instance name of Terminal App, use xprop WM_CLASS
-local terminal_args = " -W -P never -g 120x40 -n 5000 -T 20 --reverse --no-decorations --no-scrollbar" --  -f 'DejaVu Sans Mono 10'
+local terminal_args = " -g 120x40 -n 5000 -T 20 --reverse --no-decorations --no-scrollbar" --  -f 'DejaVu Sans Mono 10'
 
 -- Set default editor
-local editor = os.getenv("EDITOR") or "nano"
+local editor = os.getenv("EDITOR") or "vim"
 
 -- Set main key
 local mod_key = "Mod4"
@@ -158,38 +170,9 @@ local layouts = {
 	-- awful.layout.suit.max.fullscreen,
 }
 
--- }}}
 
 
-
--- {{{ Tags
-
--- Define a tag table which hold all screen tags.
-local tags = {}
-local tag_properties = {
-	{ "❶", layouts[1] },
-	{ "❷", layouts[2] },
-	{ "❸", layouts[2] },
-	{ "❹", layouts[3] }
-}
-
--- Each screen has its own tag table.
-for s = 1, screen.count() do
-	-- Use operate # to get lua table's size.
-	for i = 1, #tag_properties do
-		tags[i] = awful.tag.add(tag_properties[i][1], {
-			screen = s,
-			layout = tag_properties[i][2],
-			selected = i == 1 and true or false -- Only focus on index one.
-		})
-	end
-end
-
--- }}}
-
-
-
--- {{{ Menu
+-- Menu
 
 -- Add menu items to main menu
 local main_menu = awful.menu {
@@ -223,11 +206,9 @@ local main_menu = awful.menu {
 -- Menubar configuration
 menubar.utils.terminal = terminal -- Set the terminal for applications that require it
 
--- }}}
 
 
-
--- {{{ Wibox
+-- Wibox
 
 -- Create a textclock widget
 local text_clock = wibox.widget.textclock("<span font='Dejavu Sans 10' color='white'>" ..
@@ -274,34 +255,70 @@ task_list.buttons = awful.util.table.join(
 	awful.button({ }, 5, function() awful.client.focus.byidx(-1) end)
 )
 
--- {{ Vicious
 
--- Battery state
-local battery_widget = wibox.widget.textbox()
-local battery_fresh_span = 10 -- Time span for refresh battery widget (seconds)
-local battery_name = "BAT0"
 
--- Register battery widget
-vicious.register(battery_widget, vicious.widgets.bat, function(_, args)
-	local status, percent = args[1], args[2]
-	local color = percent >= 60 and "green" or percent >= 20 and "yellow" or "red"
-	return "🔋<span color='" .. color .. "'>" .. percent .. "%(" .. status .. ")</span> "
-end, battery_fresh_span, battery_name)
+-- Vicious Plugins
 
--- Volume state
-local volume_widget = wibox.widget.textbox()
+local net_widget, battery_widget, volume_widget =
+	wibox.widget.textbox(), wibox.widget.textbox(), wibox.widget.textbox()
 
--- Register volume widget
-vicious.register(volume_widget, vicious.contrib.pulse, function(_, args)
-	local percent, status = args[1], args[2]
-	local emoji = percent >= 60 and "🔊" or percent >= 20 and "🔉" or percent > 0 and "🔈" or "🔇"
-	return emoji .. "<span color='brown'>" .. percent .. "%(" .. status .. ")</span> "
-end)
+-- Vicious plugin basic usage:
+-- vicious.register(widget, wtype, format, interval, warg)
+do
+	-- Net state
+	local net_refresh_span = 2
+	local net_device =
+		-- Get default net device name, sometimes there are more than one default route, so use "tail -n 1"
+		get_command_output("ip route | grep default | tail -n 1 | grep -Po '(?<=dev )(\\S+)'")
+	local net_format = "🌐<span color='blue'>${" .. net_device .. " down_kb} KB </span>"
+	vicious.register(net_widget, vicious.widgets.net, net_format, net_refresh_span)
 
--- }}
+	-- Battery state
+	local battery_refresh_span = 10 -- Time span for refresh battery widget (seconds)
+	local battery_name = "BAT0"
+	-- Register battery widget
+	vicious.register(battery_widget, vicious.widgets.bat, function(_, args)
+		local status, percent = args[1], args[2]
+		local color = percent >= 60 and "green" or percent >= 20 and "yellow" or "red"
+		return "🔋<span color='" .. color .. "'>" .. percent .. "%(" .. status .. ") </span>"
+	end, battery_refresh_span, battery_name)
+
+	-- Volume state
+	local volume_refresh_span = 1
+	-- Get the last SINK device index
+	local volume_device_index = tonumber(get_command_output("pactl list sinks short | wc -l"))
+	-- Register volume widget
+	vicious.register(volume_widget, vicious.contrib.pulse, function(_, args)
+		local percent, status = args[1], args[2]
+		local emoji = percent >= 60 and "🔊" or percent >= 20 and "🔉" or percent > 0 and "🔈" or "🔇"
+		return emoji .. "<span color='brown'>" .. percent .. "%(" .. status .. ") </span>"
+	end, volume_refresh_span, volume_device_index)
+end
+
+
+
+-- Tags
+
+-- Define a tag table which hold all screen tags.
+local tags, tag_properties = {}, {
+	{ "❶", layouts[1] },
+	{ "❷", layouts[2] },
+	{ "❸", layouts[2] },
+	{ "❹", layouts[3] }
+}
 
 -- Add widgetboxs in each screen
 for s = 1, screen.count() do
+
+	-- Each screen has its own tag table.
+	-- Use operate # to get lua table's size.
+	for i = 1, #tag_properties do
+		tags[i] = awful.tag.add(tag_properties[i][1], {
+			screen = s,
+			layout = tag_properties[i][2],
+			selected = i == 1 and true or false -- Only focus on index one.
+		})
+	end
 
 	-- Create a promptbox for each screen
 	prompt_box[s] = awful.widget.prompt()
@@ -342,7 +359,7 @@ for s = 1, screen.count() do
 
 	-- Widgets that are aligned to the right
 	local right_layout = create_bar_layout(wibox.widget {
-		battery_widget, volume_widget, wibox.widget.systray(), text_clock,
+		net_widget, battery_widget, volume_widget, wibox.widget.systray(), text_clock,
 		layout = wibox.layout.fixed.horizontal
 	})
 
@@ -366,11 +383,9 @@ for s = 1, screen.count() do
 
 end
 
--- }}}
 
 
-
--- {{{ Mouse bindings
+-- Mouse bindings
 
 -- Mouse action on empty desktop
 root.buttons(
@@ -381,24 +396,22 @@ root.buttons(
 	)
 )
 
--- }}}
 
 
-
--- {{{ Global key bindings
+-- Global key bindings
 
 -- Brightness change function
 function brightness_change(change)
 
-	isBrightnessUp = change > 0
-	operate = isBrightnessUp and "+" or ""
-	os.execute("xbacklight " .. operate .. change)
+	local is_brightness_up = change > 0
+	local prefix = is_brightness_up and "+" or ""
+	local suffix = is_brightness_up and "" or "-"
+	os.execute("brightnessctl set " .. prefix .. math.abs(change) .. "%" .. suffix)
 
-	-- Execute async brightness config
-	awful.spawn.easy_async("xbacklight", function(brightness, _, _, _)
+	-- Execute async brightness config (need run command with shell)
+	awful.spawn.easy_async_with_shell("brightnessctl | grep -P '\\d+%' -o | sed 's/\\%//'", function(brightness, _, _, _)
 
 		local status = ""
-
 		for i = 1, 20 do
 			status = i <= brightness / 5 and status .. " |" or status .. " -"
 		end
@@ -408,7 +421,7 @@ function brightness_change(change)
 		brightness_notify = naughty.notify {
 			title = "💡 Brightness Change",
 			text = "Background brightness "
-					.. (isBrightnessUp and "up ⬆️" or "down ⬇️") .. "\n"
+					.. (is_brightness_up and "up ⬆️" or "down ⬇️") .. "\n"
 					.. "[" .. status ..  " ] "
 					.. string.format("%.f", tonumber(brightness)) .. "%"
 		}
@@ -420,8 +433,8 @@ end
 -- Volume change function
 function volume_change(change)
 
-	vicious.contrib.pulse.add(change)
-	local volume, status = vicious.contrib.pulse()[1], ""
+	vicious.contrib.pulse.add(change, volume_device_index)
+	local volume, status = vicious.contrib.pulse(0, volume_device_index)[1], ""
 
 	for i = 1, 20 do
 		status = i <= volume / 5 and status .. " |" or status .. " -"
@@ -564,13 +577,13 @@ local global_keys = awful.util.table.join(
 
 	-- Volume key bindings
 	awful.key({ }, "XF86AudioMute", function()
-		vicious.contrib.pulse.toggle()
+		vicious.contrib.pulse.toggle(volume_device_index)
 		naughty.destroy(volume_notify_id)
 		volume_notify_id = naughty.notify {
 			title = "🔈 Volume changed",
 			text = "Sound state has been changed ...\n"
 					.. "Current sound state is ["
-					.. (vicious.contrib.pulse()[1] > 0 and "🔊 ON" or "🔇 OFF") .. "] !"
+					.. (vicious.contrib.pulse(0, volume_device_index)[1] > 0 and "🔊 ON" or "🔇 OFF") .. "] !"
 		}
 	end),
 	awful.key({ }, "XF86AudioRaiseVolume", function() volume_change(5) end),
@@ -616,11 +629,9 @@ end
 -- Set global keys
 root.keys(global_keys)
 
--- }}}
 
 
-
--- {{{ Rules
+-- Rules
 
 -- Rules to apply to new clients (through the "manage" signal)
 -- Get X-Client props need to install tool "xorg-prop", use command "xprop" to check window props
@@ -665,11 +676,9 @@ awful.rules.rules = {
 	}
 }
 
--- }}}
 
 
-
--- {{{ Signals
+-- Signals
 
 -- Signal function to execute when a new client appears.
 client.connect_signal("manage", function(c, startup)
@@ -716,5 +725,3 @@ client.connect_signal("mouse::enter", function(c)
 	main_menu:hide() -- Hide main menu when focus other window
 	if task_menu then task_menu:hide() end -- Hide task menu when focus other window
 end)
-
--- }}}

@@ -3,6 +3,7 @@
 
 
 -- Load library
+require("awful.autofocus") -- Need to load "autofocus" module, if not window will lost focus when change workspace(tag).
 local awful = require("awful")
 local gears = require("gears")
 local wibox = require("wibox")
@@ -30,18 +31,15 @@ end
 
 -- Init
 do
+	function run_once(cmd)
+		awful.spawn.with_shell("pgrep -u $USER -x " .. cmd .. "; or " .. cmd)
+	end
 
 	function auto_run(tasks, once)
-
-		function run_once(cmd)
-			awful.spawn.with_shell("pgrep -u $USER -x " .. cmd .. "; or " .. cmd)
-		end
-
 		local once = once or true
 		for i = 1, #tasks do
 			if once then run_once(tasks[i]) else awful.spawn.with_shell(tasks[i]) end
 		end
-
 	end
 
 	auto_run({
@@ -53,20 +51,18 @@ do
 
 	-- These service should only run once
 	auto_run {
-		-- PulseAudio and Fcitx 5 can auto_run by systemd service
+		-- PulseAudio, Fcitx5 and Clash can auto run by systemd service
 		"picom", -- For transparent support
 		"nm-applet", -- Show network status
-		"clash-premium" -- clash proxy
+		-- "clash-premium" -- Clash proxy provided by custom systemd service
 		-- "blueman-applet", -- Use bluetooth
 	}
-
 end
 
 
 
 -- Error handling
 do
-
 	-- Check if awesome encountered an error during startup and fell back to
 	-- another config (This code will only ever execute for the fallback config)
 	if awesome.startup_errors then
@@ -90,20 +86,18 @@ do
 		}
 		in_error = false
 	end)
-
 end
-
 
 
 
 -- Variable definitions
 
 -- Theme config
+
+-- Init theme
+beautiful.init(awful.util.get_themes_dir() .. "default/theme.lua")
+local gap_size = 10
 do
-
-	-- Init theme
-	beautiful.init(awful.util.get_themes_dir() .. "default/theme.lua")
-
 	-- Custom theme settings, border and font
 	beautiful.font = "DejaVu Sans 10"
 	beautiful.border_width = 4
@@ -132,7 +126,6 @@ do
 	for s = 1, screen.count() do
 		gears.wallpaper.maximized(wall_paper, s, true)
 	end
-
 end
 
 -- This is used later as the default terminal and editor to run
@@ -142,14 +135,12 @@ local dictionary = "goldendict"
 local file_manager = "ranger"
 local terminal = "vte-2.91"
 local terminal_instance = "Terminal" -- Set the instance name of Terminal App, use xprop WM_CLASS
-local terminal_args = " -g 120x40 -n 5000 -T 20 --reverse --no-decorations --no-scrollbar" --  -f 'DejaVu Sans Mono 10'
+local terminal_args = " -g 120x40 -n 5000 -T 20 --no-decorations --no-scrollbar" -- --reverse -f 'DejaVu Sans Mono 10'
 
 -- Set default editor
 local editor = os.getenv("EDITOR") or "vim"
-
 -- Set main key
 local mod_key = "Mod4"
-
 -- Table of layouts to cover with awful.layout.inc, order matters.
 local layouts = {
 	-- awful.layout.suit.floating,
@@ -210,49 +201,69 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 
 -- Wibox
 
+-- Create widgetbox
+local widget_box, prompt_box, layout_box, tag_list, task_list = {}, {}, {}, {}, {}
+
 -- Create a textclock widget
 local text_clock = wibox.widget.textclock("<span font='Dejavu Sans 10' color='white'>" ..
 	"[<span color='yellow'>%a</span>] %b/%d <span color='cyan'>%H:%M</span> </span>")
-local month_calendar = awful.widget.calendar_popup.month()
-month_calendar.bg = beautiful.taglist_bg_focus
-month_calendar:attach(text_clock, "tr")
 
--- Create widgetbox
-local widget_box = { }
-local prompt_box = { }
-local layout_box = { }
-local tag_list = { }
-local task_list = { }
+do -- Attach a cleandar widget to text_colock widget.
+	local month_calendar = awful.widget.calendar_popup.month()
+	month_calendar.bg = beautiful.taglist_bg_focus
+	month_calendar:attach(text_clock, "tr")
+end
+
+-- Mouse bindings
+-- Muse moudle https://awesomewm.org/doc/api/libraries/mouse.html
+
+-- Mouse Key definition.
+MouseButtons = {
+	LEFT = 1,
+	MIDDLE = 2,
+	RIGHT = 3,
+	SCROLL_UP = 4,
+	SCROLL_DOWN = 5
+}
+
+-- Mouse action on empty desktop.
+root.buttons(
+	awful.util.table.join(
+		awful.button({}, MouseButtons.RIGHT, function() main_menu:toggle() end),
+		awful.button({}, MouseButtons.SCROLL_UP, awful.tag.viewprev),
+		awful.button({}, MouseButtons.SCROLL_DOWN, awful.tag.viewnext)
+	)
+)
 
 -- Set buttons in widgetbox
 tag_list.buttons = awful.util.table.join(
-	awful.button({ }, 1, awful.tag.viewonly),
-	awful.button({ }, 3, awful.tag.viewtoggle),
-	awful.button({ }, 4, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end),
-	awful.button({ }, 5, function(t) awful.tag.viewnext(awful.tag.getscreen(t)) end),
-	awful.button({ mod_key }, 1, awful.client.movetotag),
-	awful.button({ mod_key }, 3, awful.client.toggletag)
+	awful.button({}, MouseButtons.LEFT, awful.tag.viewonly),
+	awful.button({}, MouseButtons.RIGHT, awful.tag.viewtoggle),
+	awful.button({}, MouseButtons.SCROLL_UP, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end),
+	awful.button({}, MouseButtons.SCROLL_DOWN, function(t) awful.tag.viewnext(awful.tag.getscreen(t)) end),
+	awful.button({ mod_key }, MouseButtons.LEFT, awful.client.movetotag),
+	awful.button({ mod_key }, MouseButtons.RIGHT, awful.client.toggletag)
 )
 task_list.buttons = awful.util.table.join(
-	awful.button({ }, 1, function(c)
+	awful.button({}, MouseButtons.LEFT, function(c)
 		if c == client.focus then
 			c.minimized = true
 		else
+			-- This will also un-minimize the client, if need
 			c.minimized = false
 			if not c:isvisible() then c.first_tag:view_only() end
-			-- This will also un-minimize the client, if needed
 			client.focus = c
 		end
 	end),
-	awful.button({ }, 3, function()
+	awful.button({}, MouseButtons.RIGHT, function()
 		if task_menu then
 			task_menu:hide()
 		else
 			task_menu = awful.menu.clients { theme = { width = 250 } }
 		end
 	end),
-	awful.button({ }, 4, function() awful.client.focus.byidx(1) end),
-	awful.button({ }, 5, function() awful.client.focus.byidx(-1) end)
+	awful.button({}, MouseButtons.SCROLL_UP, function() awful.client.focus.byidx(1) end),
+	awful.button({}, MouseButtons.SCROLL_DOWN, function() awful.client.focus.byidx(-1) end)
 )
 
 
@@ -264,13 +275,18 @@ local net_widget, battery_widget, volume_widget =
 
 -- Vicious plugin basic usage:
 -- vicious.register(widget, wtype, format, interval, warg)
+
+-- These variables need to place at global scope, some other function need these variables.
+local volume_zero_span = 0
+-- Get the last SINK device index
+local volume_device_index = tonumber(get_command_output("pactl list sinks short | wc -l"))
+
 do
 	-- Net state
 	local net_refresh_span = 2
-	local net_device =
-		-- Get default net device name, sometimes there are more than one default route, so use "tail -n 1"
-		get_command_output("ip route | grep default | tail -n 1 | grep -Po '(?<=dev )(\\S+)'")
-	local net_format = "🌐<span color='blue'>${" .. net_device .. " down_kb} KB </span>"
+	-- Get default net device name, sometimes there are more than one default route, so use "tail -n 1"
+	local net_device = get_command_output("ip route | grep default | tail -n 1 | grep -Po '(?<=dev )(\\S+)'")
+	local net_format = "🌐 <span color='white'>${" .. net_device .. " down_kb} KB </span>"
 	vicious.register(net_widget, vicious.widgets.net, net_format, net_refresh_span)
 
 	-- Battery state
@@ -279,19 +295,16 @@ do
 	-- Register battery widget
 	vicious.register(battery_widget, vicious.widgets.bat, function(_, args)
 		local status, percent = args[1], args[2]
-		local color = percent >= 60 and "green" or percent >= 20 and "yellow" or "red"
-		return "🔋<span color='" .. color .. "'>" .. percent .. "%(" .. status .. ") </span>"
+		return "🔋 <span color='white'>" .. percent .. "%(" .. status .. ") </span>"
 	end, battery_refresh_span, battery_name)
 
 	-- Volume state
 	local volume_refresh_span = 1
-	-- Get the last SINK device index
-	local volume_device_index = tonumber(get_command_output("pactl list sinks short | wc -l"))
 	-- Register volume widget
 	vicious.register(volume_widget, vicious.contrib.pulse, function(_, args)
 		local percent, status = args[1], args[2]
 		local emoji = percent >= 60 and "🔊" or percent >= 20 and "🔉" or percent > 0 and "🔈" or "🔇"
-		return emoji .. "<span color='brown'>" .. percent .. "%(" .. status .. ") </span>"
+		return emoji .. " <span color='white'>" .. percent .. "%(" .. status .. ") </span>"
 	end, volume_refresh_span, volume_device_index)
 end
 
@@ -340,14 +353,14 @@ for s = 1, screen.count() do
 			shape = gears.shape.rounded_bar
 		},
 		layout = {
-			spacing = 10,
+			spacing = gap_size,
 			layout  = wibox.layout.flex.horizontal
 		}
 	}
 
 	function create_bar_layout(widget)
 		return wibox.container.background(
-			wibox.container.margin(widget, 10, 10),
+			wibox.container.margin(widget, gap_size, gap_size),
 			beautiful.menu_bg_normal, gears.shape.rounded_bar)
 	end
 
@@ -368,7 +381,7 @@ for s = 1, screen.count() do
 		-- margin container args: widget, left padding, right padding
 		wibox.container.margin(
 			-- place container args: widget, horizontal alignment
-			wibox.container.place(task_list[s], "left"), 10, 10)
+			wibox.container.place(task_list[s], "left"), gap_size, gap_size)
 
 	-- Create the wibar
 	widget_box[s] = awful.wibar {
@@ -378,23 +391,10 @@ for s = 1, screen.count() do
 		widget = wibox.container.margin(wibox.widget {
 			left_layout, middle_layout, right_layout,
 			layout = wibox.layout.align.horizontal
-		}, 10, 10, 10)
+		}, gap_size, gap_size, gap_size) -- Set top bar gap.
 	}
 
 end
-
-
-
--- Mouse bindings
-
--- Mouse action on empty desktop
-root.buttons(
-	awful.util.table.join(
-		awful.button({ }, 3, function() main_menu:toggle() end),
-		awful.button({ }, 4, awful.tag.viewprev),
-		awful.button({ }, 5, awful.tag.viewnext)
-	)
-)
 
 
 
@@ -402,7 +402,6 @@ root.buttons(
 
 -- Brightness change function
 function brightness_change(change)
-
 	local is_brightness_up = change > 0
 	local prefix = is_brightness_up and "+" or ""
 	local suffix = is_brightness_up and "" or "-"
@@ -410,13 +409,12 @@ function brightness_change(change)
 
 	-- Execute async brightness config (need run command with shell)
 	awful.spawn.easy_async_with_shell("brightnessctl | grep -P '\\d+%' -o | sed 's/\\%//'", function(brightness, _, _, _)
-
 		local status = ""
 		for i = 1, 20 do
 			status = i <= brightness / 5 and status .. " |" or status .. " -"
 		end
 
-		-- use 'destroy' instead of 'replaces_id' (replaces_id api sometimes doesn't take effects)
+		-- Use 'destroy' instead of 'replaces_id' (replaces_id api sometimes doesn't take effects)
 		naughty.destroy(brightness_notify)
 		brightness_notify = naughty.notify {
 			title = "💡 Brightness Change",
@@ -425,16 +423,13 @@ function brightness_change(change)
 					.. "[" .. status ..  " ] "
 					.. string.format("%.f", tonumber(brightness)) .. "%"
 		}
-
 	end)
-
 end
 
 -- Volume change function
 function volume_change(change)
-
 	vicious.contrib.pulse.add(change, volume_device_index)
-	local volume, status = vicious.contrib.pulse(0, volume_device_index)[1], ""
+	local volume, status = vicious.contrib.pulse(volume_zero_span, volume_device_index)[1], ""
 
 	for i = 1, 20 do
 		status = i <= volume / 5 and status .. " |" or status .. " -"
@@ -446,21 +441,17 @@ function volume_change(change)
 		text = "Volume " .. (change > 0 and "rise up ⬆️" or "lower ⬇️") .. "\n"
 				.. "[" .. status ..  " ] " .. volume .. "%"
 	}
-
 end
 
 -- Layout change function
 function layout_change(change)
-
 	awful.layout.inc(layouts, change)
-
 	layout_notify_id = naughty.notify {
 		title = "🔁 Layout Change",
 		text = "Layout has been changed ...\n"
 			.. "The current layout is [" .. awful.layout.getname() .. "]!",
 		replaces_id = layout_notify_id
 	}.id
-
 end
 
 local global_keys = awful.util.table.join(
@@ -552,7 +543,7 @@ local global_keys = awful.util.table.join(
 	end),
 
 	-- Screen shot key bindings
-	awful.key({ }, "Print", function()
+	awful.key({}, "Print", function()
 		awful.spawn.with_shell("scrot ~/Pictures/screenshot-fullscreen-(date -Ins).png")
 		naughty.notify {
 			title = "📸 Screen Shot",
@@ -570,24 +561,25 @@ local global_keys = awful.util.table.join(
 	end),
 
 	-- Brightness key bindings
-	awful.key({ }, "XF86MonBrightnessUp", function() brightness_change(5) end),
-	awful.key({ }, "XF86MonBrightnessDown", function() brightness_change(-5) end),
+	awful.key({}, "XF86MonBrightnessUp", function() brightness_change(5) end),
+	awful.key({}, "XF86MonBrightnessDown", function() brightness_change(-5) end),
 	awful.key({ mod_key }, "XF86MonBrightnessUp", function() brightness_change(1) end),
 	awful.key({ mod_key }, "XF86MonBrightnessDown", function() brightness_change(-1) end),
 
 	-- Volume key bindings
-	awful.key({ }, "XF86AudioMute", function()
+	awful.key({}, "XF86AudioMute", function()
 		vicious.contrib.pulse.toggle(volume_device_index)
 		naughty.destroy(volume_notify_id)
+		local volume = vicious.contrib.pulse(volume_zero_span, volume_device_index)[1]
 		volume_notify_id = naughty.notify {
 			title = "🔈 Volume changed",
 			text = "Sound state has been changed ...\n"
 					.. "Current sound state is ["
-					.. (vicious.contrib.pulse(0, volume_device_index)[1] > 0 and "🔊 ON" or "🔇 OFF") .. "] !"
+					.. (volume > 0 and "🔊 ON" or "🔇 OFF") .. "] !"
 		}
 	end),
-	awful.key({ }, "XF86AudioRaiseVolume", function() volume_change(5) end),
-	awful.key({ }, "XF86AudioLowerVolume", function() volume_change(-5) end),
+	awful.key({}, "XF86AudioRaiseVolume", function() volume_change(5) end),
+	awful.key({}, "XF86AudioLowerVolume", function() volume_change(-5) end),
 	awful.key({ mod_key }, "XF86AudioRaiseVolume", function() volume_change(1) end),
 	awful.key({ mod_key }, "XF86AudioLowerVolume", function() volume_change(-1) end)
 )
@@ -596,7 +588,6 @@ local global_keys = awful.util.table.join(
 -- Be careful: we use keycodes to make it works on any keyboard layout
 -- This should map on the top row of your keyboard, usually 1 to 9
 for i = 1, #tags do
-
 	global_keys = awful.util.table.join(global_keys,
 		-- View tag only
 		awful.key({ mod_key }, "#" .. i + 9, function()
@@ -623,7 +614,6 @@ for i = 1, #tags do
 			end
 		end)
 	)
-
 end
 
 -- Set global keys
@@ -638,7 +628,7 @@ root.keys(global_keys)
 awful.rules.rules = {
 	{
 		-- All clients will match this rule
-		rule = { },
+		rule = {},
 		properties = {
 			raise = true,
 			border_width = beautiful.border_width,
@@ -654,7 +644,7 @@ awful.rules.rules = {
 			),
 			-- Use mod_key with mouse key to move/resize the window
 			buttons = awful.util.table.join(
-				awful.button({ }, 1, function(c) client.focus = c; c:raise() end),
+				awful.button({}, 1, function(c) client.focus = c; c:raise() end),
 				awful.button({ mod_key }, 1, function(c)
 					c:raise()
 					client.focus = c
@@ -669,7 +659,11 @@ awful.rules.rules = {
 		}
 	}, {
 		rule = { instance = terminal_instance },
-		properties = { floating = true }
+		properties = {
+			floating = true,
+			-- Make terminal open at mouse position
+			callback = function(c) awful.placement.under_mouse(c) end
+		}
 	}, {
 		rule = { class = "jetbrains-idea" },
 		properties = { tag = tags[4] }
@@ -701,7 +695,6 @@ client.connect_signal("manage", function(c, startup)
 end)
 
 client.connect_signal("focus", function(c)
-
 	if not c.floating then
 		-- Set all floating windows lower when focus to a unfloating window
 		for _, window in pairs(c.screen.clients) do
@@ -711,10 +704,8 @@ client.connect_signal("focus", function(c)
 	else
 		c:raise() -- Raise the floating window
 	end
-
 	-- Set the border color when window is focused
 	c.border_color = beautiful.border_focus
-
 end)
 
 client.connect_signal("unfocus", function(c)

@@ -41,6 +41,12 @@
       httpProxy = "localhost:9999";
       httpsProxy = "localhost:9999";
     };
+    # NixOS enabled firewall by default, so need to allow some ports.
+    firewall.allowedTCPPorts = [
+      9999 # Clash
+      8384 # Syncthing WEB UI port
+      22000 # Syncthing transform port
+    ];
   };
 
   # Set your time zone.
@@ -72,7 +78,7 @@
     # In NixOS, pip can't install package, set up pip package in configuration.
     (python3.withPackages (p: [p.black p.ansible p.jupyter]))
     # Developer tools
-    gcc gdb clang lldb cmake rustup # C/C++/Rust compiler and build tools
+    binutils gcc gdb clang lldb rustup cmake gnumake # C/C++/Rust compiler and build tools
     jdk scala android-tools dotnet-sdk # Java and .Net SDK
     git kubectl stack nodejs # Other develop tools
     vscode jetbrains.idea-ultimate # IDE/Editor
@@ -83,6 +89,8 @@
     man-pages-posix stdmanpages
     # Clash
     nur.repos.linyinfeng.clash-premium # nur.repos.linyinfeng.clash-for-windows
+    # Wechat
+    nur.repos.xddxdd.wechat-uos
   ] ++ config.custom.extraPackages;
 
   # Config services.
@@ -112,6 +120,17 @@
       redis.wantedBy = lib.mkForce [];
       mysql.wantedBy = lib.mkForce [];
       postgresql.wantedBy = lib.mkForce [];
+    };
+    # Setup user service.
+    user.services.clash = {
+      # Define a custom clash service.
+      wantedBy = ["default.target"];
+      after = ["network.target"];
+      description = "Start clash service";
+      serviceConfig = {
+        ExecStart = "/run/current-system/sw/bin/clash-premium &";
+        ExecStop = "/run/current-system/sw/bin/kill -9 clash-premium";
+      };
     };
   };
 
@@ -147,10 +166,13 @@
     ln -sf /bin/sh /bin/bash
   ";
 
-  # Replace custom nixos channel with TUNA mirror:
-  # sudo nix-channel --add https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-unstable
-  # or use USTC Mirror:
-  # https://mirrors.ustc.edu.cn/nix-channels/nixos-unstable
-  nix.settings.substituters = ["https://mirrors.ustc.edu.cn/nix-channels/store"];
-  nixpkgs.config.allowUnfree = true;
+  nix = {
+    # Replace custom nixos channel with TUNA mirror:
+    # sudo nix-channel --add https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-unstable
+    # or use USTC Mirror:
+    # https://mirrors.ustc.edu.cn/nix-channels/nixos-unstable
+    settings.substituters = ["https://mirrors.ustc.edu.cn/nix-channels/store"];
+    autoOptimiseStore = true; # Enable nix store auto optimise.
+  };
+  nixpkgs.config.allowUnfree = true; # Allow some unfree software (like vscode and chrome).
 }

@@ -3,17 +3,18 @@
 # Change options in this file by need.
 
 {
-  networking.hostName = "MI-AIR12"; # Define your hostname.
+  networking.hostName = "YOUR-PC-NAME"; # Define your hostname.
   # Set up custom options
   custom = {
     desktop = {
-      wm = true;
+      wm = false;
       kde = false;
+      xfce = false;
       gnome = false;
       pantheon = false;
     };
     platform = {
-      intel = true;
+      intel = false;
       amd = false;
     };
   };

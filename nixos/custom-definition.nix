@@ -11,6 +11,7 @@ with lib; {
       desktop = {
         wm = mkEnableOption "wm";
         kde = mkEnableOption "kde";
+        xfce = mkEnableOption "xfce";
         gnome = mkEnableOption "gnome";
         pantheon = mkEnableOption "pantheon";
       };
@@ -18,23 +19,31 @@ with lib; {
         amd = mkEnableOption "amd";
         intel = mkEnableOption "intel";
       };
-      extraPackages = with types; mkOption { type = listOf package; };
+      extraPackages = with types; mkOption {
+        type = listOf package;
+        default = [];
+      };
     };
   };
 
   # Custom releation configurations.
   config = mkMerge [
     (mkIf config.custom.platform.intel {
-      services.xserver.videoDrivers = ["intel"];
+      services.xserver = {
+        # Intel driver haven't been updated in years.
+        videoDrivers = ["modesetting"];
+        useGlamor = true;
+      };
     })
     (mkIf config.custom.platform.amd {
+      # Newer AMD CPU require "amdgpu" kernel module.
       boot.initrd.kernelModules = ["amdgpu"];
       services.xserver.videoDrivers = ["amdgpu"];
     })
     (mkIf (config.custom.desktop.gnome || config.custom.desktop.pantheon) {
       # Set up the input method.
       i18n.inputMethod = {
-        # Use ibus for Gnome and Pantheon
+        # Use ibus for Gnome and Pantheon.
         enabled = "ibus";
         ibus.engines = with pkgs.ibus-engines; [libpinyin mozc];
       };
@@ -48,17 +57,18 @@ with lib; {
       };
     })
     (mkIf config.custom.desktop.wm {
-      # Csutom packages for window manager
+      # Csutom packages for window manager.
       custom.extraPackages = with pkgs; [
-        xorg.xbacklight xdg-user-dirs picom networkmanagerapplet scrot vte ranger ueberzug
-        dunst # Provide notification (some WM like Qtile and XMonad don't have a built-in notification service)
+        xdg-user-dirs picom networkmanagerapplet scrot vte ranger ueberzug
+        brightnessctl # For brightness control.
+        dunst # Provide notification (some WM like Qtile and XMonad don't have a built-in notification service).
       ];
       services.xserver = {
-        # Set up display manager
+        # Set up display manager.
         displayManager.lightdm.greeters.gtk.extraConfig = "background=/boot/background.jpg";
-        # Enable Qtile
+        # Enable Qtile.
         windowManager.qtile.enable = true;
-        # Enable AwesomeWM
+        # Enable AwesomeWM.
         windowManager.awesome = {
           enable = true;
           luaModules = [pkgs.luaPackages.vicious];
@@ -66,16 +76,51 @@ with lib; {
       };
     })
     (mkIf config.custom.desktop.kde {
-      # Custom packages for KDE
+      # Custom packages for KDE.
       custom.extraPackages = with pkgs; [
         libsForQt5.yakuake libsForQt5.sddm-kcm
       ];
       services.xserver = {
-        displayManager.sddm.enable = true; # Plasma use SDDM
+        displayManager.sddm.enable = true; # Plasma use SDDM as display manager.
         desktopManager.plasma5 = {
           enable = true;
           phononBackend = "vlc"; # Use VLC as media backend.
         };
+      };
+    })
+    (mkIf config.custom.desktop.gnome {
+      programs.gnome-terminal.enable = true;
+      # Custom packages for GNOME.
+      custom.extraPackages = with pkgs.gnome; [
+        nautilus file-roller eog gnome-system-monitor
+      ];
+      services.gnome = {
+        core-utilities.enable = false; # Disable useless default Gnome apps.
+        chrome-gnome-shell.enable = true;
+      };
+      services.xserver = {
+        displayManager.gdm.enable = true; # Gnome use GDM as display manager.
+        desktopManager.gnome.enable = true;
+      };
+    })
+    (mkIf config.custom.desktop.pantheon {
+      services.pantheon.apps.enable = false;
+      # Custom packages for GNOME.
+      custom.extraPackages = with pkgs.pantheon; [
+        elementary-terminal elementary-files
+      ];
+      services.xserver = {
+         # Patheon use custom lightdm greeter.
+        displayManager.lightdm.greeters.pantheon.enable = true;
+        desktopManager.pantheon.enable = true;
+      };
+    })
+    (mkIf config.custom.desktop.xfce {
+      # Set the Xfce GTK themes.
+      custom.extraPackages = with pkgs; [arc-theme whitesur-gtk-theme];
+      services.xserver = {
+        desktopManager.xfce.enable = true;
+        displayManager.lightdm.greeters.gtk.enable = true;
       };
     })
   ];

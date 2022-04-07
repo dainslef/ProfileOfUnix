@@ -1,4 +1,4 @@
-# Place the file at this place: ~/.gitconfig
+# Link this file to path ~/.gitconfig
 [user]
 	email = dainslef@outlook.com
 	name = dainslef

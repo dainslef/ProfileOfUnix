@@ -115,10 +115,8 @@ Plugin 'udalov/kotlin-vim' " Kotlin語法高亮
 " Plugin 'fatih/vim-go' " golang插件，使用指令:GoInstallBinaries安裝補全工具
 " Plugin 'klen/python-mode' " python插件
 " Plugin 'fholgado/minibufexpl.vim' " 窗口標籤插件，功能已由vim-airline提供
-" Plugin 'Lokaltog/vim-powerline' " 來自github的vim插件，寫成這樣的格式
 " Plugin 'Valloric/YouCompleteMe' " 高級補全插件，支持語法補全
 " Plugin 'ervandew/eclim' " 類似eclipse的java插件
-" Plugin 'altercation/vim-colors-solarized' " solarized主題配色插件
 " Plugin 'tpope/vim-rails' " ROR插件
 call vundle#end() " required
 filetype plugin indent on " 開啓插件
@@ -227,15 +225,23 @@ let g:syntastic_python_python_exe = "python3" " 檢查python語法時使用pytho
 
 
 " --- 常用的幾個主題 ---
+" 編輯器主題
 " colorschem molokai
 " colorschem materialbox
 " colorschem xterm16
 " colorscheme grb256
+" colorschem hybrid-light
+" colorscheme hybrid_reverse
+
+" Airline主題
+" let g:airline_theme = 'papercolor'
+" let g:airline_theme = 'powerlineish'
+" let g:airline_theme = 'sol'
 
 
 
 " --- 根據OS環境加載設置 ---
-if has("win32unix")
+if has("win32unix") " Other platform: macunix, unix
 	set listchars=tab:›\ ,trail:•,extends:#,nbsp:.,eol:\ " 設置Windows環境下vim的tab、行尾等位置的特殊符號的顯示
 
 	" syntastic配置
@@ -248,10 +254,10 @@ else
 	let g:syntastic_warning_symbol = "⚠" " 設置語法警告的提示
 
 	" vim-arline配置
-	let g:airline_theme = 'powerlineish' " 設置主題
+	let g:airline_theme = 'sol' " 設置主題
 	let g:airline_powerline_fonts = 1 " 使用powerline字體
 
 	" 主題設置
-	colorschem molokai
+	colorscheme hybrid_reverse
 	highlight Normal ctermbg=None " 強制設置主題背景透明
 endif

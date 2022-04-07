@@ -1,4 +1,4 @@
-# Place this file at the path '~/.icons/default/index.theme'
+# Link or place this file at the path '~/.icons/default/index.theme'
 # For cursor theme
 [icon theme]
 Inherits = Adwaita

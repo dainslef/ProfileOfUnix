@@ -13,7 +13,7 @@ CMakeFiles
 node_modules
 dist
 
-// for most IDE
+// for most IDEs
 build
 target
 log

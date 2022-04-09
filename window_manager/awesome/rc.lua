@@ -1,9 +1,8 @@
 -- AwesomeWM configuration
--- Link this file to the path ~/.config/awesome/rc.lua
+-- Link this file to the path ~/.config/awesome/rc.lua.
 
 
 -- Load library
-require("awful.autofocus") -- Need to load "autofocus" module, if not window will lost focus when change workspace(tag).
 local awful = require("awful")
 local gears = require("gears")
 local wibox = require("wibox")
@@ -11,9 +10,12 @@ local naughty = require("naughty")
 local menubar = require("menubar")
 local beautiful = require("beautiful")
 
--- Load vicious widgets
+-- Load vicious widgets.
 local vicious = require("vicious")
 vicious.contrib = require("vicious.contrib")
+
+-- Need to load "autofocus" module, if not window will lost focus when change workspace(tag).
+require("awful.autofocus")
 
 
 
@@ -43,19 +45,19 @@ do
 	end
 
 	auto_run({
-		"systemctl --user restart pulseaudio", -- In NixOS PulseAudio should restart during window manager startup, otherwise the PulseAudio plugin won't work
-		"xset +dpms", -- Use the power manager
-		"xset dpms 0 0 1800", -- Set the power manager timeout to 30 minutes
-		"xset s 1800" -- Set screensaver timeout to 30 mintues
+		"systemctl --user restart pulseaudio", -- In NixOS PulseAudio should restart during window manager startup, otherwise the PulseAudio plugin won't work.
+		"xset +dpms", -- Use the power manager.
+		"xset dpms 0 0 1800", -- Set the power manager timeout to 30 minutes.
+		"xset s 1800" -- Set screensaver timeout to 30 mintues.
 	}, false)
 
 	-- These service should only run once
 	auto_run {
-		-- PulseAudio, Fcitx5 and Clash can auto run by systemd service
-		"picom", -- For transparent support
-		"nm-applet", -- Show network status
-		-- "clash-premium" -- Clash proxy provided by custom systemd service
-		-- "blueman-applet", -- Use bluetooth
+		-- PulseAudio, Fcitx5 and Clash can auto run by systemd service.
+		"picom", -- For transparent support.
+		"nm-applet", -- Show network status.
+		-- "clash-premium" -- Clash proxy provided by custom systemd service.
+		-- "blueman-applet", -- Use bluetooth.
 	}
 end
 
@@ -64,7 +66,7 @@ end
 -- Error handling
 do
 	-- Check if awesome encountered an error during startup and fell back to
-	-- another config (This code will only ever execute for the fallback config)
+	-- another config (This code will only ever execute for the fallback config).
 	if awesome.startup_errors then
 		naughty.notify {
 			preset = naughty.config.presets.critical,
@@ -92,54 +94,54 @@ end
 
 -- Variable definitions
 
--- Theme config
+-- Load the default theme config.
+beautiful.init(awful.util.get_themes_dir() .. "default/theme.lua") -- Init theme.
 
--- Init theme
-beautiful.init(awful.util.get_themes_dir() .. "default/theme.lua")
-local gap_size = 10
-do
-	-- Custom theme settings, border and font
-	beautiful.font = "DejaVu Sans 10"
-	beautiful.border_width = 4
-	beautiful.master_width_factor = 0.6 -- Set the master window percent
-	beautiful.useless_gap = 5 -- Set the window Gap size
+-- Custom theme settings, border and font.
+-- All custom settings can find at https://awesomewm.org/doc/api/documentation/06-appearance.md.html.
+beautiful.font = "DejaVu Sans 10"
+beautiful.border_width = 5
+beautiful.master_width_factor = 0.6 -- Set the master window percent.
+beautiful.useless_gap = beautiful.border_width -- Set the window Gap size (equals to border width).
+beautiful.notification_shape = gears.shape.rounded_rect -- Set the notification border shape.
 
-	-- Color settings, the last two bits are alpha channels
-	beautiful.bg_normal = "#00000000" -- Set background transparent
-	beautiful.bg_minimize = beautiful.bg_normal -- Set the minimize color of taskbar
-	beautiful.fg_normal = "#FFFFFF99"
-	beautiful.fg_minimize = "#55555500"
-	beautiful.bg_systray = "#AAAAAA00"
-	beautiful.border_focus = "#778899EE"
-	beautiful.border_normal = "#00000022"
-	beautiful.menu_bg_normal = "#33445566"
-	beautiful.menu_fg_normal = beautiful.fg_focus
-	beautiful.menu_border_color = beautiful.border_focus
-	beautiful.taglist_bg_focus = "#55667788"
-	beautiful.tasklist_bg_focus = beautiful.taglist_bg_focus
-	beautiful.tasklist_bg_normal = beautiful.bg_normal
-	beautiful.tasklist_fg_normal = beautiful.fg_minimize
-	beautiful.notification_bg = "#33445599"
+-- Color settings, the last two bits are alpha channels.
+beautiful.bg_normal = "#00000000" -- Set background transparency.
+beautiful.bg_minimize = beautiful.bg_normal -- Set the minimize color of taskbar.
+beautiful.fg_normal = "#FFFFFF99"
+beautiful.fg_minimize = "#55555500"
+beautiful.bg_systray = "#8899AA" -- Systray doesn't support alpha channel (transparency).
+beautiful.border_focus = "#445566AA"
+beautiful.border_normal = "#00000011"
+beautiful.menu_bg_normal = "#33445566"
+beautiful.menu_fg_normal = beautiful.fg_focus
+beautiful.menu_border_color = beautiful.border_focus
+beautiful.taglist_bg_focus = beautiful.border_focus
+beautiful.tasklist_bg_focus = beautiful.taglist_bg_focus
+beautiful.tasklist_bg_normal = beautiful.bg_normal
+beautiful.tasklist_fg_normal = beautiful.fg_minimize
+beautiful.notification_bg = beautiful.border_focus
+beautiful.notification_fg = beautiful.fg_focus
 
-	-- Wallpaper
-	local wall_paper = "/boot/background.jpg"
-	for s = 1, screen.count() do
-		gears.wallpaper.maximized(wall_paper, s, true)
-	end
+-- Wallpaper
+local wall_paper = "/boot/background.jpg"
+for s = 1, screen.count() do
+	gears.wallpaper.maximized(wall_paper, s, true)
 end
 
--- This is used later as the default terminal and editor to run
+-- Define the gap size for window and bar.
+local bar_gap_size = beautiful.border_width * 2
+
+-- This is used later as the default terminal and editor to run.
 local mail = "thunderbird"
 local browser = "google-chrome-stable"
 local dictionary = "goldendict"
 local file_manager = "ranger"
 local terminal = "vte-2.91"
-local terminal_instance = "Terminal" -- Set the instance name of Terminal App, use xprop WM_CLASS
+local terminal_instance = "Terminal" -- Set the instance name of Terminal App, use xprop WM_CLASS.
 local terminal_args = " -g 120x40 -n 5000 -T 20 --no-decorations --no-scrollbar" -- --reverse -f 'DejaVu Sans Mono 10'
 
--- Set default editor
-local editor = os.getenv("EDITOR") or "vim"
--- Set main key
+-- Set main key.
 local mod_key = "Mod4"
 -- Table of layouts to cover with awful.layout.inc, order matters.
 local layouts = {
@@ -179,9 +181,9 @@ local main_menu = awful.menu {
 			{ "IDEA", "idea-ultimate" }
 		}},
 		{ "Tools", {
-			{ "Browser", browser },
 			{ "Dictionary", dictionary },
-			{ "VLC", "vlc" }
+			{ "VLC", "vlc" },
+			{ "WeChat", "wechat-uos" }
 		}},
 		{ "System", {
 			{ "Terminal", terminal .. terminal_args },
@@ -195,16 +197,16 @@ local main_menu = awful.menu {
 }
 
 -- Menubar configuration
-menubar.utils.terminal = terminal -- Set the terminal for applications that require it
+menubar.utils.terminal = terminal -- Set the terminal for applications that require it.
 
 
 
 -- Wibox
 
--- Create widgetbox
+-- Create widgetboxs.
 local widget_box, prompt_box, layout_box, tag_list, task_list = {}, {}, {}, {}, {}
 
--- Create a textclock widget
+-- Create a textclock widget.
 local text_clock = wibox.widget.textclock("<span font='Dejavu Sans 10' color='white'>" ..
 	"[<span color='yellow'>%a</span>] %b/%d <span color='cyan'>%H:%M</span> </span>")
 
@@ -278,21 +280,21 @@ local net_widget, battery_widget, volume_widget =
 
 -- These variables need to place at global scope, some other function need these variables.
 local volume_zero_span = 0
--- Get the last SINK device index
+-- Get the last SINK device index.
 local volume_device_index = tonumber(get_command_output("pactl list sinks short | wc -l"))
 
 do
 	-- Net state
 	local net_refresh_span = 2
-	-- Get default net device name, sometimes there are more than one default route, so use "tail -n 1"
+	-- Get default net device name, sometimes there are more than one default route, so use "tail -n 1".
 	local net_device = get_command_output("ip route | grep default | tail -n 1 | grep -Po '(?<=dev )(\\S+)'")
 	local net_format = "🌐 <span color='white'>${" .. net_device .. " down_kb} KB </span>"
 	vicious.register(net_widget, vicious.widgets.net, net_format, net_refresh_span)
 
 	-- Battery state
-	local battery_refresh_span = 10 -- Time span for refresh battery widget (seconds)
+	local battery_refresh_span = 10 -- Time span for refresh battery widget (seconds).
 	local battery_name = "BAT0"
-	-- Register battery widget
+	-- Register battery widget.
 	vicious.register(battery_widget, vicious.widgets.bat, function(_, args)
 		local status, percent = args[1], args[2]
 		return "🔋 <span color='white'>" .. percent .. "%(" .. status .. ") </span>"
@@ -300,7 +302,7 @@ do
 
 	-- Volume state
 	local volume_refresh_span = 1
-	-- Register volume widget
+	-- Register volume widget.
 	vicious.register(volume_widget, vicious.contrib.pulse, function(_, args)
 		local percent, status = args[1], args[2]
 		local emoji = percent >= 60 and "🔊" or percent >= 20 and "🔉" or percent > 0 and "🔈" or "🔇"
@@ -320,11 +322,10 @@ local tags, tag_properties = {}, {
 	{ "❹", layouts[3] }
 }
 
--- Add widgetboxs in each screen
+-- Add widgetboxs in each screen.
 for s = 1, screen.count() do
 
-	-- Each screen has its own tag table.
-	-- Use operate # to get lua table's size.
+	-- Each screen has its own tag table, use operate # to get lua table's size.
 	for i = 1, #tag_properties do
 		tags[i] = awful.tag.add(tag_properties[i][1], {
 			screen = s,
@@ -333,88 +334,97 @@ for s = 1, screen.count() do
 		})
 	end
 
-	-- Create a promptbox for each screen
+	-- Create a promptbox for each screen.
 	prompt_box[s] = awful.widget.prompt()
 
 	-- Create an imagebox widget which will contains an icon indicating which layout we're using.
 	-- We need one layoutbox per screen.
 	layout_box[s] = awful.widget.layoutbox(s)
 
-	-- Create a taglist widget
+	-- Create a taglist widget.
 	tag_list[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, tag_list.buttons)
 
-	-- Create a tasklist widget
+	-- Create a tasklist widget.
 	task_list[s] = awful.widget.tasklist {
 		screen = s,
 		filter = awful.widget.tasklist.filter.currenttags,
 		buttons = task_list.buttons,
-		style = { -- change the task list style
+		style = { -- Change the task list style.
 			shape_border_width = 2,
 			shape = gears.shape.rounded_bar
 		},
 		layout = {
-			spacing = gap_size,
+			spacing = bar_gap_size,
 			layout  = wibox.layout.flex.horizontal
 		}
 	}
 
-	function create_bar_layout(widget)
+	function create_bar_layout(widget, color)
 		return wibox.container.background(
-			wibox.container.margin(widget, gap_size, gap_size),
-			beautiful.menu_bg_normal, gears.shape.rounded_bar)
+			wibox.container.margin(widget, bar_gap_size, bar_gap_size),
+			color, gears.shape.rounded_bar)
 	end
 
-	-- Widgets that are aligned to the left
-	local left_layout = create_bar_layout(wibox.widget {
+	-- Widgets that are aligned to the left.
+	local left_bar = create_bar_layout(wibox.widget {
 		layout_box[s], prompt_box[s], tag_list[s],
 		layout = wibox.layout.fixed.horizontal
-	})
+	}, beautiful.border_focus)
 
-	-- Widgets that are aligned to the right
-	local right_layout = create_bar_layout(wibox.widget {
-		net_widget, battery_widget, volume_widget, wibox.widget.systray(), text_clock,
+	-- Create systray.
+	local sys_tray = wibox.container.margin(create_bar_layout(
+		wibox.widget.systray(), beautiful.bg_systray), 0, bar_gap_size)
+
+	-- Create custom trays.
+	local custom_tray = create_bar_layout(wibox.widget {
+		net_widget, battery_widget, volume_widget, text_clock,
 		layout = wibox.layout.fixed.horizontal
-	})
+	}, beautiful.border_focus)
 
-	-- Now bring it all together (with the tasklist in the middle)
-	local middle_layout =
-		-- margin container args: widget, left padding, right padding
-		wibox.container.margin(
-			-- place container args: widget, horizontal alignment
-			wibox.container.place(task_list[s], "left"), gap_size, gap_size)
+	-- Widgets that are aligned to the right.
+	local right_bar = wibox.widget {
+		sys_tray, custom_tray, layout = wibox.layout.fixed.horizontal
+	}
 
-	-- Create the wibar
+	-- Now bring it all together (with the tasklist in the middle).
+	-- Margin container args: widget, left padding, right padding.
+	local middle_bar = wibox.container.margin(
+			-- Place container args: widget, horizontal alignment.
+			wibox.container.place(task_list[s], "left"), bar_gap_size, bar_gap_size)
+
+	-- Create the wibar.
 	widget_box[s] = awful.wibar {
 		position = "top",
 		screen = s,
 		height = 35,
 		widget = wibox.container.margin(wibox.widget {
-			left_layout, middle_layout, right_layout,
+			left_bar, middle_bar, right_bar,
 			layout = wibox.layout.align.horizontal
-		}, gap_size, gap_size, gap_size) -- Set top bar gap.
+		}, bar_gap_size, bar_gap_size, bar_gap_size) -- Set top bar gap.
 	}
 
 end
 
 
 
--- Global key bindings
+-- Global key bindings.
 
--- Brightness change function
+-- Brightness change function.
 function brightness_change(change)
 	local is_brightness_up = change > 0
 	local prefix = is_brightness_up and "+" or ""
 	local suffix = is_brightness_up and "" or "-"
 	os.execute("brightnessctl set " .. prefix .. math.abs(change) .. "%" .. suffix)
 
-	-- Execute async brightness config (need run command with shell)
-	awful.spawn.easy_async_with_shell("brightnessctl | grep -P '\\d+%' -o | sed 's/\\%//'", function(brightness, _, _, _)
+	-- Execute async brightness config (need run command with shell).
+	awful.spawn.easy_async_with_shell("brightnessctl | grep -P '\\d+%' -o | sed 's/\\%//'",
+	function(brightness, _, _, _)
 		local status = ""
 		for i = 1, 20 do
 			status = i <= brightness / 5 and status .. " |" or status .. " -"
 		end
 
-		-- Use 'destroy' instead of 'replaces_id' (replaces_id api sometimes doesn't take effects)
+		-- Use 'destroy' instead of 'replaces_id' (replaces_id api sometimes doesn't take effects).
 		naughty.destroy(brightness_notify)
 		brightness_notify = naughty.notify {
 			title = "💡 Brightness Change",
@@ -474,12 +484,12 @@ local global_keys = awful.util.table.join(
 	-- Standard program
 	awful.key({ mod_key }, "Return", function()
 		local last_terminal, last_unfocus_terminal, find_last_unfocus_terminal
-		-- Only find the terminal instance in current tag (workspace)
+		-- Only find the terminal instance in current tag (workspace).
 		for _, c in pairs(awful.screen.focused().selected_tag:clients()) do
 			-- Find the last unfocused terminal window in current tag
 			if c.instance == terminal_instance then
 				last_terminal = c
-				-- The last unfocus window should before the current window
+				-- The last unfocus window should before the current window.
 				if c ~= client.focus and not find_last_unfocus_terminal then
 					last_unfocus_terminal = c
 				else
@@ -488,10 +498,10 @@ local global_keys = awful.util.table.join(
 			end
 		end
 		if last_unfocus_terminal or last_terminal then
-			-- Use the existed terminal if possible
+			-- Use the existed terminal if possible.
 			client.focus = last_unfocus_terminal or last_terminal
 		else
-			-- Create a terminal if there is no terminal
+			-- Create a terminal if there is no terminal.
 			awful.spawn.spawn(terminal .. terminal_args)
 		end
 	end),
@@ -521,13 +531,13 @@ local global_keys = awful.util.table.join(
 	-- Custom key bindings
 	awful.key({ mod_key }, "l", function() awful.spawn("dm-tool lock") end), -- Lock screen
 	awful.key({ mod_key }, "h", function()
-		-- Minimize all floating windows in current tag (workspace)
+		-- Minimize all floating windows in current tag (workspace).
 		for _, c in pairs(awful.screen.focused().selected_tag:clients()) do
 			if c.floating then c.minimized = true end
 		end
 	end),
 	awful.key({ mod_key, "Control" }, "h", function()
-		-- Unminimize all floating windows
+		-- Unminimize all floating windows.
 		for _, c in pairs(awful.screen.focused().selected_tag:clients()) do
 			if c.floating then c.minimized = false; client.focus = c end
 		end
@@ -538,27 +548,13 @@ local global_keys = awful.util.table.join(
 		awful.spawn(terminal .. terminal_args  .. " -c " .. file_manager)
 	end),
 	awful.key({ mod_key, "Control" }, "n", function()
-		local c_restore = awful.client.restore() -- Restore the minimize window and focus it
+		local c_restore = awful.client.restore() -- Restore the minimize window and focus it.
 		if c_restore then client.focus = c_restore; c_restore:raise() end
 	end),
 
 	-- Screen shot key bindings
-	awful.key({}, "Print", function()
-		awful.spawn.with_shell("scrot ~/Pictures/screenshot-fullscreen-(date -Ins).png")
-		naughty.notify {
-			title = "📸 Screen Shot",
-			text = "Take the fullscreen screenshot success!\n"
-					.. "Screenshot saved in dir ~/Pictures."
-		}
-	end),
-	awful.key({ mod_key }, "Print", function()
-		awful.spawn.with_shell("scrot -u ~/Pictures/screenshot-window-(date -Ins).png")
-		naughty.notify {
-			title = "📸 Screen Shot",
-			text = "Take the window screenshot success!\n"
-					.. "Screenshot saved in dir ~/Pictures."
-		}
-	end),
+	awful.key({}, "Print", function() awful.spawn("flameshot screen") end),
+	awful.key({ mod_key }, "Print", function() awful.spawn("flameshot gui") end),
 
 	-- Brightness key bindings
 	awful.key({}, "XF86MonBrightnessUp", function() brightness_change(5) end),
@@ -584,9 +580,9 @@ local global_keys = awful.util.table.join(
 	awful.key({ mod_key }, "XF86AudioLowerVolume", function() volume_change(-1) end)
 )
 
--- Bind all key numbers to tags (Work Space)
--- Be careful: we use keycodes to make it works on any keyboard layout
--- This should map on the top row of your keyboard, usually 1 to 9
+-- Bind all key numbers to tags (Work Space).
+-- Be careful: Use keycodes to make it works on any keyboard layout.
+-- This should map on the top row of your keyboard, usually 1 to 9.
 for i = 1, #tags do
 	global_keys = awful.util.table.join(global_keys,
 		-- View tag only
@@ -603,7 +599,12 @@ for i = 1, #tags do
 		awful.key({ mod_key, "Control" }, "#" .. i + 9, function()
 			if client.focus then
 				local tag = client.focus.screen.tags[i]
-				if tag then client.focus:move_to_tag(tag) end
+				if tag then
+					-- Move the current focused window to the target tag.
+					client.focus:move_to_tag(tag)
+					-- Jump to the target tag.
+					tag:view_only()
+				 end
 			end
 		end),
 		-- Toggle tag
@@ -623,11 +624,11 @@ root.keys(global_keys)
 
 -- Rules
 
--- Rules to apply to new clients (through the "manage" signal)
--- Get X-Client props need to install tool "xorg-prop", use command "xprop" to check window props
+-- Rules to apply to new clients (through the "manage" signal).
+-- Get X-Client props need to install tool "xorg-prop", use command "xprop" to check window props.
 awful.rules.rules = {
 	{
-		-- All clients will match this rule
+		-- All clients will match this rule.
 		rule = {},
 		properties = {
 			raise = true,
@@ -642,7 +643,7 @@ awful.rules.rules = {
 				awful.key({ mod_key, "Control" }, "m", function(c) awful.client.setmaster(c) end),
 				awful.key({ mod_key, "Control" }, "f", awful.client.floating.toggle)
 			),
-			-- Use mod_key with mouse key to move/resize the window
+			-- Use mod_key with mouse key to move/resize the window.
 			buttons = awful.util.table.join(
 				awful.button({}, 1, function(c) client.focus = c; c:raise() end),
 				awful.button({ mod_key }, 1, function(c)
@@ -661,7 +662,7 @@ awful.rules.rules = {
 		rule = { instance = terminal_instance },
 		properties = {
 			floating = true,
-			-- Make terminal open at mouse position
+			-- Make terminal open at mouse position.
 			callback = function(c) awful.placement.under_mouse(c) end
 		}
 	}, {
@@ -676,27 +677,25 @@ awful.rules.rules = {
 
 -- Signal function to execute when a new client appears.
 client.connect_signal("manage", function(c, startup)
-
 	-- Set the dialog always on the top
 	if c.type == "dialog" then c.ontop = true end
 
 	if not startup then
 		-- Set the windows at the slave,
-		-- i.e. put it at the end of others instead of setting it master
+		-- i.e. put it at the end of others instead of setting it master.
 		awful.client.setslave(c)
-		-- Put windows in a smart way, only if they does not set an initial position
+		-- Put windows in a smart way, only if they does not set an initial position.
 		if not c.size_hints.user_position
 				and not c.size_hints.program_position then
 			awful.placement.no_overlap(c)
 			awful.placement.no_offscreen(c)
 		end
 	end
-
 end)
 
 client.connect_signal("focus", function(c)
 	if not c.floating then
-		-- Set all floating windows lower when focus to a unfloating window
+		-- Set all floating windows lower when focus to a unfloating window.
 		for _, window in pairs(c.screen.clients) do
 			-- if window.floating then window:lower() end
 			if window.floating and not window.ontop then window.minimized = true end
@@ -704,7 +703,7 @@ client.connect_signal("focus", function(c)
 	else
 		c:raise() -- Raise the floating window
 	end
-	-- Set the border color when window is focused
+	-- Set the border color when window is focused.
 	c.border_color = beautiful.border_focus
 end)
 
@@ -713,6 +712,15 @@ client.connect_signal("unfocus", function(c)
 end)
 
 client.connect_signal("mouse::enter", function(c)
-	main_menu:hide() -- Hide main menu when focus other window
-	if task_menu then task_menu:hide() end -- Hide task menu when focus other window
+	main_menu:hide() -- Hide main menu when focus other window.
+	if task_menu then task_menu:hide() end -- Hide task menu when focus other window.
+end)
+
+-- Callback when window size is changed.
+client.connect_signal("property::geometry", function(c)
+	-- Set up the window border shape when window is not fullscreen.
+	c.shape = not c.fullscreen and gears.shape.rounded_rect or nil
+	-- !!
+	-- In Lua, nil will be treat as false,
+	-- so expression "xxx and nil or xxx" don't work as ternary operator.
 end)

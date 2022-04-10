@@ -1,6 +1,6 @@
 # Qtile configuration
-# Link this file to the path ~/.config/qtile/config.py
-# Qtile will log in the path ~/.local/share/qtile/qtile.log
+# Link this file to the path ~/.config/qtile/config.py.
+# Qtile will log in the path ~/.local/share/qtile/qtile.log.
 
 # Import library
 from libqtile import bar, layout, widget, hook
@@ -60,6 +60,7 @@ def get_command_output(command: str) -> str:
 # Color settings
 class Color:
     CLOCK = "#00FFFF"
+    BAR = "#001122"
 
     class Border:
         NORMAL = "#999999"
@@ -257,20 +258,6 @@ def open_terminal_by_need(qtile: Qtile):
 
 
 @lazy.function
-def take_screenshot(_, window: bool = False):
-    if window:
-        arg, desc = "", "window"
-    else:
-        arg, desc = "-u", "fullscreen"
-    os.system(f"scrot {arg} ~/Pictures/screenshot-{desc}-$(date -Ins).png")
-    send_notification(
-        "📸 Screen Shot",
-        f"Take the {desc} screenshot success!\nScreenshot saved in dir ~/Pictures.",
-        NotificationType.TAKE_SCREENSHOT,
-    )
-
-
-@lazy.function
 def toggle_window(
     qtile: Qtile,
     operate: Callable[[Window], None],
@@ -397,13 +384,13 @@ keys = [
     Key(
         [],
         "Print",
-        take_screenshot,
+        lazy.spawn("flameshot screen"),
         desc="Take screenshot for full screen",
     ),
     Key(
         [mod],
         "Print",
-        take_screenshot(True),
+        lazy.spawn("flameshot gui"),
         desc="Take screenshot for current window",
     ),
     # Volume keybings
@@ -506,9 +493,11 @@ screens = [
                 widget.Clock(format=" %Y-%m-%d %a %I:%M %p ", foreground=Color.CLOCK),
             ],
             25,
-            opacity=0.6,
+            opacity=0.7,
             # [N E S W]
             margin=[0, 0, margin, 0],
+            border_color=Color.BAR,
+            background=Color.BAR,
             # Set up bar inner content gap
             border_width=[margin, margin, margin, margin],
         ),
@@ -523,8 +512,9 @@ layouts = [
         border_width=border_width,
         border_focus=Color.Border.FOCUS,
         border_normal=Color.Border.NORMAL,
+        border_on_single=True,
     )
-    for l in [layout.Columns, layout.Bsp, layout.Max]
+    for l in [layout.Columns, layout.MonadThreeCol, layout.Zoomy]
 ]
 floating_layout = layout.Floating(
     border_width=border_width,

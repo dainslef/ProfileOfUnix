@@ -114,7 +114,7 @@ beautiful.bg_systray = "#8899AA" -- Systray doesn't support alpha channel (trans
 beautiful.border_focus = "#445566AA"
 beautiful.border_normal = "#00000011"
 beautiful.menu_bg_normal = "#33445566"
-beautiful.menu_fg_normal = beautiful.fg_focus
+beautiful.menu_fg_normal = beautiful.fg_focus -- The fg_focus color is white.
 beautiful.menu_border_color = beautiful.border_focus
 beautiful.taglist_bg_focus = beautiful.border_focus
 beautiful.tasklist_bg_focus = beautiful.taglist_bg_focus
@@ -139,7 +139,7 @@ local dictionary = "goldendict"
 local file_manager = "ranger"
 local terminal = "vte-2.91"
 local terminal_instance = "Terminal" -- Set the instance name of Terminal App, use xprop WM_CLASS.
-local terminal_args = " -g 120x40 -n 5000 -T 20 --no-decorations --no-scrollbar" -- --reverse -f 'DejaVu Sans Mono 10'
+local terminal_args = " -g 120x40 -n 5000 -T 10 --no-decorations --no-scrollbar" -- --reverse -f 'DejaVu Sans Mono 10'
 
 -- Set main key.
 local mod_key = "Mod4"
@@ -196,9 +196,6 @@ local main_menu = awful.menu {
 	}
 }
 
--- Menubar configuration
-menubar.utils.terminal = terminal -- Set the terminal for applications that require it.
-
 
 
 -- Wibox
@@ -207,7 +204,8 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 local widget_box, prompt_box, layout_box, tag_list, task_list = {}, {}, {}, {}, {}
 
 -- Create a textclock widget.
-local text_clock = wibox.widget.textclock("<span font='Dejavu Sans 10' color='white'>" ..
+local text_clock = wibox.widget.textclock(
+	"<span font='Dejavu Sans 10' color='white'>" ..
 	"[<span color='yellow'>%a</span>] %b/%d <span color='cyan'>%H:%M</span> </span>")
 
 do -- Attach a cleandar widget to text_colock widget.
@@ -279,15 +277,25 @@ local net_widget, battery_widget, volume_widget =
 -- vicious.register(widget, wtype, format, interval, warg)
 
 -- These variables need to place at global scope, some other function need these variables.
-local volume_zero_span = 0
--- Get the last SINK device index.
-local volume_device_index = tonumber(get_command_output("pactl list sinks short | wc -l"))
+local volume_refresh_span = 1
+-- Get the last SINK device index, the current used sound device will have * mark.
+-- Define function to get volume device index (lazy execute),
+-- because 'pacmd' command maybe not ready when WM startup.
+function volume_device_number()
+	local sink_index = tonumber(get_command_output("pacmd list-sinks | grep -Po '(?<=\\* index:) \\d+'"))
+	return sink_index + 1
+end
 
 do
 	-- Net state
 	local net_refresh_span = 2
 	-- Get default net device name, sometimes there are more than one default route, so use "tail -n 1".
-	local net_device = get_command_output("ip route | grep default | tail -n 1 | grep -Po '(?<=dev )(\\S+)'")
+	local net_device = get_command_output("ip route list default | tail -n 1 | grep -Po '(?<=dev )(\\S+)'")
+	if net_device == "" then
+		-- If current route is empty, then get wifi net device name.
+		-- Use Regex Lookarounds feature to find 'w*' net device.'
+		net_device = get_command_output("ip addr | grep -oP '(?<=: )w[\\w]+'")
+	end
 	local net_format = "🌐 <span color='white'>${" .. net_device .. " down_kb} KB </span>"
 	vicious.register(net_widget, vicious.widgets.net, net_format, net_refresh_span)
 
@@ -297,17 +305,16 @@ do
 	-- Register battery widget.
 	vicious.register(battery_widget, vicious.widgets.bat, function(_, args)
 		local status, percent = args[1], args[2]
-		return "🔋 <span color='white'>" .. percent .. "%(" .. status .. ") </span>"
+		return "🔋<span color='white'>" .. percent .. "%(" .. status .. ") </span>"
 	end, battery_refresh_span, battery_name)
 
 	-- Volume state
-	local volume_refresh_span = 1
 	-- Register volume widget.
 	vicious.register(volume_widget, vicious.contrib.pulse, function(_, args)
 		local percent, status = args[1], args[2]
 		local emoji = percent >= 60 and "🔊" or percent >= 20 and "🔉" or percent > 0 and "🔈" or "🔇"
-		return emoji .. " <span color='white'>" .. percent .. "%(" .. status .. ") </span>"
-	end, volume_refresh_span, volume_device_index)
+		return emoji .. "<span color='white'>" .. percent .. "%(" .. status .. ") </span>"
+	end, volume_refresh_span, volume_device_number())
 end
 
 
@@ -438,9 +445,11 @@ end
 
 -- Volume change function
 function volume_change(change)
-	vicious.contrib.pulse.add(change, volume_device_index)
-	local volume, status = vicious.contrib.pulse(volume_zero_span, volume_device_index)[1], ""
+	local volume_device_number = volume_device_number()
+	vicious.contrib.pulse.add(change, volume_device_number)
+	local volume = vicious.contrib.pulse(volume_refresh_span, volume_device_number)[1]
 
+	local status = ""
 	for i = 1, 20 do
 		status = i <= volume / 5 and status .. " |" or status .. " -"
 	end
@@ -564,9 +573,11 @@ local global_keys = awful.util.table.join(
 
 	-- Volume key bindings
 	awful.key({}, "XF86AudioMute", function()
-		vicious.contrib.pulse.toggle(volume_device_index)
+		local volume_device_number = volume_device_number()
+		vicious.contrib.pulse.toggle(volume_device_number)
+		local volume = vicious.contrib.pulse(volume_refresh_span, volume_device_number)[1]
+
 		naughty.destroy(volume_notify_id)
-		local volume = vicious.contrib.pulse(volume_zero_span, volume_device_index)[1]
 		volume_notify_id = naughty.notify {
 			title = "🔈 Volume changed",
 			text = "Sound state has been changed ...\n"
@@ -590,12 +601,7 @@ for i = 1, #tags do
 			local tag = mouse.screen.tags[i]
 			if tag then tag:view_only() end
 		end),
-		-- Toggle tag
-		awful.key({ mod_key, "Shift" }, "#" .. i + 9, function()
-			local tag = mouse.screen.tags[i]
-			if tag then awful.tag.viewtoggle(tag) end
-		end),
-		-- Move client to tag
+		-- Move client to target tag, then jump to target tag.
 		awful.key({ mod_key, "Control" }, "#" .. i + 9, function()
 			if client.focus then
 				local tag = client.focus.screen.tags[i]
@@ -607,12 +613,17 @@ for i = 1, #tags do
 				 end
 			end
 		end),
-		-- Toggle tag
-		awful.key({ mod_key, "Control", "Shift" }, "#" .. i + 9, function()
+		-- Let current window both show in current and target tag.
+		awful.key({ mod_key, "Shift" }, "#" .. i + 9, function()
 			if client.focus then
 				local tag = client.focus.screen.tags[i]
 				if tag then client.focus:toggle_tag(tag) end
 			end
+		end),
+		-- Combine both clients in current and target tag.
+		awful.key({ mod_key, "Control", "Shift" }, "#" .. i + 9, function()
+			local tag = mouse.screen.tags[i]
+			if tag then awful.tag.viewtoggle(tag) end
 		end)
 	)
 end
@@ -635,13 +646,17 @@ awful.rules.rules = {
 			border_width = beautiful.border_width,
 			border_color = beautiful.border_normal,
 			focus = awful.client.focus.filter,
+			-- Client key bindings.
 			keys = awful.util.table.join(
 				awful.key({ mod_key }, "w", function(c) c:kill() end),
-				awful.key({ mod_key }, "m", function(c) c.fullscreen = not c.fullscreen end),
-				awful.key({ mod_key }, "n", function(c) c.minimized = true end),
+				awful.key({ mod_key }, "m", function(c) awful.client.setmaster(c) end),
+				-- Window state key bindings, window title will add some charator for specific window state:
+				-- '+' maxmized, '^' ontop
+				awful.key({ mod_key, "Shift" }, "m", function(c) c.maximized = not c.maximized end),
+				awful.key({ mod_key, "Control" }, "m", function(c) c.fullscreen = not c.fullscreen end),
+				awful.key({ mod_key, "Control" }, "n", function(c) c.minimized = not c.minimized end),
 				awful.key({ mod_key, "Control" }, "t", function(c) c.ontop = not c.ontop end),
-				awful.key({ mod_key, "Control" }, "m", function(c) awful.client.setmaster(c) end),
-				awful.key({ mod_key, "Control" }, "f", awful.client.floating.toggle)
+				awful.key({ mod_key, "Control" }, "f", function(c) c.floating = not c.floating end)
 			),
 			-- Use mod_key with mouse key to move/resize the window.
 			buttons = awful.util.table.join(

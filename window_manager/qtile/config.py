@@ -81,9 +81,7 @@ class Application:
         GROUP_NAME = "T"
         MATCH_RULE = Match(wm_class=WM_CLASS)
         __command = "vte-2.91"
-        __args = (
-            " -g 120x40 -n 5000 -T 20  --no-decorations --no-scrollbar"  # --reverse
-        )
+        __args = " -g 120x40 -n 5000 -T 10 --no-decorations --no-scrollbar"  # --reverse
 
         # Add method to Window class
         Window.is_terminal = lambda c: c and c.match(Application.Terminal.MATCH_RULE)
@@ -105,27 +103,24 @@ class VolumeControl:
     # Set up the commands
     if IS_PULSE_AUDIO_ENABLED:
         # PulseAudio commands
-        SINK = (
-            int(
-                # Get the SINK count.
-                get_command_output(
-                    "pactl list sinks | grep '^[[:space:]]Volume:' | wc -l"
-                )
-            )
-            - 1
-        )  # Get the last SINK index
+        SINK = int(
+            # Get SINK device index, the current used sound device will have * mark.
+            get_command_output("pacmd list-sinks | grep -Po '(?<=\\* index:) \\d+'")
+        )
         GET_VOLUME = (
             # Get the last SINK (when a computer has multi sinks, usually the last sink is the TRUE output sink)
             "pactl list sinks | grep '^[[:space:]]Volume:' "
-            + "| tail -n 1 | sed -e 's,.* \\([0-9][0-9]*\\)%.*,\\1,'"
+            + f"| sed -n {SINK + 1}p | sed -e 's,.* \\([0-9][0-9]*\\)%.*,\\1,'"
         )
-        CHECK_MUTE = "pactl list sinks | awk '/Mute/ { print $2 }' | tail -n 1"
+        CHECK_MUTE = (
+            f"pacmd list-sinks | grep -Po '(?<=muted: )\\S+' | sed -n {SINK + 1}p"
+        )
         MUTE_STATUS = "yes"
         MUTE_TOGGLE = f"pactl set-sink-mute {SINK} toggle"
     else:
         # ALSA commands
-        GET_VOLUME = "amixer get Master | grep -P '\d+%' -o | sed  's/\%//'"
-        CHECK_MUTE = "amixer get Master | grep -P '\[(o|n|f)+\]' -o"
+        GET_VOLUME = "amixer get Master | grep -Po '\d+(?=%)'"
+        CHECK_MUTE = "amixer get Master | grep -Po '\[(o|n|f)+\]'"
         MUTE_STATUS = "[off]"
         MUTE_TOGGLE = "amixer set Master toggle"
 
@@ -196,9 +191,7 @@ def change_brightness(_, value: int):
     else:
         prefix, suffix, content = "", "-", "down ⬇️"
     os.system(f"brightnessctl set {prefix}{abs(value)}%{suffix}")
-    brightness = int(
-        get_command_output("brightnessctl | grep -P '\d+%' -o | sed  's/\%//'")
-    )
+    brightness = int(get_command_output("brightnessctl | grep -Po '\\d+(?=\\%\\))'"))
     send_notification(
         "💡 Brightness Changed",
         f"Background brightness {content} ({brightness}%)",

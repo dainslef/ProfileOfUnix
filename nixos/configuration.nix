@@ -171,7 +171,10 @@
     # sudo nix-channel --add https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-unstable
     # or use USTC Mirror:
     # https://mirrors.ustc.edu.cn/nix-channels/nixos-unstable
-    settings.substituters = ["https://mirrors.ustc.edu.cn/nix-channels/store"];
+    settings.substituters = [ # Binary Cache Mirror
+      "https://mirrors.ustc.edu.cn/nix-channels/store"
+      "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
+    ];
     autoOptimiseStore = true; # Enable nix store auto optimise.
   };
   nixpkgs.config.allowUnfree = true; # Allow some unfree software (like vscode and chrome).

@@ -59,19 +59,23 @@ with lib; {
     (mkIf config.custom.desktop.wm {
       # Csutom packages for window manager.
       custom.extraPackages = with pkgs; [
-        xdg-user-dirs picom networkmanagerapplet scrot vte ranger ueberzug
+        xdg-user-dirs picom networkmanagerapplet vte ranger ueberzug flameshot
         brightnessctl # For brightness control.
         dunst # Provide notification (some WM like Qtile and XMonad don't have a built-in notification service).
       ];
       services.xserver = {
+        # Start xdg autostart service when only use window manager (No desktop environment).
+        desktopManager.runXdgAutostartIfNone = true;
         # Set up display manager.
         displayManager.lightdm.greeters.gtk.extraConfig = "background=/boot/background.jpg";
-        # Enable Qtile.
-        windowManager.qtile.enable = true;
-        # Enable AwesomeWM.
-        windowManager.awesome = {
-          enable = true;
-          luaModules = [pkgs.luaPackages.vicious];
+        windowManager = {
+          # Enable Qtile.
+          qtile.enable = true;
+          # Enable AwesomeWM.
+          awesome = {
+            enable = true;
+            luaModules = [pkgs.luaPackages.vicious];
+          };
         };
       };
     })
@@ -117,7 +121,8 @@ with lib; {
     })
     (mkIf config.custom.desktop.xfce {
       # Set the Xfce GTK themes.
-      custom.extraPackages = with pkgs; [arc-theme whitesur-gtk-theme];
+      # Other good GTK themes: arc-theme whitesur-gtk-theme
+      custom.extraPackages = with pkgs; [ant-theme mojave-gtk-theme];
       services.xserver = {
         desktopManager.xfce.enable = true;
         displayManager.lightdm.greeters.gtk.enable = true;

@@ -56,6 +56,7 @@ do
 		-- PulseAudio, Fcitx5 and Clash can auto run by systemd service.
 		"picom", -- For transparent support.
 		"nm-applet", -- Show network status.
+		-- "fcitx5",
 		-- "clash-premium" -- Clash proxy provided by custom systemd service.
 		-- "blueman-applet", -- Use bluetooth.
 	}
@@ -139,7 +140,8 @@ local dictionary = "goldendict"
 local file_manager = "ranger"
 local terminal = "vte-2.91"
 local terminal_instance = "Terminal" -- Set the instance name of Terminal App, use xprop WM_CLASS.
-local terminal_args = " -g 120x40 -n 5000 -T 10 --no-decorations --no-scrollbar" -- --reverse -f 'DejaVu Sans Mono 10'
+-- Use 10% transparency in light mode, 20% in dark mode.
+local terminal_args = " -g 120x40 -n 5000 -T 10 --no-decorations --no-scrollbar" -- --reverse -T 20 -f 'DejaVu Sans Mono 10'
 
 -- Set main key.
 local mod_key = "Mod4"
@@ -277,18 +279,12 @@ local net_widget, battery_widget, volume_widget =
 -- vicious.register(widget, wtype, format, interval, warg)
 
 -- These variables need to place at global scope, some other function need these variables.
-local volume_refresh_span = 1
--- Get the last SINK device index, the current used sound device will have * mark.
--- Define function to get volume device index (lazy execute),
--- because 'pacmd' command maybe not ready when WM startup.
-function volume_device_number()
-	local sink_index = tonumber(get_command_output("pacmd list-sinks | grep -Po '(?<=\\* index:) \\d+'"))
-	return sink_index + 1
-end
+local widget_refresh_span = 1 -- Time span for refresh widget (seconds).
+-- Get SINK device index, the current used sound device will have '*'' mark.
+local volume_device_number = 1 + tonumber(get_command_output("pacmd list-sinks | grep -Po '(?<=\\* index:) \\d+'"))
 
 do
 	-- Net state
-	local net_refresh_span = 2
 	-- Get default net device name, sometimes there are more than one default route, so use "tail -n 1".
 	local net_device = get_command_output("ip route list default | tail -n 1 | grep -Po '(?<=dev )(\\S+)'")
 	if net_device == "" then
@@ -297,16 +293,15 @@ do
 		net_device = get_command_output("ip addr | grep -oP '(?<=: )w[\\w]+'")
 	end
 	local net_format = "🌐 <span color='white'>${" .. net_device .. " down_kb} KB </span>"
-	vicious.register(net_widget, vicious.widgets.net, net_format, net_refresh_span)
+	vicious.register(net_widget, vicious.widgets.net, net_format, widget_refresh_span)
 
 	-- Battery state
-	local battery_refresh_span = 10 -- Time span for refresh battery widget (seconds).
 	local battery_name = "BAT0"
 	-- Register battery widget.
 	vicious.register(battery_widget, vicious.widgets.bat, function(_, args)
 		local status, percent = args[1], args[2]
 		return "🔋<span color='white'>" .. percent .. "%(" .. status .. ") </span>"
-	end, battery_refresh_span, battery_name)
+	end, widget_refresh_span, battery_name)
 
 	-- Volume state
 	-- Register volume widget.
@@ -314,7 +309,7 @@ do
 		local percent, status = args[1], args[2]
 		local emoji = percent >= 60 and "🔊" or percent >= 20 and "🔉" or percent > 0 and "🔈" or "🔇"
 		return emoji .. "<span color='white'>" .. percent .. "%(" .. status .. ") </span>"
-	end, volume_refresh_span, volume_device_number())
+	end, widget_refresh_span, volume_device_number)
 end
 
 
@@ -407,7 +402,7 @@ for s = 1, screen.count() do
 		widget = wibox.container.margin(wibox.widget {
 			left_bar, middle_bar, right_bar,
 			layout = wibox.layout.align.horizontal
-		}, bar_gap_size, bar_gap_size, bar_gap_size) -- Set top bar gap.
+		}, bar_gap_size, bar_gap_size, bar_gap_size) -- Set top bar gap (left, right, top)
 	}
 
 end
@@ -424,13 +419,12 @@ function brightness_change(change)
 	os.execute("brightnessctl set " .. prefix .. math.abs(change) .. "%" .. suffix)
 
 	-- Execute async brightness config (need run command with shell).
-	awful.spawn.easy_async_with_shell("brightnessctl | grep -P '\\d+%' -o | sed 's/\\%//'",
+	awful.spawn.easy_async_with_shell("brightnessctl | grep -Po '\\d+(?=\\%\\))'",
 	function(brightness, _, _, _)
 		local status = ""
 		for i = 1, 20 do
 			status = i <= brightness / 5 and status .. " |" or status .. " -"
 		end
-
 		-- Use 'destroy' instead of 'replaces_id' (replaces_id api sometimes doesn't take effects).
 		naughty.destroy(brightness_notify)
 		brightness_notify = naughty.notify {
@@ -445,9 +439,8 @@ end
 
 -- Volume change function
 function volume_change(change)
-	local volume_device_number = volume_device_number()
 	vicious.contrib.pulse.add(change, volume_device_number)
-	local volume = vicious.contrib.pulse(volume_refresh_span, volume_device_number)[1]
+	local volume = vicious.contrib.pulse(widget_refresh_span, volume_device_number)[1]
 
 	local status = ""
 	for i = 1, 20 do
@@ -475,6 +468,7 @@ end
 
 local global_keys = awful.util.table.join(
 
+	-- Window navigation.
 	awful.key({ mod_key }, "Left", function() awful.client.focus.bydirection("left") end),
 	awful.key({ mod_key }, "Right", function() awful.client.focus.bydirection("right") end),
 	awful.key({ mod_key }, "Up", function() awful.client.focus.bydirection("up") end),
@@ -483,14 +477,49 @@ local global_keys = awful.util.table.join(
 	awful.key({ mod_key, "Control"}, "Right", function() awful.client.swap.byidx(-1) end),
 
 	awful.key({ mod_key }, "Escape", awful.tag.history.restore),
-	awful.key({ mod_key }, "BackSpace", naughty.destroy_all_notifications),
 
-	-- Layout manipulation
+	-- Layout manipulation.
 	awful.key({ mod_key }, "j", awful.client.urgent.jumpto),
 	awful.key({ mod_key }, "Tab", function() awful.client.focus.byidx(1) end),
 	awful.key({ mod_key }, "`", function() awful.client.focus.byidx(-1) end),
 
-	-- Standard program
+	-- Change layout.
+	awful.key({ mod_key }, "space", function() layout_change(1) end),
+	awful.key({ mod_key, "Control" }, "space", function() layout_change(-1) end),
+
+	-- Run prompt.
+	awful.key({ mod_key }, "r", function() prompt_box[mouse.screen.index]:run() end, {
+		description = "run prompt", group = "launcher"
+	}),
+
+	-- Menu and menubar.
+	awful.key({ mod_key }, "o", function() main_menu:show() end),
+	awful.key({ mod_key }, "p", function() menubar.show() end),
+
+	-- Brightness key bindings.
+	awful.key({}, "XF86MonBrightnessUp", function() brightness_change(5) end),
+	awful.key({}, "XF86MonBrightnessDown", function() brightness_change(-5) end),
+	awful.key({ mod_key }, "XF86MonBrightnessUp", function() brightness_change(1) end),
+	awful.key({ mod_key }, "XF86MonBrightnessDown", function() brightness_change(-1) end),
+
+	-- Volume key bindings.
+	awful.key({}, "XF86AudioMute", function()
+		vicious.contrib.pulse.toggle(volume_device_number)
+		local volume = vicious.contrib.pulse(widget_refresh_span, volume_device_number)[1]
+		naughty.destroy(volume_notify_id)
+		volume_notify_id = naughty.notify {
+			title = "🔈 Volume changed",
+			text = "Sound state has been changed ...\n"
+					.. "Current sound state is ["
+					.. (volume > 0 and "🔊 ON" or "🔇 OFF") .. "] !"
+		}
+	end),
+	awful.key({}, "XF86AudioRaiseVolume", function() volume_change(5) end),
+	awful.key({}, "XF86AudioLowerVolume", function() volume_change(-5) end),
+	awful.key({ mod_key }, "XF86AudioRaiseVolume", function() volume_change(1) end),
+	awful.key({ mod_key }, "XF86AudioLowerVolume", function() volume_change(-1) end),
+
+	-- Open terminal by need.
 	awful.key({ mod_key }, "Return", function()
 		local last_terminal, last_unfocus_terminal, find_last_unfocus_terminal
 		-- Only find the terminal instance in current tag (workspace).
@@ -518,27 +547,19 @@ local global_keys = awful.util.table.join(
 	awful.key({ mod_key, "Control" }, "r", awesome.restart),
 	awful.key({ mod_key, "Control" }, "q", awesome.quit),
 
-	-- Change layout
-	awful.key({ mod_key }, "space", function() layout_change(1) end),
-	awful.key({ mod_key, "Control" }, "space", function() layout_change(-1) end),
-
-	-- Prompt
-	awful.key({ mod_key }, "r", function() prompt_box[mouse.screen.index]:run() end, {
-		description = "run prompt", group = "launcher"
-	}),
-	awful.key({ mod_key }, "x", function()
-		awful.prompt.run({ prompt = "Run Lua code: " },
-		prompt_box[mouse.screen.index].widget,
-		awful.util.eval, nil,
-		awful.util.getdir("cache") .. "/history_eval")
-	end),
-
-	-- Menu and menubar
-	awful.key({ mod_key }, "o", function() main_menu:show() end),
-	awful.key({ mod_key }, "p", function() menubar.show() end),
-
-	-- Custom key bindings
+	-- Custom application key bindings.
 	awful.key({ mod_key }, "l", function() awful.spawn("dm-tool lock") end), -- Lock screen
+	awful.key({ mod_key }, "b", function() awful.spawn(browser) end),
+	awful.key({ mod_key }, "d", function() awful.spawn(dictionary) end),
+	awful.key({ mod_key }, "f", function()
+		awful.spawn(terminal .. terminal_args  .. " -c " .. file_manager)
+	end),
+	-- Screen shot key bindings.
+	awful.key({}, "Print", function() awful.spawn("flameshot screen") end),
+	awful.key({ mod_key }, "Print", function() awful.spawn("flameshot gui") end),
+	-- Destory notifications.
+	awful.key({ mod_key }, "BackSpace", naughty.destroy_all_notifications),
+	-- Window manage keys.
 	awful.key({ mod_key }, "h", function()
 		-- Minimize all floating windows in current tag (workspace).
 		for _, c in pairs(awful.screen.focused().selected_tag:clients()) do
@@ -551,44 +572,14 @@ local global_keys = awful.util.table.join(
 			if c.floating then c.minimized = false; client.focus = c end
 		end
 	end),
-	awful.key({ mod_key }, "b", function() awful.spawn(browser) end),
-	awful.key({ mod_key }, "d", function() awful.spawn(dictionary) end),
-	awful.key({ mod_key }, "f", function()
-		awful.spawn(terminal .. terminal_args  .. " -c " .. file_manager)
-	end),
 	awful.key({ mod_key, "Control" }, "n", function()
+		local c = client.focus
+		if not c.minimized then c.minimized = true end
+	end),
+	awful.key({ mod_key, "Control" }, "b", function()
 		local c_restore = awful.client.restore() -- Restore the minimize window and focus it.
 		if c_restore then client.focus = c_restore; c_restore:raise() end
-	end),
-
-	-- Screen shot key bindings
-	awful.key({}, "Print", function() awful.spawn("flameshot screen") end),
-	awful.key({ mod_key }, "Print", function() awful.spawn("flameshot gui") end),
-
-	-- Brightness key bindings
-	awful.key({}, "XF86MonBrightnessUp", function() brightness_change(5) end),
-	awful.key({}, "XF86MonBrightnessDown", function() brightness_change(-5) end),
-	awful.key({ mod_key }, "XF86MonBrightnessUp", function() brightness_change(1) end),
-	awful.key({ mod_key }, "XF86MonBrightnessDown", function() brightness_change(-1) end),
-
-	-- Volume key bindings
-	awful.key({}, "XF86AudioMute", function()
-		local volume_device_number = volume_device_number()
-		vicious.contrib.pulse.toggle(volume_device_number)
-		local volume = vicious.contrib.pulse(volume_refresh_span, volume_device_number)[1]
-
-		naughty.destroy(volume_notify_id)
-		volume_notify_id = naughty.notify {
-			title = "🔈 Volume changed",
-			text = "Sound state has been changed ...\n"
-					.. "Current sound state is ["
-					.. (volume > 0 and "🔊 ON" or "🔇 OFF") .. "] !"
-		}
-	end),
-	awful.key({}, "XF86AudioRaiseVolume", function() volume_change(5) end),
-	awful.key({}, "XF86AudioLowerVolume", function() volume_change(-5) end),
-	awful.key({ mod_key }, "XF86AudioRaiseVolume", function() volume_change(1) end),
-	awful.key({ mod_key }, "XF86AudioLowerVolume", function() volume_change(-1) end)
+	end)
 )
 
 -- Bind all key numbers to tags (Work Space).
@@ -694,7 +685,6 @@ awful.rules.rules = {
 client.connect_signal("manage", function(c, startup)
 	-- Set the dialog always on the top
 	if c.type == "dialog" then c.ontop = true end
-
 	if not startup then
 		-- Set the windows at the slave,
 		-- i.e. put it at the end of others instead of setting it master.
@@ -708,27 +698,35 @@ client.connect_signal("manage", function(c, startup)
 	end
 end)
 
-client.connect_signal("focus", function(c)
+client.connect_signal("unfocus", function(c)
+	-- Set back window color.
+	c.border_color = beautiful.border_normal
+end)
+
+function update_floating_state(c)
 	if not c.floating then
 		-- Set all floating windows lower when focus to a unfloating window.
 		for _, window in pairs(c.screen.clients) do
-			-- if window.floating then window:lower() end
-			if window.floating and not window.ontop then window.minimized = true end
+			if window.instance == terminal_instance
+				and window.floating
+				and not window.ontop then
+				window.minimized = true -- Minimized other terminal windows.
+			end
 		end
 	else
-		c:raise() -- Raise the floating window
+		c:raise() -- Raise the floating window.
 	end
+end
+
+client.connect_signal("focus", function(c)
+	update_floating_state(c)
 	-- Set the border color when window is focused.
 	c.border_color = beautiful.border_focus
 end)
 
-client.connect_signal("unfocus", function(c)
-	c.border_color = beautiful.border_normal
-end)
-
-client.connect_signal("mouse::enter", function(c)
-	main_menu:hide() -- Hide main menu when focus other window.
-	if task_menu then task_menu:hide() end -- Hide task menu when focus other window.
+-- Callback when window position is changed
+client.connect_signal("property::position", function(c)
+	update_floating_state(c)
 end)
 
 -- Callback when window size is changed.
@@ -738,4 +736,9 @@ client.connect_signal("property::geometry", function(c)
 	-- !!
 	-- In Lua, nil will be treat as false,
 	-- so expression "xxx and nil or xxx" don't work as ternary operator.
+end)
+
+client.connect_signal("mouse::enter", function(c)
+	main_menu:hide() -- Hide main menu when focus other window.
+	if task_menu then task_menu:hide() end -- Hide task menu when focus other window.
 end)

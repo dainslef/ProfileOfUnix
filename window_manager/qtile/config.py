@@ -14,6 +14,26 @@ import os, subprocess
 from typing import Callable
 from enum import Enum, auto
 
+
+# Qtile most useful API:
+# qtile.current_window
+# qtile.current_layout
+# qtile.current_group
+#
+# Common Functions:
+# Focus specific window: qtile.current_group.focus(widnow)
+# Get all windows in current group: qtile.current_group.windows
+#
+# Command API:
+# lazy.xxx.cmd_xxx
+#
+# Main source files:
+# libqtile/core/manager.py => Qtile
+# libqtile/backend/base.py => Window
+# libqtile/layout/base.py => Layout
+# libqtile/group.py => Group
+
+
 # Qtile pre-define config variables
 follow_mouse_focus = False
 auto_fullscreen = True
@@ -27,6 +47,26 @@ mod = "mod4"
 # log start message
 # logger for debug, logger level should large than "warnning")
 logger.warning("Qtile start ...")
+
+
+# Set auto start commands
+# PulseAudio and Fcitx5 can autorun by systemd service
+once_cmds = [
+    "picom",  # Compositing manager, for transparent support.
+    "nm-applet",  # Show network status.
+    # "fcitx5", # Fcitx5 is provided by systemd service.
+    # "clash-premium",  # Clash proxy is provided by systemd service.
+]
+normal_cmds = [
+    "systemctl --user restart pulseaudio",  # In NixOS PulseAudio should restart during window manager startup, otherwise command can't get PulseAudio volume correctly.
+    "xset +dpms",
+    "xset dpms 0 0 1800",
+    "xset s 1800",
+]
+run_once = lambda cmd: os.system(f"fish -c 'pgrep -u $USER -x {cmd}; or {cmd} &'")
+[run_once(cmd) for cmd in once_cmds]
+[os.system(cmd) for cmd in normal_cmds]
+
 
 # Notification Types
 class NotificationType(Enum):
@@ -76,6 +116,14 @@ class Application:
     FILE_MANAGER = "ranger"
     LOCK_SCREEN = "dm-tool lock"
 
+    def jump_to_normal_window(qtile: Qtile):
+        # Skip minimized windows when switch windows.
+        while qtile.current_window.minimized:
+            qtile.current_group.cmd_next_window()
+
+    # Bind method to Qtile class
+    Qtile.jump_to_normal_window = jump_to_normal_window
+
     class Terminal:
         WM_CLASS = "Terminal"
         GROUP_NAME = "T"
@@ -98,19 +146,19 @@ class Application:
 # Sound control settings
 class VolumeControl:
     # Check if system enabled PulseAudio.
-    IS_PULSE_AUDIO_ENABLED = os.system("pactl stat") == 0
+    IS_PULSE_AUDIO_ENABLED = os.system("pacmd stat") == 0
+    logger.warning(f"IS_PULSE_AUDIO_ENABLED: {IS_PULSE_AUDIO_ENABLED}")
 
     # Set up the commands
     if IS_PULSE_AUDIO_ENABLED:
         # PulseAudio commands
         SINK = int(
-            # Get SINK device index, the current used sound device will have * mark.
+            # Get SINK device index, the current used sound device will have '*' mark.
             get_command_output("pacmd list-sinks | grep -Po '(?<=\\* index:) \\d+'")
         )
         GET_VOLUME = (
-            # Get the last SINK (when a computer has multi sinks, usually the last sink is the TRUE output sink)
-            "pactl list sinks | grep '^[[:space:]]Volume:' "
-            + f"| sed -n {SINK + 1}p | sed -e 's,.* \\([0-9][0-9]*\\)%.*,\\1,'"
+            # Get volume (when a computer has multi sinks, get the output from the device which has '*' mark)
+            f"pacmd list-sinks | grep -Po '(?<=volume: front-left: \\d{{5}} /) +\\d+(?=% /)' | sed -n {SINK + 1}p"
         )
         CHECK_MUTE = (
             f"pacmd list-sinks | grep -Po '(?<=muted: )\\S+' | sed -n {SINK + 1}p"
@@ -260,6 +308,9 @@ def toggle_window(
     if w:
         # The default toggle operation (like fullscreen/minimize) will make floating mark useless.
         operate(w)
+        # Skip minimized windows when switch windows.
+        qtile.jump_to_normal_window()  # Custom method.
+        # Check if the current window is terminal, terminal window need to restore floating state.
         if w.is_terminal() and not check_state(w):
             w.floating = True
             # Qtile has been started to provide the cmd_center() method in Window class since v0.21.0
@@ -273,6 +324,8 @@ def next_window(qtile: Qtile):
     if w and not w.fullscreen:
         # Only switch window when the current window isn't fullscreen
         qtile.current_group.cmd_next_window()
+        # Skip minimized windows when switch windows.
+        qtile.jump_to_normal_window()  # Custom method.
 
 
 @lazy.function
@@ -280,6 +333,17 @@ def prev_window(qtile: Qtile):
     w = qtile.current_window
     if w and not w.fullscreen:
         qtile.current_group.cmd_prev_window()
+        # Skip minimized windows when switch windows.
+        qtile.jump_to_normal_window()  # Custom method.
+
+
+@lazy.function
+def restore_minimized_window(qtile: Qtile):
+    for w in qtile.current_group.windows:
+        if w.minimized:
+            w.toggle_minimize()
+            qtile.current_group.focus(w)
+            break  # Only restore one window each time.
 
 
 keys = [
@@ -316,6 +380,9 @@ keys = [
     ),
     # Window operation
     Key([mod], "w", lazy.window.kill(), desc="Kill focused window"),
+    Key(
+        [mod, "control"], "b", restore_minimized_window, desc="Restore minimized window"
+    ),
     Key(
         [mod, "control"],
         "m",
@@ -526,7 +593,7 @@ mouse = [
     Drag(
         [mod],
         "Button1",
-        lazy.window.set_position_floating(),
+        lazy.window.set_position(),  # Use set_position_floating() will make any window floating.
         start=lazy.window.get_position(),
     ),
     Drag(
@@ -537,23 +604,6 @@ mouse = [
     ),
     Click([mod], "Button3", lazy.window.bring_to_front()),
 ]
-
-# Set auto start commands
-# PulseAudio and Fcitx 5 can autorun by systemd service
-once_cmds = [
-    "picom",  # Compositing manager, for transparent support.
-    "nm-applet",  # Show network status.
-    # "clash-premium",  # Clash proxy provide by systemd service.
-]
-normal_cmds = [
-    "xset +dpms",
-    "xset dpms 0 0 1800",
-    "xset s 1800",
-]
-run_once = lambda cmd: os.system(f"fish -c 'pgrep -u $USER -x {cmd}; or {cmd} &'")
-[run_once(cmd) for cmd in once_cmds]
-[os.system(cmd) for cmd in normal_cmds]
-
 
 # Hooks
 @hook.subscribe.client_focus

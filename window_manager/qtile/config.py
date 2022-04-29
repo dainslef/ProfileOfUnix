@@ -34,6 +34,11 @@ from enum import Enum, auto
 # libqtile/group.py => Group
 
 
+# log start message
+# logger for debug, logger level should large than "warnning")
+logger.warning("Qtile start ...")
+
+
 # Qtile pre-define config variables
 follow_mouse_focus = False
 auto_fullscreen = True
@@ -43,10 +48,6 @@ focus_on_window_activation = "focus"
 
 # User custom variables
 mod = "mod4"
-
-# log start message
-# logger for debug, logger level should large than "warnning")
-logger.warning("Qtile start ...")
 
 
 # Set auto start commands
@@ -117,11 +118,18 @@ class Application:
     LOCK_SCREEN = "dm-tool lock"
 
     def jump_to_normal_window(qtile: Qtile):
-        # Skip minimized windows when switch windows.
-        while qtile.current_window.minimized:
-            qtile.current_group.cmd_next_window()
+        w = qtile.current_window  # Save current window.
+        if w:
+            # Skip minimized windows when switch windows.
+            while qtile.current_window.minimized:
+                qtile.current_group.cmd_next_window()
+                if qtile.current_window == w:
+                    # If current window is saved window,
+                    # means all window had been traversed (all windows are minimized),
+                    # break the loop to avoid the dead loop.
+                    break
 
-    # Bind method to Qtile class
+    # Bind the method to Qtile class
     Qtile.jump_to_normal_window = jump_to_normal_window
 
     class Terminal:
@@ -313,9 +321,18 @@ def toggle_window(
         # Check if the current window is terminal, terminal window need to restore floating state.
         if w.is_terminal() and not check_state(w):
             w.floating = True
-            # Qtile has been started to provide the cmd_center() method in Window class since v0.21.0
+            # Qtile has been started to provide the cmd_center() method in Window class since v0.21.
             # In Qtile early version, you need impelement center window function manually.
             w.cmd_center()  # Put the terminal window back to the screen center.
+
+
+@lazy.function
+def hide_floating_terminals(qtile: Qtile):
+    terminals = [
+        w for w in qtile.current_group.windows if w.floating and w.is_terminal()
+    ]
+    terminals.reverse()  # Reverse terminal windows' order, then move to terminal group.
+    [w.togroup(Application.Terminal.GROUP_NAME) for w in terminals]
 
 
 @lazy.function
@@ -402,6 +419,12 @@ keys = [
         # Use 'picom' instead
         lazy.window.toggle_floating(),
         desc="Floating the focused window",
+    ),
+    Key(
+        [mod, "control"],
+        "h",
+        hide_floating_terminals,
+        desc="Hide all floating windows",
     ),
     # System operation
     Key([mod, "control"], "r", lazy.reload_config(), desc="Reload the config"),
@@ -612,5 +635,5 @@ def client_focus(c: Window):
         c.cmd_bring_to_front()  # Bring the floating focus window to front
     else:
         terminals = [w for w in c.group.windows if w.floating and w.is_terminal()]
-        terminals.reverse()  # Reverse terminal windows' order, then move to terminal group
+        terminals.reverse()  # Reverse terminal windows' order, then move to terminal group.
         [w.togroup(Application.Terminal.GROUP_NAME) for w in terminals]

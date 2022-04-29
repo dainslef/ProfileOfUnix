@@ -237,7 +237,7 @@ root.buttons(
 	)
 )
 
--- Set buttons in widgetbox
+-- Set buttons in widgetbox.
 tag_list.buttons = awful.util.table.join(
 	awful.button({}, MouseButtons.LEFT, awful.tag.viewonly),
 	awful.button({}, MouseButtons.RIGHT, awful.tag.viewtoggle),
@@ -361,10 +361,13 @@ for s = 1, screen.count() do
 		}
 	}
 
+	-- Gap sequence: Lef Right Top Down.
 	function create_bar_layout(widget, color)
-		return wibox.container.background(
-			wibox.container.margin(widget, bar_gap_size, bar_gap_size),
-			color, gears.shape.rounded_bar)
+		return wibox.container.margin(
+			wibox.container.background(
+				wibox.container.margin(widget, bar_gap_size, bar_gap_size),
+				color, gears.shape.rounded_bar
+			), bar_gap_size)
 	end
 
 	-- Widgets that are aligned to the left.
@@ -374,10 +377,11 @@ for s = 1, screen.count() do
 	}, beautiful.border_focus)
 
 	-- Create systray.
-	local sys_tray = wibox.container.margin(create_bar_layout(
-		wibox.widget.systray(), beautiful.bg_systray), 0, bar_gap_size)
+	-- local sys_tray = wibox.container.margin(create_bar_layout(
+	-- 	wibox.widget.systray(), beautiful.bg_systray), 0, bar_gap_size)
+	local sys_tray = create_bar_layout(wibox.widget.systray(), beautiful.bg_systray)
 
-	-- Create custom trays.
+	-- Create user custom tray.
 	local custom_tray = create_bar_layout(wibox.widget {
 		net_widget, battery_widget, volume_widget, text_clock,
 		layout = wibox.layout.fixed.horizontal
@@ -391,8 +395,8 @@ for s = 1, screen.count() do
 	-- Now bring it all together (with the tasklist in the middle).
 	-- Margin container args: widget, left padding, right padding.
 	local middle_bar = wibox.container.margin(
-			-- Place container args: widget, horizontal alignment.
-			wibox.container.place(task_list[s], "left"), bar_gap_size, bar_gap_size)
+		-- Place container args: widget, horizontal alignment.
+		wibox.container.place(task_list[s], "left"), bar_gap_size)
 
 	-- Create the wibar.
 	widget_box[s] = awful.wibar {
@@ -402,7 +406,7 @@ for s = 1, screen.count() do
 		widget = wibox.container.margin(wibox.widget {
 			left_bar, middle_bar, right_bar,
 			layout = wibox.layout.align.horizontal
-		}, bar_gap_size, bar_gap_size, bar_gap_size) -- Set top bar gap (left, right, top)
+		}, 0, bar_gap_size, bar_gap_size) -- Set top bar gap (left, right, top)
 	}
 
 end
@@ -411,27 +415,30 @@ end
 
 -- Global key bindings.
 
+function build_progress(value)
+	local status = ""
+	for i = 1, 20 do
+		status = i <= value / 5 and status .. " |" or status .. " -"
+	end
+	return status
+end
+
 -- Brightness change function.
 function brightness_change(change)
 	local is_brightness_up = change > 0
 	local prefix = is_brightness_up and "+" or ""
 	local suffix = is_brightness_up and "" or "-"
 	os.execute("brightnessctl set " .. prefix .. math.abs(change) .. "%" .. suffix)
-
 	-- Execute async brightness config (need run command with shell).
 	awful.spawn.easy_async_with_shell("brightnessctl | grep -Po '\\d+(?=\\%\\))'",
 	function(brightness, _, _, _)
-		local status = ""
-		for i = 1, 20 do
-			status = i <= brightness / 5 and status .. " |" or status .. " -"
-		end
 		-- Use 'destroy' instead of 'replaces_id' (replaces_id api sometimes doesn't take effects).
 		naughty.destroy(brightness_notify)
 		brightness_notify = naughty.notify {
 			title = "💡 Brightness Change",
 			text = "Background brightness "
 					.. (is_brightness_up and "up ⬆️" or "down ⬇️") .. "\n"
-					.. "[" .. status ..  " ] "
+					.. "[" .. build_progress(brightness) ..  " ] "
 					.. string.format("%.f", tonumber(brightness)) .. "%"
 		}
 	end)
@@ -441,17 +448,11 @@ end
 function volume_change(change)
 	vicious.contrib.pulse.add(change, volume_device_number)
 	local volume = vicious.contrib.pulse(widget_refresh_span, volume_device_number)[1]
-
-	local status = ""
-	for i = 1, 20 do
-		status = i <= volume / 5 and status .. " |" or status .. " -"
-	end
-
 	naughty.destroy(volume_notify)
 	volume_notify = naughty.notify {
 		title = "🔈 Volume Change",
 		text = "Volume " .. (change > 0 and "rise up ⬆️" or "lower ⬇️") .. "\n"
-				.. "[" .. status ..  " ] " .. volume .. "%"
+				.. "[" .. build_progress(volume) ..  " ] " .. volume .. "%"
 	}
 end
 
@@ -492,9 +493,11 @@ local global_keys = awful.util.table.join(
 		description = "run prompt", group = "launcher"
 	}),
 
-	-- Menu and menubar.
+	-- Menu, menubar and system operation.
 	awful.key({ mod_key }, "o", function() main_menu:show() end),
 	awful.key({ mod_key }, "p", function() menubar.show() end),
+	awful.key({ mod_key, "Control" }, "r", awesome.restart),
+	awful.key({ mod_key, "Control" }, "q", awesome.quit),
 
 	-- Brightness key bindings.
 	awful.key({}, "XF86MonBrightnessUp", function() brightness_change(5) end),
@@ -544,8 +547,6 @@ local global_keys = awful.util.table.join(
 		end
 	end),
 	awful.key({ mod_key, "Control" }, "Return", function() awful.spawn(terminal .. terminal_args) end),
-	awful.key({ mod_key, "Control" }, "r", awesome.restart),
-	awful.key({ mod_key, "Control" }, "q", awesome.quit),
 
 	-- Custom application key bindings.
 	awful.key({ mod_key }, "l", function() awful.spawn("dm-tool lock") end), -- Lock screen
@@ -559,22 +560,12 @@ local global_keys = awful.util.table.join(
 	awful.key({ mod_key }, "Print", function() awful.spawn("flameshot gui") end),
 	-- Destory notifications.
 	awful.key({ mod_key }, "BackSpace", naughty.destroy_all_notifications),
-	-- Window manage keys.
-	awful.key({ mod_key }, "h", function()
+	-- Global window manage keys (Specific window manage should use awful.rules).
+	awful.key({ mod_key, "Control" }, "h", function()
 		-- Minimize all floating windows in current tag (workspace).
 		for _, c in pairs(awful.screen.focused().selected_tag:clients()) do
 			if c.floating then c.minimized = true end
 		end
-	end),
-	awful.key({ mod_key, "Control" }, "h", function()
-		-- Unminimize all floating windows.
-		for _, c in pairs(awful.screen.focused().selected_tag:clients()) do
-			if c.floating then c.minimized = false; client.focus = c end
-		end
-	end),
-	awful.key({ mod_key, "Control" }, "n", function()
-		local c = client.focus
-		if not c.minimized then c.minimized = true end
 	end),
 	awful.key({ mod_key, "Control" }, "b", function()
 		local c_restore = awful.client.restore() -- Restore the minimize window and focus it.
@@ -651,13 +642,13 @@ awful.rules.rules = {
 			),
 			-- Use mod_key with mouse key to move/resize the window.
 			buttons = awful.util.table.join(
-				awful.button({}, 1, function(c) client.focus = c; c:raise() end),
-				awful.button({ mod_key }, 1, function(c)
+				awful.button({}, MouseButtons.LEFT, function(c) client.focus = c; c:raise() end),
+				awful.button({ mod_key }, MouseButtons.LEFT, function(c)
 					c:raise()
 					client.focus = c
 					awful.mouse.client.move()
 				end),
-				awful.button({ mod_key, "Control" }, 1, function(c)
+				awful.button({ mod_key, "Control" }, MouseButtons.LEFT, function(c)
 					c:raise()
 					client.focus = c
 					awful.mouse.client.resize()

@@ -1,4 +1,4 @@
-# Place this file at the path '~/.config/fish/config.fish'
+# Link this file to the path '~/.config/fish/config.fish'
 
 # This fish config need to install "Oh-My-Fish" and "bobthefish" theme:
 # $ curl -L https://get.oh-my.fish | fish
@@ -49,6 +49,35 @@ function env_config
             #     ~/Public/idea-IU/bin/idea.sh $argv &
             # end
 
+            # Select input method by desktop environment.
+            # Gnome XDG_SESSION_DESKTOP will be gnome-xorg or gnome-wayland
+            # By default, string match will return match content to standard output,
+            # use output redirection to ignore this output.
+            string match 'gnome*' "$XDG_SESSION_DESKTOP" >/dev/null # match return 0 (normal)
+            if [ $status = 0 ] || [ "$DESKTOP_SESSION" = pantheon ]
+                set input_method ibus
+            else
+                set input_method fcitx
+            end
+
+            # Set the input environment variables.
+            set -gx GTK_IM_MODULE $input_method
+            set -gx QT_IM_MODULE $input_method
+            set -gx XMODIFIERS "@im=$input_method"
+            set -gx CLASSPATH $CLASSPATH:.
+
+            # Set language environment variables.
+            set -gx LANG en_US.UTF-8
+            set -gx LC_ALL en_US.UTF-8
+
+            # Set Qt style
+            if [ "$XDG_SESSION_DESKTOP" = xfce ]
+                # Need to set both environment variables,
+                # only set QT_STYLE_OVERRIDE=gtk2 will cause application crash.
+                set -gx QT_STYLE_OVERRIDE gtk2
+                set -gx QT_QPA_PLATFORMTHEME gtk2
+            end
+
         end
 
         # Set python pip package binary path
@@ -95,11 +124,7 @@ function theme_config
         omf theme bobthefish
         # Set theme color for bobthefish
         # Override the default greeting at ~/.config/fish/functions/fish_greeting.fish or refine function
-        if [ (uname) = Darwin ]
-            set -g theme_color_scheme dark
-        else if [ (uname) = Linux ]
-            set -g theme_color_scheme light
-        end
+        set -g theme_color_scheme dark
         set -g theme_date_format "+%b/%d/%Y [%a] %R:%S"
     else # Use default in Non-GUI environment
         omf theme default

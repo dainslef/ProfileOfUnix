@@ -524,23 +524,24 @@ local global_keys = awful.util.table.join(
 
 	-- Open terminal by need.
 	awful.key({ mod_key }, "Return", function()
-		local last_terminal, last_unfocus_terminal, find_last_unfocus_terminal
-		-- Only find the terminal instance in current tag (workspace).
+		local last_terminal, nearby_terminal, find_nearby_terminal
+		-- First try to find the terminal instance which aready existed in current tag (workspace).
 		for _, c in pairs(awful.screen.focused().selected_tag:clients()) do
-			-- Find the last unfocused terminal window in current tag
+			-- Find the nearby terminal in current tag
 			if c.instance == terminal_instance then
 				last_terminal = c
-				-- The last unfocus window should before the current window.
-				if c ~= client.focus and not find_last_unfocus_terminal then
-					last_unfocus_terminal = c
+				-- The nearby window should before the current terminal.
+				if c ~= client.focus and not find_nearby_terminal then
+					nearby_terminal = c
 				else
-					find_last_unfocus_terminal = true
+					find_nearby_terminal = true
 				end
 			end
 		end
-		if last_unfocus_terminal or last_terminal then
-			-- Use the existed terminal if possible.
-			client.focus = last_unfocus_terminal or last_terminal
+		-- Use the existed terminal if possible.
+		if nearby_terminal or last_terminal then
+			-- If the nearby terminal doesn't exist, use the last terminal.
+			client.focus = nearby_terminal or last_terminal
 		else
 			-- Create a terminal if there is no terminal.
 			awful.spawn.spawn(terminal .. terminal_args)
@@ -664,7 +665,7 @@ awful.rules.rules = {
 		}
 	}, {
 		rule = { class = "jetbrains-idea" },
-		properties = { tag = tags[4] }
+		properties = { tag = tags[2] } -- Oper IDEA at workspace 2.
 	}
 }
 

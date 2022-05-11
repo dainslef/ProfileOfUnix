@@ -109,7 +109,7 @@ beautiful.notification_shape = gears.shape.rounded_rect -- Set the notification 
 -- Color settings, the last two bits are alpha channels.
 beautiful.bg_normal = "#00000000" -- Set background transparency.
 beautiful.bg_minimize = beautiful.bg_normal -- Set the minimize color of taskbar.
-beautiful.fg_normal = "#FFFFFF99"
+beautiful.fg_normal = beautiful.fg_focus -- Set foreground color(text).
 beautiful.fg_minimize = "#55555500"
 beautiful.bg_systray = "#8899AA" -- Systray doesn't support alpha channel (transparency).
 beautiful.border_focus = "#445566AA"
@@ -119,10 +119,8 @@ beautiful.menu_fg_normal = beautiful.fg_focus -- The fg_focus color is white.
 beautiful.menu_border_color = beautiful.border_focus
 beautiful.taglist_bg_focus = beautiful.border_focus
 beautiful.tasklist_bg_focus = beautiful.taglist_bg_focus
-beautiful.tasklist_bg_normal = beautiful.bg_normal
 beautiful.tasklist_fg_normal = beautiful.fg_minimize
 beautiful.notification_bg = beautiful.border_focus
-beautiful.notification_fg = beautiful.fg_focus
 
 -- Wallpaper
 local wall_paper = "/boot/background.jpg"
@@ -138,10 +136,10 @@ local mail = "thunderbird"
 local browser = "google-chrome-stable"
 local dictionary = "goldendict"
 local file_manager = "ranger"
-local terminal = "vte-2.91"
-local terminal_instance = "Terminal" -- Set the instance name of Terminal App, use xprop WM_CLASS.
 -- Use 10% transparency in light mode, 20% in dark mode.
-local terminal_args = " -g 120x40 -n 5000 -T 10 --no-decorations --no-scrollbar" -- --reverse -T 20 -f 'DejaVu Sans Mono 10'
+local terminal = "vte-2.91 -g 120x40 -n 5000 -T 10 --no-decorations --no-scrollbar"
+-- --reverse -T 20 -f 'DejaVu Sans Mono 10'
+local terminal_instance = "Terminal" -- Set the instance name of Terminal App, use xprop WM_CLASS.
 
 -- Set main key.
 local mod_key = "Mod4"
@@ -188,12 +186,12 @@ local main_menu = awful.menu {
 			{ "WeChat", "wechat-uos" }
 		}},
 		{ "System", {
-			{ "Terminal", terminal .. terminal_args },
-			{ "Top", terminal .. terminal_args .. " -k -- top" },
+			{ "Terminal", terminal },
+			{ "Top", terminal .. " -k -- top" },
 			{ "GParted", "gparted" }
 		}},
 		{ "Mail", mail },
-		{ "Files", terminal .. terminal_args  .. " -k -- " .. file_manager },
+		{ "Files", terminal  .. " -k -- " .. file_manager },
 		{ "Browser", browser }
 	}
 }
@@ -204,11 +202,9 @@ local main_menu = awful.menu {
 
 -- Create widgetboxs.
 local widget_box, prompt_box, layout_box, tag_list, task_list = {}, {}, {}, {}, {}
-
 -- Create a textclock widget.
 local text_clock = wibox.widget.textclock(
-	"<span font='Dejavu Sans 10' color='white'>" ..
-	"[<span color='yellow'>%a</span>] %b/%d <span color='cyan'>%H:%M</span> </span>")
+	"[<span color='yellow'>%a</span>] %b/%d <span color='cyan'>%H:%M</span>")
 
 do -- Attach a cleandar widget to text_colock widget.
 	local month_calendar = awful.widget.calendar_popup.month()
@@ -292,7 +288,7 @@ do
 		-- Use Regex Lookarounds feature to find 'w*' net device.'
 		net_device = get_command_output("ip addr | grep -oP '(?<=: )w[\\w]+'")
 	end
-	local net_format = "🌐 <span color='white'>${" .. net_device .. " down_kb} KB </span>"
+	local net_format = "🌐 ${" .. net_device .. " down_kb} KB "
 	vicious.register(net_widget, vicious.widgets.net, net_format, widget_refresh_span)
 
 	-- Battery state
@@ -300,7 +296,7 @@ do
 	-- Register battery widget.
 	vicious.register(battery_widget, vicious.widgets.bat, function(_, args)
 		local status, percent = args[1], args[2]
-		return "🔋<span color='white'>" .. percent .. "%(" .. status .. ") </span>"
+		return "🔋" .. percent .. "%(" .. status .. ") "
 	end, widget_refresh_span, battery_name)
 
 	-- Volume state
@@ -308,7 +304,7 @@ do
 	vicious.register(volume_widget, vicious.contrib.pulse, function(_, args)
 		local percent, status = args[1], args[2]
 		local emoji = percent >= 60 and "🔊" or percent >= 20 and "🔉" or percent > 0 and "🔈" or "🔇"
-		return emoji .. "<span color='white'>" .. percent .. "%(" .. status .. ") </span>"
+		return emoji ..percent .. "%(" .. status .. ") "
 	end, widget_refresh_span, volume_device_number)
 end
 
@@ -524,37 +520,38 @@ local global_keys = awful.util.table.join(
 
 	-- Open terminal by need.
 	awful.key({ mod_key }, "Return", function()
-		local last_terminal, nearby_terminal, find_nearby_terminal
+		local last_terminal, terminal_before_current, find_terminal_before_current
 		-- First try to find the terminal instance which aready existed in current tag (workspace).
-		for _, c in pairs(awful.screen.focused().selected_tag:clients()) do
-			-- Find the nearby terminal in current tag
+		for _, c in ipairs(awful.screen.focused().selected_tag:clients()) do
+			-- Find the last terminal in current workspace.
+			-- If current window is a terminal, find the lastest terminal before current.
 			if c.instance == terminal_instance then
-				last_terminal = c
+				last_terminal = c -- Save the last terminal.
 				-- The nearby window should before the current terminal.
-				if c ~= client.focus and not find_nearby_terminal then
-					nearby_terminal = c
+				if c ~= client.focus and not find_terminal_before_current then
+					terminal_before_current = c
 				else
-					find_nearby_terminal = true
+					find_terminal_before_current = true
 				end
 			end
 		end
 		-- Use the existed terminal if possible.
-		if nearby_terminal or last_terminal then
+		if terminal_before_current or last_terminal then
 			-- If the nearby terminal doesn't exist, use the last terminal.
-			client.focus = nearby_terminal or last_terminal
+			client.focus = terminal_before_current or last_terminal
 		else
 			-- Create a terminal if there is no terminal.
-			awful.spawn.spawn(terminal .. terminal_args)
+			awful.spawn.spawn(terminal)
 		end
 	end),
-	awful.key({ mod_key, "Control" }, "Return", function() awful.spawn(terminal .. terminal_args) end),
+	awful.key({ mod_key, "Control" }, "Return", function() awful.spawn(terminal) end),
 
 	-- Custom application key bindings.
 	awful.key({ mod_key }, "l", function() awful.spawn("dm-tool lock") end), -- Lock screen
 	awful.key({ mod_key }, "b", function() awful.spawn(browser) end),
 	awful.key({ mod_key }, "d", function() awful.spawn(dictionary) end),
 	awful.key({ mod_key }, "f", function()
-		awful.spawn(terminal .. terminal_args  .. " -c " .. file_manager)
+		awful.spawn(terminal  .. " -c " .. file_manager)
 	end),
 	-- Screen shot key bindings.
 	awful.key({}, "Print", function() awful.spawn("flameshot screen") end),
@@ -564,7 +561,7 @@ local global_keys = awful.util.table.join(
 	-- Global window manage keys (Specific window manage should use awful.rules).
 	awful.key({ mod_key, "Control" }, "h", function()
 		-- Minimize all floating windows in current tag (workspace).
-		for _, c in pairs(awful.screen.focused().selected_tag:clients()) do
+		for _, c in ipairs(awful.screen.focused().selected_tag:clients()) do
 			if c.floating then c.minimized = true end
 		end
 	end),

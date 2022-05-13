@@ -93,6 +93,12 @@ with lib; {
       };
     })
     (mkIf config.custom.desktop.gnome {
+      # Set up Qt look style.
+      qt5 = {
+        enable = true; # Enable Qt theme config.
+        style = "adwaita"; # Let Qt use Adwaita style.
+        platformTheme = "gnome";
+      };
       programs.gnome-terminal.enable = true;
       # Custom packages for GNOME.
       custom.extraPackages = with pkgs.gnome; [
@@ -109,7 +115,7 @@ with lib; {
     })
     (mkIf config.custom.desktop.pantheon {
       services.pantheon.apps.enable = false;
-      # Custom packages for GNOME.
+      # Custom packages for Pantheon.
       custom.extraPackages = with pkgs.pantheon; [
         elementary-terminal elementary-files
       ];
@@ -120,6 +126,12 @@ with lib; {
       };
     })
     (mkIf config.custom.desktop.xfce {
+      # Set up Qt look style.
+      qt5 = {
+        enable = true; # Enable Qt theme config.
+        style = "gtk2"; # Let Qt use GTK style.
+        platformTheme = "gtk2";
+      };
       # Set the Xfce GTK themes.
       # Other good GTK themes: arc-theme whitesur-gtk-theme
       custom.extraPackages = with pkgs; [ant-theme mojave-gtk-theme];

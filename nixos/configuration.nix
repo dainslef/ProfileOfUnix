@@ -43,9 +43,9 @@
     };
     # NixOS enabled firewall by default, so need to allow some ports.
     firewall.allowedTCPPorts = [
-      9999 # Clash
-      8384 # Syncthing WEB UI port
-      22000 # Syncthing transform port
+      9999 # For Clash service.
+      8384 # For Syncthing WEB UI.
+      22000 # For Syncthing data transmission.
     ];
   };
 
@@ -79,11 +79,11 @@
     (python3.withPackages (p: [p.black p.ansible p.jupyter]))
     # Developer tools
     binutils gcc gdb clang lldb rustup cmake gnumake # C/C++/Rust compiler and build tools
-    jdk scala android-tools dotnet-sdk # Java and .Net SDK
-    git kubectl stack nodejs # Other develop tools
+    jdk scala visualvm android-tools dotnet-sdk # Java and .Net SDK
+    git stack nodejs kubectl # Other develop tools
     vscode jetbrains.idea-ultimate # IDE/Editor
     # Normal tools
-    aria nmap openssh neofetch p7zip qemu opencc syncthing wine # Service and command line tools
+    file aria nmap openssh neofetch p7zip qemu opencc syncthing wine # Service and command line tools
     vlc gparted gimp google-chrome thunderbird goldendict blender # GUI tools
     # Man pages (POSIX API and C++ dev doc)
     man-pages-posix stdmanpages
@@ -137,12 +137,12 @@
   # Config fonts.
   fonts = {
     enableDefaultFonts = true;
-    fonts = with pkgs; [noto-fonts-cjk-sans powerline-fonts];
+    fonts = with pkgs; [cascadia-code noto-fonts-cjk-sans];
     fontconfig = {
       defaultFonts = {
         serif = ["Noto Sans"];
         sansSerif = ["Noto Sans"];
-        monospace = ["DejaVu Sans Mono"];
+        monospace = ["Cascadia Code PL"];
       };
     };
   };
@@ -160,12 +160,18 @@
     };
   };
 
-  # Execute custom scripts when rebuild NixOS configuration.
-  system.activationScripts.text = "
-    # Create custom bash symbol link (/bin/bash) for compatibility with most Linux scripts.
-    ln -sf /bin/sh /bin/bash
-  ";
+  system = {
+    # Set up system.stateVersion to avoid config not set warning.
+    # Use default system.stateVersion config will get warning since this commit https://github.com/NixOS/nixpkgs/commit/e2703d269756d27cff92ecb61c6da9d68ad8fdf8.
+    stateVersion = config.system.nixos.release;
+    # Execute custom scripts when rebuild NixOS configuration.
+    activationScripts.text = "
+      # Create custom bash symbol link (/bin/bash) for compatibility with most Linux scripts.
+      ln -sf /bin/sh /bin/bash
+    ";
+  };
 
+  nixpkgs.config.allowUnfree = true; # Allow some unfree software (like vscode and chrome).
   nix = {
     # Replace custom nixos channel with TUNA mirror:
     # sudo nix-channel --add https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-unstable
@@ -177,5 +183,4 @@
     ];
     autoOptimiseStore = true; # Enable nix store auto optimise.
   };
-  nixpkgs.config.allowUnfree = true; # Allow some unfree software (like vscode and chrome).
 }

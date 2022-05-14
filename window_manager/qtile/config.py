@@ -45,6 +45,7 @@ auto_fullscreen = True
 reconfigure_screens = True
 bring_front_click = True
 focus_on_window_activation = "focus"
+widget_defaults = dict(font="Cascadia Code PL", fontsize=12, padding=2)
 
 # User custom variables
 mod = "mod4"
@@ -117,7 +118,8 @@ class Application:
     FILE_MANAGER = "ranger"
     LOCK_SCREEN = "dm-tool lock"
 
-    def jump_to_normal_window(qtile: Qtile):
+    # Find the next normal window (Skip the minimized window).
+    def next_normal_window(qtile: Qtile):
         w = qtile.current_window  # Save current window.
         if w:
             # Skip minimized windows when switch windows.
@@ -130,16 +132,16 @@ class Application:
                     break
 
     # Bind the method to Qtile class
-    Qtile.jump_to_normal_window = jump_to_normal_window
+    Qtile.next_normal_window = next_normal_window
 
     class Terminal:
         WM_CLASS = "Terminal"
-        GROUP_NAME = "T"
+        GROUP_NAME = ""
         MATCH_RULE = Match(wm_class=WM_CLASS)
         __command = "vte-2.91"
         __args = " -g 120x40 -n 5000 -T 10 --no-decorations --no-scrollbar"  # --reverse
 
-        # Add method to Window class
+        # Add method to Window class.
         Window.is_terminal = lambda c: c and c.match(Application.Terminal.MATCH_RULE)
 
         @staticmethod
@@ -172,6 +174,7 @@ class VolumeControl:
             f"pacmd list-sinks | grep -Po '(?<=muted: )\\S+' | sed -n {SINK + 1}p"
         )
         MUTE_STATUS = "yes"
+        # "pacmd" doesn't have "toggle" subcommand, so need use "pactl" to toggle mute.
         MUTE_TOGGLE = f"pactl set-sink-mute {SINK} toggle"
     else:
         # ALSA commands
@@ -317,7 +320,7 @@ def toggle_window(
         # The default toggle operation (like fullscreen/minimize) will make floating mark useless.
         operate(w)
         # Skip minimized windows when switch windows.
-        qtile.jump_to_normal_window()  # Custom method.
+        qtile.next_normal_window()  # Custom method.
         # Check if the current window is terminal, terminal window need to restore floating state.
         if w.is_terminal() and not check_state(w):
             w.floating = True
@@ -342,7 +345,7 @@ def next_window(qtile: Qtile):
         # Only switch window when the current window isn't fullscreen
         qtile.current_group.cmd_next_window()
         # Skip minimized windows when switch windows.
-        qtile.jump_to_normal_window()  # Custom method.
+        qtile.next_normal_window()  # Custom method.
 
 
 @lazy.function
@@ -351,7 +354,7 @@ def prev_window(qtile: Qtile):
     if w and not w.fullscreen:
         qtile.current_group.cmd_prev_window()
         # Skip minimized windows when switch windows.
-        qtile.jump_to_normal_window()  # Custom method.
+        qtile.next_normal_window()  # Custom method.
 
 
 @lazy.function
@@ -514,8 +517,8 @@ keys = [
     ],
 ]
 
-# Add groups
-groups = [Group(i) for i in f"❶❷❸❹"]
+# Add groups.
+groups = [Group(i) for i in f"➊➋➌➍"]
 # Set up group keys
 for i in range(len(groups)):
     group_key, group_name = str(i + 1), groups[i].name
@@ -561,7 +564,7 @@ screens = [
                 widget.CurrentLayoutIcon(scale=0.8),
                 widget.GroupBox(),
                 widget.Prompt(),
-                widget.WindowCount(text_format="[{num}]"),
+                widget.WindowCount(text_format="⎛{num}⎠"),
                 widget.WindowTabs(),
                 widget.Net(format="🌐 {down}"),
                 widget.Battery(
@@ -573,7 +576,7 @@ screens = [
                     func=VolumeControl.get_volume_text, update_interval=1
                 ),
                 widget.Systray(),
-                widget.Clock(format=" %Y-%m-%d %a %I:%M %p ", foreground=Color.CLOCK),
+                widget.Clock(format="%b/%d/%Y %a %H:%M", foreground=Color.CLOCK),
             ],
             25,
             opacity=0.7,

@@ -63,18 +63,29 @@ with lib; {
         brightnessctl # For brightness control.
         dunst # Provide notification (some WM like Qtile and XMonad don't have a built-in notification service).
       ];
-      services.xserver = {
-        # Start xdg autostart service when only use window manager (No desktop environment).
-        desktopManager.runXdgAutostartIfNone = true;
-        # Set up display manager.
-        displayManager.lightdm.greeters.gtk.extraConfig = "background=/boot/background.jpg";
-        windowManager = {
-          # Enable Qtile.
-          qtile.enable = true;
-          # Enable AwesomeWM.
-          awesome = {
-            enable = true;
-            luaModules = [pkgs.luaPackages.vicious];
+      services = {
+        # Set up the compositor.
+        picom = {
+          enable = true;
+          fade = true; # Enable window animation.
+          shadow = true; # Enable window shadow.
+          backend = "glx";
+          shadowExclude = ["!focused"]; # Only shadow the current focus window.
+        };
+        # Set up the XServer.
+        xserver = {
+          # Start xdg autostart service when only use window manager (No desktop environment).
+          desktopManager.runXdgAutostartIfNone = true;
+          # Set up display manager.
+          displayManager.lightdm.greeters.gtk.extraConfig = "background=/boot/background.jpg";
+          windowManager = {
+            # Enable Qtile.
+            qtile.enable = true;
+            # Enable AwesomeWM.
+            awesome = {
+              enable = true;
+              luaModules = [pkgs.luaPackages.vicious];
+            };
           };
         };
       };
@@ -99,30 +110,29 @@ with lib; {
         style = "adwaita"; # Let Qt use Adwaita style.
         platformTheme = "gnome";
       };
-      programs.gnome-terminal.enable = true;
       # Custom packages for GNOME.
-      custom.extraPackages = with pkgs.gnome; [
-        nautilus file-roller eog gnome-system-monitor
-      ];
-      services.gnome = {
-        core-utilities.enable = false; # Disable useless default Gnome apps.
-        chrome-gnome-shell.enable = true;
-      };
-      services.xserver = {
-        displayManager.gdm.enable = true; # Gnome use GDM as display manager.
-        desktopManager.gnome.enable = true;
+      custom.extraPackages = with pkgs;
+        (with gnome; [nautilus file-roller eog gnome-system-monitor gnome-tweaks]) ++
+        (with gnomeExtensions; [blur-my-shell ddterm net-speed-simplified]);
+      programs.gnome-terminal.enable = true;
+      services = {
+        gnome.core-utilities.enable = false; # Disable useless default Gnome apps.
+        xserver = {
+          displayManager.gdm.enable = true; # Gnome use GDM as display manager.
+          desktopManager.gnome.enable = true;
+        };
       };
     })
     (mkIf config.custom.desktop.pantheon {
-      services.pantheon.apps.enable = false;
       # Custom packages for Pantheon.
-      custom.extraPackages = with pkgs.pantheon; [
-        elementary-terminal elementary-files
-      ];
-      services.xserver = {
-         # Patheon use custom lightdm greeter.
-        displayManager.lightdm.greeters.pantheon.enable = true;
-        desktopManager.pantheon.enable = true;
+      custom.extraPackages = with pkgs.pantheon; [elementary-terminal elementary-files];
+      services = {
+        pantheon.apps.enable = false;
+        xserver = {
+          # Patheon use custom lightdm greeter.
+          displayManager.lightdm.greeters.pantheon.enable = true;
+          desktopManager.pantheon.enable = true;
+        };
       };
     })
     (mkIf config.custom.desktop.xfce {

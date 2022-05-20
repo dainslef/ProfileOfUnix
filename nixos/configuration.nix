@@ -37,9 +37,9 @@
   networking = {
     networkmanager.enable = true;
     proxy = { # Set up proxy (for Clash).
-      allProxy = "localhost:9999";
-      httpProxy = "localhost:9999";
-      httpsProxy = "localhost:9999";
+      allProxy = "127.0.0.1:9999";
+      httpProxy = "http://127.0.0.1:9999";
+      httpsProxy = "http://127.0.0.1:9999";
     };
     # NixOS enabled firewall by default, so need to allow some ports.
     firewall.allowedTCPPorts = [
@@ -76,15 +76,17 @@
   # List packages installed in system profile.
   environment.systemPackages = with pkgs; [
     # In NixOS, pip can't install package, set up pip package in configuration.
-    (python3.withPackages (p: [p.black p.ansible p.jupyter]))
+    (python3.withPackages (p: [p.black p.jupyter p.ansible-core]))
     # Developer tools
     binutils gcc gdb clang lldb rustup cmake gnumake # C/C++/Rust compiler and build tools
-    jdk scala visualvm android-tools dotnet-sdk # Java and .Net SDK
+    jdk scala visualvm dotnet-sdk # Java and .Net SDK
     git stack nodejs kubectl # Other develop tools
     vscode jetbrains.idea-ultimate # IDE/Editor
+    # Android Tools
+    android-tools android-file-transfer
     # Normal tools
-    file aria nmap openssh neofetch p7zip qemu opencc syncthing wine # Service and command line tools
-    vlc gparted gimp google-chrome thunderbird goldendict blender # GUI tools
+    file aria nmap openssh neofetch p7zip qemu opencc syncthing # Service and command line tools
+    vlc gparted gimp google-chrome thunderbird goldendict blender bottles # GUI tools
     # Man pages (POSIX API and C++ dev doc)
     man-pages-posix stdmanpages
     # Clash
@@ -137,7 +139,7 @@
   # Config fonts.
   fonts = {
     enableDefaultFonts = true;
-    fonts = with pkgs; [cascadia-code noto-fonts-cjk-sans];
+    fonts = with pkgs; [cascadia-code noto-fonts noto-fonts-cjk-sans];
     fontconfig = {
       defaultFonts = {
         serif = ["Noto Sans"];
@@ -173,6 +175,7 @@
 
   nixpkgs.config.allowUnfree = true; # Allow some unfree software (like vscode and chrome).
   nix = {
+    autoOptimiseStore = true; # Enable nix store auto optimise.
     # Replace custom nixos channel with TUNA mirror:
     # sudo nix-channel --add https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-unstable
     # or use USTC Mirror:
@@ -181,6 +184,5 @@
       "https://mirrors.ustc.edu.cn/nix-channels/store"
       "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
     ];
-    autoOptimiseStore = true; # Enable nix store auto optimise.
   };
 }

@@ -45,21 +45,22 @@ do
 	end
 
 	auto_run({
-		"systemctl --user restart pulseaudio", -- In NixOS PulseAudio should restart during window manager startup, otherwise the PulseAudio plugin won't work.
+		"systemctl --user start pulseaudio", -- In NixOS PulseAudio should restart during window manager startup, otherwise the PulseAudio plugin won't work.
 		"xset +dpms", -- Use the power manager.
 		"xset dpms 0 0 1800", -- Set the power manager timeout to 30 minutes.
 		"xset s 1800" -- Set screensaver timeout to 30 mintues.
 	}, false)
 
-	-- These service should only run once
+	-- These service should only run once, service can auto run by systemd service.
 	auto_run {
-		-- PulseAudio, Fcitx5 and Clash can auto run by systemd service.
-		"picom", -- For transparent support.
-		"nm-applet", -- Show network status.
+		-- "nm-applet", -- Show network status.
+		-- "picom", -- For transparent and other window effects support.
 		-- "fcitx5",
 		-- "clash-premium" -- Clash proxy provided by custom systemd service.
 		-- "blueman-applet", -- Use bluetooth.
 	}
+
+	awful.spawn("sleep 0.5") -- Wait pulseaudio process start.
 end
 
 
@@ -100,7 +101,7 @@ beautiful.init(awful.util.get_themes_dir() .. "default/theme.lua") -- Init theme
 
 -- Custom theme settings, border and font.
 -- All custom settings can find at https://awesomewm.org/doc/api/documentation/06-appearance.md.html.
-beautiful.font = "DejaVu Sans 10"
+beautiful.font = "Cascadia Code PL 10"
 beautiful.border_width = 5
 beautiful.master_width_factor = 0.6 -- Set the master window percent.
 beautiful.useless_gap = beautiful.border_width -- Set the window Gap size (equals to border width).
@@ -288,7 +289,7 @@ do
 		-- Use Regex Lookarounds feature to find 'w*' net device.'
 		net_device = get_command_output("ip addr | grep -oP '(?<=: )w[\\w]+'")
 	end
-	local net_format = "🌐 ${" .. net_device .. " down_kb} KB "
+	local net_format = "🌐 ${" .. net_device .. " down_kb}KB "
 	vicious.register(net_widget, vicious.widgets.net, net_format, widget_refresh_span)
 
 	-- Battery state
@@ -314,10 +315,10 @@ end
 
 -- Define a tag table which hold all screen tags.
 local tags, tag_properties = {}, {
-	{ "❶", layouts[1] },
-	{ "❷", layouts[2] },
-	{ "❸", layouts[2] },
-	{ "❹", layouts[3] }
+	{ "➊", layouts[1] },
+	{ "➋", layouts[2] },
+	{ "➌", layouts[2] },
+	{ "➍", layouts[3] }
 }
 
 -- Add widgetboxs in each screen.
@@ -414,9 +415,9 @@ end
 function build_progress(value)
 	local status = ""
 	for i = 1, 20 do
-		status = i <= value / 5 and status .. " |" or status .. " -"
+		status = i <= value / 5 and status .. "█" or status .. "▂"
 	end
-	return status
+	return "┣ " .. status .. " ┫" .. " " .. tonumber(value) .. "%"
 end
 
 -- Brightness change function.
@@ -424,7 +425,13 @@ function brightness_change(change)
 	local is_brightness_up = change > 0
 	local prefix = is_brightness_up and "+" or ""
 	local suffix = is_brightness_up and "" or "-"
-	os.execute("brightnessctl set " .. prefix .. math.abs(change) .. "%" .. suffix)
+	local output = os.execute("brightnessctl set " .. prefix .. math.abs(change) .. "%" .. suffix)
+	if output == nil then
+		naughty.notify {
+			title = "Tool not found!",
+			text = 'Change brightness need tool "brightnessctl".\nPlease install this tool.'
+		}
+	end
 	-- Execute async brightness config (need run command with shell).
 	awful.spawn.easy_async_with_shell("brightnessctl | grep -Po '\\d+(?=\\%\\))'",
 	function(brightness, _, _, _)
@@ -434,8 +441,7 @@ function brightness_change(change)
 			title = "💡 Brightness Change",
 			text = "Background brightness "
 					.. (is_brightness_up and "up ⬆️" or "down ⬇️") .. "\n"
-					.. "[" .. build_progress(brightness) ..  " ] "
-					.. string.format("%.f", tonumber(brightness)) .. "%"
+					.. build_progress(brightness)
 		}
 	end)
 end
@@ -447,8 +453,9 @@ function volume_change(change)
 	naughty.destroy(volume_notify)
 	volume_notify = naughty.notify {
 		title = "🔈 Volume Change",
-		text = "Volume " .. (change > 0 and "rise up ⬆️" or "lower ⬇️") .. "\n"
-				.. "[" .. build_progress(volume) ..  " ] " .. volume .. "%"
+		text = "Volume "
+				.. (change > 0 and "rise up ⬆️" or "lower ⬇️") .. "\n"
+				.. build_progress(volume)
 	}
 end
 

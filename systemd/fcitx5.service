@@ -1,0 +1,14 @@
+# Link this file to ~/.config/systemd/user/fcitx5.service.
+
+[Unit]
+Description=Fcitx5
+
+[Service]
+Type=exec
+ExecStartPre=/bin/sleep 2
+ExecStart=/usr/bin/fcitx5
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=session.slice

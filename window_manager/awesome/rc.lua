@@ -59,8 +59,6 @@ do
 		-- "clash-premium" -- Clash proxy provided by custom systemd service.
 		-- "blueman-applet", -- Use bluetooth.
 	}
-
-	awful.spawn("sleep 0.5") -- Wait pulseaudio process start.
 end
 
 
@@ -96,13 +94,22 @@ end
 
 -- Variable definitions
 
+-- Define the gap size for window and bar.
+local standard_dpi = 96
+-- Cacaulate the scaling size, use format to solve "screen.primary.dpi" precision problem.
+-- The awesomewm api "screen.primary.dpi" return the value like 96.05123456...
+local scaling_size = tonumber(string.format("%.f", screen.primary.dpi) / standard_dpi)
+local head_bar_size = 35 * scaling_size
+local border_width = 5 * scaling_size
+local bar_gap_size = 2 * border_width
+
 -- Load the default theme config.
 beautiful.init(awful.util.get_themes_dir() .. "default/theme.lua") -- Init theme.
 
 -- Custom theme settings, border and font.
 -- All custom settings can find at https://awesomewm.org/doc/api/documentation/06-appearance.md.html.
 beautiful.font = "Cascadia Code PL 10"
-beautiful.border_width = 5
+beautiful.border_width = border_width
 beautiful.master_width_factor = 0.6 -- Set the master window percent.
 beautiful.useless_gap = beautiful.border_width -- Set the window Gap size (equals to border width).
 beautiful.notification_shape = gears.shape.rounded_rect -- Set the notification border shape.
@@ -126,17 +133,15 @@ beautiful.notification_bg = beautiful.border_focus
 -- Wallpaper
 local wall_paper = "/boot/background.jpg"
 for s = 1, screen.count() do
-	gears.wallpaper.maximized(wall_paper, s, true)
+	gears.wallpaper.maximized(wall_paper, s)
 end
-
--- Define the gap size for window and bar.
-local bar_gap_size = beautiful.border_width * 2
 
 -- This is used later as the default terminal and editor to run.
 local mail = "thunderbird"
 local browser = "google-chrome-stable"
 local dictionary = "goldendict"
 local file_manager = "ranger"
+local screen_locker = "dm-tool lock"
 -- Use 10% transparency in light mode, 20% in dark mode.
 local terminal = "vte-2.91 -g 120x40 -n 5000 -T 10 --no-decorations --no-scrollbar"
 -- --reverse -T 20 -f 'DejaVu Sans Mono 10'
@@ -293,7 +298,9 @@ do
 	vicious.register(net_widget, vicious.widgets.net, net_format, widget_refresh_span)
 
 	-- Battery state
-	local battery_name = "BAT0"
+	-- In some device (the fuck HUAWEI MateBook), the battery device isn't BAT0,
+	-- so get the correct battery device name under /sys/class/power_supply.
+	local battery_name = get_command_output("ls /sys/class/power_supply | grep BAT")
 	-- Register battery widget.
 	vicious.register(battery_widget, vicious.widgets.bat, function(_, args)
 		local status, percent = args[1], args[2]
@@ -325,11 +332,11 @@ local tags, tag_properties = {}, {
 for s = 1, screen.count() do
 
 	-- Each screen has its own tag table, use operate # to get lua table's size.
-	for i = 1, #tag_properties do
-		tags[i] = awful.tag.add(tag_properties[i][1], {
+	for i, tag_propertie in ipairs(tag_properties) do
+		tags[i] = awful.tag.add(tag_propertie[1], {
 			screen = s,
-			layout = tag_properties[i][2],
-			selected = i == 1 and true or false -- Only focus on index one.
+			layout = tag_propertie[2],
+			selected = i == 1 -- Only focus on index one.
 		})
 	end
 
@@ -363,8 +370,7 @@ for s = 1, screen.count() do
 		return wibox.container.margin(
 			wibox.container.background(
 				wibox.container.margin(widget, bar_gap_size, bar_gap_size),
-				color, gears.shape.rounded_bar
-			), bar_gap_size)
+				color, gears.shape.rounded_bar), bar_gap_size)
 	end
 
 	-- Widgets that are aligned to the left.
@@ -399,7 +405,7 @@ for s = 1, screen.count() do
 	widget_box[s] = awful.wibar {
 		position = "top",
 		screen = s,
-		height = 35,
+		height = head_bar_size,
 		widget = wibox.container.margin(wibox.widget {
 			left_bar, middle_bar, right_bar,
 			layout = wibox.layout.align.horizontal
@@ -417,7 +423,7 @@ function build_progress(value)
 	for i = 1, 20 do
 		status = i <= value / 5 and status .. "█" or status .. "▂"
 	end
-	return "┣ " .. status .. " ┫" .. " " .. tonumber(value) .. "%"
+	return "\n┣ " .. status .. " ┫" .. " " .. tonumber(value) .. "%"
 end
 
 -- Brightness change function.
@@ -440,7 +446,7 @@ function brightness_change(change)
 		brightness_notify = naughty.notify {
 			title = "💡 Brightness Change",
 			text = "Background brightness "
-					.. (is_brightness_up and "up ⬆️" or "down ⬇️") .. "\n"
+					.. (is_brightness_up and "up ⬆️" or "down ⬇️")
 					.. build_progress(brightness)
 		}
 	end)
@@ -454,7 +460,7 @@ function volume_change(change)
 	volume_notify = naughty.notify {
 		title = "🔈 Volume Change",
 		text = "Volume "
-				.. (change > 0 and "rise up ⬆️" or "lower ⬇️") .. "\n"
+				.. (change > 0 and "rise up ⬆️" or "lower ⬇️")
 				.. build_progress(volume)
 	}
 end
@@ -554,7 +560,7 @@ local global_keys = awful.util.table.join(
 	awful.key({ mod_key, "Control" }, "Return", function() awful.spawn(terminal) end),
 
 	-- Custom application key bindings.
-	awful.key({ mod_key }, "l", function() awful.spawn("dm-tool lock") end), -- Lock screen
+	awful.key({ mod_key }, "l", function() awful.spawn(screen_locker) end), -- Lock screen
 	awful.key({ mod_key }, "b", function() awful.spawn(browser) end),
 	awful.key({ mod_key }, "d", function() awful.spawn(dictionary) end),
 	awful.key({ mod_key }, "f", function()

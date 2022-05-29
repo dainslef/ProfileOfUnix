@@ -34,9 +34,9 @@ from enum import Enum, auto
 # libqtile/group.py => Group
 
 
-# log start message
-# logger for debug, logger level should large than "warnning")
-logger.warning("Qtile start ...")
+# Log start message.
+# logger for debug, logger level should large than "warnning".
+logger.warn("Qtile start ...")
 
 
 # Qtile pre-define config variables
@@ -45,22 +45,21 @@ auto_fullscreen = True
 reconfigure_screens = True
 bring_front_click = True
 focus_on_window_activation = "focus"
-widget_defaults = dict(font="Cascadia Code PL", fontsize=12, padding=2)
 
-# User custom variables
+# User custom variables.
 mod = "mod4"
 
 
-# Set auto start commands
-# PulseAudio and Fcitx5 can autorun by systemd service
+# Set auto start commands.
+# Currently autorun by systemd service.
 once_cmds = [
-    "picom",  # Compositing manager, for transparent support.
-    "nm-applet",  # Show network status.
+    # "nm-applet",  # Show network status.
+    # "picom",  # Compositing manager, for transparent support.
     # "fcitx5", # Fcitx5 is provided by systemd service.
     # "clash-premium",  # Clash proxy is provided by systemd service.
 ]
 normal_cmds = [
-    "systemctl --user restart pulseaudio",  # In NixOS PulseAudio should restart during window manager startup, otherwise command can't get PulseAudio volume correctly.
+    "systemctl --user start pulseaudio",  # In NixOS PulseAudio should restart during window manager startup, otherwise command can't get PulseAudio volume correctly.
     "xset +dpms",
     "xset dpms 0 0 1800",
     "xset s 1800",
@@ -245,6 +244,12 @@ class VolumeControl:
 
 @lazy.function
 def change_brightness(_, value: int):
+    # Check if 'brightnessctl' tool exist.
+    if os.system("brightnessctl") > 0:
+        send_notification(
+            "Tool not found!",
+            'Change brightness need tool "brightnessctl".\nPlease install this tool.',
+        )
     if value > 0:
         prefix, suffix, content = "+", "", "up ⬆️"
     else:
@@ -553,7 +558,25 @@ groups.extend(
 )
 keys.extend([Key([mod], "s", lazy.group["Scratchpad"].dropdown_toggle("DropDown"))])
 
-margin, border_width = 5, 4
+
+# Get system current DPI, than caculate the scaling factor.
+standard_dpi = 96
+current_dpi = int(
+    get_command_output("grep -Po '(?<=DPI set to \\()\\d+' /var/log/X*.0.log")
+)
+logger.warn(f"Current DPI is {current_dpi}")
+
+# Caculate the border and font size with scaling factor.
+scaling_factor = current_dpi / standard_dpi
+icon_size, icon_padding = int(20 * scaling_factor), int(5 * scaling_factor)
+font_size, font_padding = int(12 * scaling_factor), int(2 * scaling_factor)
+bar_height = int(25 * scaling_factor)
+margin, border_width = int(5 * scaling_factor), int(4 * scaling_factor)
+
+# Set widget default config and screen widgets.
+widget_defaults = dict(
+    font="Cascadia Code PL", fontsize=font_size, padding=font_padding
+)
 screens = [
     # By default, Qtile layout window margin will cause the gap between two window double size,
     # should use Screen gap to fill the remaining width.
@@ -575,10 +598,10 @@ screens = [
                 widget.GenPollText(
                     func=VolumeControl.get_volume_text, update_interval=1
                 ),
-                widget.Systray(),
+                widget.Systray(icon_size=icon_size, paddling=icon_padding),
                 widget.Clock(format="%b/%d/%Y %a %H:%M", foreground=Color.CLOCK),
             ],
-            25,
+            bar_height,
             opacity=0.7,
             # [N E S W]
             margin=[0, 0, margin, 0],

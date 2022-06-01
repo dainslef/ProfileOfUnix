@@ -1,0 +1,45 @@
+<?xml version='1.0'?>
+<!DOCTYPE fontconfig SYSTEM 'fonts.dtd'>
+
+<!-- Link this file (if need) to path ~/.config/fontconfig/fonts.conf -->
+<fontconfig>
+
+	<!-- Default fonts -->
+	<alias binding="same">
+		<family>sans-serif</family>
+		<prefer>
+			<family>Noto Sans</family>
+		</prefer>
+	</alias>
+
+	<alias binding="same">
+		<family>serif</family>
+		<prefer>
+			<family>Noto Sans</family>
+		</prefer>
+	</alias>
+
+	<alias binding="same">
+		<family>monospace</family>
+		<prefer>
+			<family>Cascadia Code PL</family>
+		</prefer>
+	</alias>
+
+	<alias binding="same">
+		<family>emoji</family>
+		<prefer>
+			<family>Cascadia Code PL</family>
+			<family>Noto Color Emoji</family>
+		</prefer>
+	</alias>
+
+	<alias binding="same">
+		<family>system-ui</family>
+		<prefer>
+			<family>Cascadia Code PL</family>
+			<family>Noto Sans</family>
+		</prefer>
+	</alias>
+
+</fontconfig>

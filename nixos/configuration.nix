@@ -24,7 +24,8 @@
   # Set up boot options.
   boot = {
     # Set the custom linux kernel.
-    kernelPackages = pkgs.linuxKernel.packages.linux_zen;
+    # kernelPackages = pkgs.linuxPackages_zen;
+    kernelPackages = pkgs.linuxPackages_latest;
     # Set boot loader.
     loader = {
       timeout = 999999;
@@ -85,7 +86,8 @@
     # Android Tools
     android-tools android-file-transfer
     # Normal tools
-    file aria nmap openssh neofetch p7zip qemu opencc syncthing # Service and command line tools
+    file tree usbutils pciutils btop # Base CLI tools
+    nmap openssh neofetch p7zip qemu opencc syncthing # Service and command line tools
     vlc gparted gimp google-chrome thunderbird goldendict blender bottles # GUI tools
     # Man pages (POSIX API and C++ dev doc)
     man-pages-posix stdmanpages

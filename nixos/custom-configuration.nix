@@ -4,6 +4,10 @@
 
 {
   networking.hostName = "YOUR-PC-NAME"; # Define your hostname.
+  services = {
+    fprintd.enable = true; # Enable if the device has finger print support.
+    xserver.dpi = null; # Set the DPI, the default value is 96.
+  };
   # Set up custom options
   custom = {
     desktop = {

@@ -59,7 +59,7 @@ with lib; {
     (mkIf config.custom.desktop.wm {
       # Csutom packages for window manager.
       custom.extraPackages = with pkgs; [
-        xdg-user-dirs picom networkmanagerapplet vte ranger ueberzug flameshot
+        xdg-user-dirs networkmanagerapplet vte ranger ueberzug flameshot
         brightnessctl # For brightness control.
         dunst # Provide notification (some WM like Qtile and XMonad don't have a built-in notification service).
       ];
@@ -70,6 +70,7 @@ with lib; {
           fade = true; # Enable window animation.
           shadow = true; # Enable window shadow.
           backend = "glx";
+          inactiveOpacity = 0.9;
           shadowExclude = ["!focused"]; # Only shadow the current focus window.
         };
         # Set up the XServer.

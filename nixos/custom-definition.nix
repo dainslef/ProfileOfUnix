@@ -59,7 +59,7 @@ with lib; {
     (mkIf config.custom.desktop.wm {
       # Csutom packages for window manager.
       custom.extraPackages = with pkgs; [
-        xdg-user-dirs networkmanagerapplet vte ranger ueberzug flameshot
+        xdg-user-dirs networkmanagerapplet kitty ranger ueberzug flameshot
         brightnessctl # For brightness control.
         dunst # Provide notification (some WM like Qtile and XMonad don't have a built-in notification service).
       ];

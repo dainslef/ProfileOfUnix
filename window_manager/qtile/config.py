@@ -134,11 +134,8 @@ class Application:
     Qtile.next_normal_window = next_normal_window
 
     class Terminal:
-        WM_CLASS = "Terminal"
-        GROUP_NAME = ""
-        MATCH_RULE = Match(wm_class=WM_CLASS)
-        __command = "vte-2.91"
-        __args = " -g 120x40 -n 5000 -T 10 --no-decorations --no-scrollbar"  # --reverse
+        MATCH_RULE = Match(wm_class="kitty")
+        GROUP_NAME, COMMAND = "", "kitty"
 
         # Add method to Window class.
         Window.is_terminal = lambda c: c and c.match(Application.Terminal.MATCH_RULE)
@@ -148,8 +145,8 @@ class Application:
             run_background: bool = False, run_other_command: str = None
         ) -> str:
             backgroud = "&" if run_background else ""
-            other_command = f"-c {run_other_command}" if run_other_command else ""
-            return f"{Application.Terminal.__command} {Application.Terminal.__args} {backgroud} {other_command}"
+            other_command = f"--hold {run_other_command}" if run_other_command else ""
+            return f"{Application.Terminal.COMMAND} {backgroud} {other_command}"
 
 
 # Sound control settings
@@ -560,8 +557,7 @@ keys.extend([Key([mod], "s", lazy.group["Scratchpad"].dropdown_toggle("DropDown"
 
 
 # Get system current DPI, than caculate the scaling factor.
-standard_dpi = 96
-current_dpi = int(
+standard_dpi, current_dpi = 96, int(
     get_command_output("grep -Po '(?<=DPI set to \\()\\d+' /var/log/X*.0.log")
 )
 logger.warn(f"Current DPI is {current_dpi}")
@@ -616,14 +612,14 @@ screens = [
     )
 ]
 layouts = [
-    l(
+    build_layout(
         margin=margin,
         border_width=border_width,
         border_focus=Color.Border.FOCUS,
         border_normal=Color.Border.NORMAL,
         border_on_single=True,
     )
-    for l in [layout.Columns, layout.MonadThreeCol, layout.Zoomy]
+    for build_layout in [layout.Columns, layout.MonadThreeCol, layout.Zoomy]
 ]
 floating_layout = layout.Floating(
     border_width=border_width,

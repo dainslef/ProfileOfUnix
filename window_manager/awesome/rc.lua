@@ -47,8 +47,8 @@ do
 	auto_run({
 		"systemctl --user start pulseaudio", -- In NixOS PulseAudio should restart during window manager startup, otherwise the PulseAudio plugin won't work.
 		"xset +dpms", -- Use the power manager.
-		"xset dpms 0 0 1800", -- Set the power manager timeout to 30 minutes.
-		"xset s 1800" -- Set screensaver timeout to 30 mintues.
+		"xset dpms 600 900 1800", -- Set the power manager suspend timeout(15min), screen off timeout(30min).
+		"xset s 600" -- Set screensaver timeout to 10 mintues.
 	}, false)
 
 	-- These service should only run once, service can auto run by systemd service.
@@ -98,9 +98,9 @@ end
 local standard_dpi = 96
 -- Cacaulate the scaling size, use format to solve "screen.primary.dpi" precision problem.
 -- The awesomewm api "screen.primary.dpi" return the value like 96.05123456...
-local scaling_size = tonumber(string.format("%.f", screen.primary.dpi) / standard_dpi)
-local head_bar_size = 35 * scaling_size
-local border_width = 5 * scaling_size
+local scaling_factor = tonumber(string.format("%.f", screen.primary.dpi) / standard_dpi)
+local head_bar_size = 35 * scaling_factor
+local border_width = 5 * scaling_factor
 local bar_gap_size = 2 * border_width
 
 -- Load the default theme config.
@@ -142,10 +142,16 @@ local browser = "google-chrome-stable"
 local dictionary = "goldendict"
 local file_manager = "ranger"
 local screen_locker = "dm-tool lock"
+
 -- Use 10% transparency in light mode, 20% in dark mode.
-local terminal = "vte-2.91 -g 120x40 -n 5000 -T 10 --no-decorations --no-scrollbar"
--- --reverse -T 20 -f 'DejaVu Sans Mono 10'
-local terminal_instance = "Terminal" -- Set the instance name of Terminal App, use xprop WM_CLASS.
+local terminal = "env GLFW_IM_MODULE=ibus kitty"
+-- Set the instance name of Terminal App, use xprop WM_CLASS.
+local terminal_instance = "kitty"
+
+-- Use terminal to open a new CLI program.
+function terminal_open(program)
+	return terminal .. " --hold " .. program
+end
 
 -- Set main key.
 local mod_key = "Mod4"
@@ -193,11 +199,11 @@ local main_menu = awful.menu {
 		}},
 		{ "System", {
 			{ "Terminal", terminal },
-			{ "Top", terminal .. " -k -- top" },
+			{ "Top", terminal_open("btop") },
 			{ "GParted", "gparted" }
 		}},
 		{ "Mail", mail },
-		{ "Files", terminal  .. " -k -- " .. file_manager },
+		{ "Files", terminal_open(file_manager) },
 		{ "Browser", browser }
 	}
 }
@@ -234,8 +240,8 @@ MouseButtons = {
 root.buttons(
 	awful.util.table.join(
 		awful.button({}, MouseButtons.RIGHT, function() main_menu:toggle() end),
-		awful.button({}, MouseButtons.SCROLL_UP, awful.tag.viewprev),
-		awful.button({}, MouseButtons.SCROLL_DOWN, awful.tag.viewnext)
+		awful.button({ mod_key }, MouseButtons.SCROLL_UP, awful.tag.viewprev),
+		awful.button({ mod_key }, MouseButtons.SCROLL_DOWN, awful.tag.viewnext)
 	)
 )
 
@@ -563,9 +569,7 @@ local global_keys = awful.util.table.join(
 	awful.key({ mod_key }, "l", function() awful.spawn(screen_locker) end), -- Lock screen
 	awful.key({ mod_key }, "b", function() awful.spawn(browser) end),
 	awful.key({ mod_key }, "d", function() awful.spawn(dictionary) end),
-	awful.key({ mod_key }, "f", function()
-		awful.spawn(terminal  .. " -c " .. file_manager)
-	end),
+	awful.key({ mod_key }, "f", function() awful.spawn(terminal_open(file_manager)) end),
 	-- Screen shot key bindings.
 	awful.key({}, "Print", function() awful.spawn("flameshot screen") end),
 	awful.key({ mod_key }, "Print", function() awful.spawn("flameshot gui") end),
@@ -707,7 +711,7 @@ end)
 
 function update_floating_state(c)
 	if not c.floating then
-		-- Set all floating windows lower when focus to a unfloating window.
+		-- Minimize all floating windows in current tag when focus to a unfloating window.
 		for _, window in pairs(c.screen.clients) do
 			if window.instance == terminal_instance
 				and window.floating
@@ -726,8 +730,8 @@ client.connect_signal("focus", function(c)
 	c.border_color = beautiful.border_focus
 end)
 
--- Callback when window position is changed
-client.connect_signal("property::position", function(c)
+-- Callback when window size is changed
+client.connect_signal("property::size", function(c)
 	update_floating_state(c)
 end)
 

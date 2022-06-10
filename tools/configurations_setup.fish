@@ -14,25 +14,17 @@ ln -sf $REPO_PATH/.gitconfig ~/.gitconfig
 ln -sf $REPO_PATH/.gitignore ~/.gitignore
 echo OK
 
-# Fish
-echo -ne "Set up Fish shell ... "
-if ! [ -e ~/.config/omf ] # Check if OMF has areadly downloaded.
-    curl -L https://get.oh-my.fish | fish
-end
-omf install bobthefish
-ln -sf $REPO_PATH/shell/config.fish ~/.config/fish/config.fish
-echo OK
-
 # VIM
 echo -n "Set up VIM ... "
 if ! [ -e ~/.vim/bundle/Vundle.vim ]
     git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 end
-ln -sf $REPO_PATH/editor/.vimrc ~/.vimrc
+ln -sf $REPO_PATH/.vimrc ~/.vimrc
 echo OK
 
 # Ansible
 echo -n "Set up Ansible ... "
+mkdir ~/.ansible
 if ! [ -e ~/.ansible/hosts ]
     cp $REPO_PATH/ansible/hosts ~/.ansible/hosts
 end
@@ -78,8 +70,60 @@ end
 
 # File manager
 if type -q ranger
-    echo -n "Set up ranger ... "
+    echo -n "Set up Ranger ... "
     mkdir -p ~/.config/ranger
     ln -sf $REPO_PATH/ranger/rc.conf ~/.config/ranger/rc.conf
+    ln -sf $REPO_PATH/ranger/rifle.conf ~/.config/ranger/rifle.conf
     echo OK
+end
+
+# Kitty terminal
+if type -q kitty
+    echo -n "Set up Kitty ... "
+    mkdir -p ~/.config/kitty
+    ln -sf $REPO_PATH/shell/kitty.conf ~/.config/kitty/kitty.conf
+    echo OK
+end
+
+if type -q btop
+    echo -n "Set up Btop ... "
+    mkdir -p ~/.config/btop
+    ln -sf $REPO_PATH/btop.conf ~/.config/btop/btop.conf
+    # Btop process will try to overwrite config, so lock file write permisson.
+    chmod 400 ~/.config/btop/btop.conf
+    echo OK
+end
+
+# Oh ny fish
+echo -ne "Set up Fish shell ... "
+if ! [ -e ~/.config/omf ] # Check if OMF has areadly downloaded.
+    curl -L https://get.oh-my.fish | fish
+end
+omf install bobthefish
+ln -sf $REPO_PATH/shell/config.fish ~/.config/fish/config.fish
+echo OK
+
+# Check if current plantform is Linux.
+if [ (uname) = Linux ]
+    # Extra setup for Arch Linux.
+    set os_name (grep -Po '(?<=NAME=\\")\\w+ \\w+' /etc/os-release | tail -n 1)
+    if [ $os_name = "Arch Linux" ]
+        echo "Current OS is Arch Linux, set up addition configuration ..."
+        ln -sf $REPO_PATH/xorg/fonts.xml ~/.fonts.conf # Fonts configurations.
+
+        # Create systemd user service dir if not exist.
+        mkdir -p ~/.config/systemd/user/
+
+        ln -sf $REPO_PATH/systemd/fcitx5.service ~/.config/systemd/user/fcitx5.service
+        systemctl --user enable fcitx5
+        systemctl --user start fcitx5
+
+        ln -sf $REPO_PATH/systemd/nm-applet.service ~/.config/systemd/user/nm-applet.service
+        systemctl --user enable nm-applet
+        systemctl --user start nm-applet
+
+        ln -sf $REPO_PATH/systemd/picom.service ~/.config/systemd/user/picom.service
+        systemctl --user enable picom
+        systemctl --user start picom
+    end
 end

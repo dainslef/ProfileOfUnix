@@ -1,25 +1,155 @@
-# COPY this file to /etc/nixos/custom-configuration.nix
-# This file is just a sample.
-# Change options in this file by need.
+# This config provide the custom option definitions
+# and custom settings according to the custom option values.
 
-{
-  networking.hostName = "YOUR-PC-NAME"; # Define your hostname.
-  services = {
-    fprintd.enable = true; # Enable if the device has finger print support.
-    xserver.dpi = null; # Set the DPI, the default value is 96.
-  };
-  # Set up custom options
-  custom = {
-    desktop = {
-      wm = false;
-      kde = false;
-      xfce = false;
-      gnome = false;
-      pantheon = false;
+{ lib, pkgs, config, ... }:
+
+with lib; {
+  # Use 'options' object to define custom options.
+  options = {
+    custom = {
+      # Use mk* fuctions to define custom options.
+      desktop = {
+        wm = mkEnableOption "wm";
+        kde = mkEnableOption "kde";
+        xfce = mkEnableOption "xfce";
+        gnome = mkEnableOption "gnome";
+        pantheon = mkEnableOption "pantheon";
+      };
+      platform = {
+        amd = mkEnableOption "amd";
+        intel = mkEnableOption "intel";
+      };
+      extraPackages = with types; mkOption {
+        type = listOf package;
+        default = [];
+      };
     };
-    platform = {
-      intel = false;
-      amd = false;
-    };
   };
+
+  # Custom releation configurations.
+  config = mkMerge [
+    (mkIf config.custom.platform.intel {
+      services.xserver = {
+        # Intel driver haven't been updated in years.
+        videoDrivers = ["modesetting"];
+        useGlamor = true;
+      };
+    })
+    (mkIf config.custom.platform.amd {
+      # Newer AMD CPU require "amdgpu" kernel module.
+      boot.initrd.kernelModules = ["amdgpu"];
+      services.xserver.videoDrivers = ["amdgpu"];
+    })
+    (mkIf (config.custom.desktop.gnome || config.custom.desktop.pantheon) {
+      # Set up the input method.
+      i18n.inputMethod = {
+        # Use ibus for Gnome and Pantheon.
+        enabled = "ibus";
+        ibus.engines = with pkgs.ibus-engines; [libpinyin mozc];
+      };
+    })
+    (mkIf (!(config.custom.desktop.gnome || config.custom.desktop.pantheon)) {
+      services.gnome.gnome-keyring.enable = true; # For syncing VSCode configuration.
+      i18n.inputMethod = {
+        # Use fcitx5 for most desktop/wm.
+        enabled = "fcitx5";
+        fcitx5.addons = with pkgs; [fcitx5-chinese-addons fcitx5-mozc];
+      };
+    })
+    (mkIf config.custom.desktop.wm {
+      # Csutom packages for window manager.
+      custom.extraPackages = with pkgs; [
+        xdg-user-dirs networkmanagerapplet kitty ranger ueberzug flameshot
+        brightnessctl # For brightness control.
+        dunst # Provide notification (some WM like Qtile and XMonad don't have a built-in notification service).
+      ];
+      services = {
+        # Set up the compositor.
+        picom = {
+          enable = true;
+          fade = true; # Enable window animation.
+          shadow = true; # Enable window shadow.
+          backend = "glx";
+          inactiveOpacity = 0.9;
+          shadowExclude = ["!focused"]; # Only shadow the current focus window.
+        };
+        # Set up the XServer.
+        xserver = {
+          # Start xdg autostart service when only use window manager (No desktop environment).
+          desktopManager.runXdgAutostartIfNone = true;
+          # Set up display manager.
+          displayManager.lightdm.greeters.gtk.extraConfig = "background=/boot/background.jpg";
+          windowManager = {
+            # Enable Qtile.
+            qtile.enable = true;
+            # Enable AwesomeWM.
+            awesome = {
+              enable = true;
+              luaModules = [pkgs.luaPackages.vicious];
+            };
+          };
+        };
+      };
+    })
+    (mkIf config.custom.desktop.kde {
+      # Custom packages for KDE.
+      custom.extraPackages = with pkgs; [
+        libsForQt5.yakuake libsForQt5.sddm-kcm
+      ];
+      services.xserver = {
+        displayManager.sddm.enable = true; # Plasma use SDDM as display manager.
+        desktopManager.plasma5 = {
+          enable = true;
+          phononBackend = "vlc"; # Use VLC as media backend.
+        };
+      };
+    })
+    (mkIf config.custom.desktop.gnome {
+      # Set up Qt look style.
+      qt5 = {
+        enable = true; # Enable Qt theme config.
+        style = "adwaita"; # Let Qt use Adwaita style.
+        platformTheme = "gnome";
+      };
+      # Custom packages for GNOME.
+      custom.extraPackages = with pkgs;
+        (with gnome; [nautilus file-roller eog gnome-system-monitor gnome-tweaks]) ++
+        (with gnomeExtensions; [blur-my-shell ddterm net-speed-simplified]);
+      programs.gnome-terminal.enable = true;
+      services = {
+        gnome.core-utilities.enable = false; # Disable useless default Gnome apps.
+        xserver = {
+          displayManager.gdm.enable = true; # Gnome use GDM as display manager.
+          desktopManager.gnome.enable = true;
+        };
+      };
+    })
+    (mkIf config.custom.desktop.pantheon {
+      # Custom packages for Pantheon.
+      custom.extraPackages = with pkgs.pantheon; [elementary-terminal elementary-files];
+      services = {
+        pantheon.apps.enable = false;
+        xserver = {
+          # Patheon use custom lightdm greeter.
+          displayManager.lightdm.greeters.pantheon.enable = true;
+          desktopManager.pantheon.enable = true;
+        };
+      };
+    })
+    (mkIf config.custom.desktop.xfce {
+      # Set up Qt look style.
+      qt5 = {
+        enable = true; # Enable Qt theme config.
+        style = "gtk2"; # Let Qt use GTK style.
+        platformTheme = "gtk2";
+      };
+      # Set the Xfce GTK themes.
+      # Other good GTK themes: arc-theme whitesur-gtk-theme
+      custom.extraPackages = with pkgs; [ant-theme mojave-gtk-theme];
+      services.xserver = {
+        desktopManager.xfce.enable = true;
+        displayManager.lightdm.greeters.gtk.enable = true;
+      };
+    })
+  ];
 }

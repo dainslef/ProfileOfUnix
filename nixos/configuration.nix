@@ -8,10 +8,11 @@
 
 {
   imports =
-    [ # Include the results of the hardware scan.
+    [ # Include other configurations.
+      ./custom-configuration.nix
+      /etc/nixos/user-configuration.nix
+      # Include system generate hardware configurations.
       /etc/nixos/hardware-configuration.nix
-      /etc/nixos/custom-configuration.nix
-      ./custom-definition.nix
     ];
 
   nixpkgs.config.packageOverrides = pkgs: {

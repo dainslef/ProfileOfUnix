@@ -1,0 +1,32 @@
+# COPY this file to ~/.ansible/hosts
+# Ansible inventory template.
+
+all:
+  # more connection args, see https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html#behavioral-parameters
+  hosts:
+    xxx_host_1:
+      ansible_host: x.x.x.x
+      ansible_user: xxx
+    xxx_host_2:
+      ansible_host: xxx_hostname
+    # xxx_other_host...
+  vars:
+    ansible_user: root
+  children:
+    xxx_group_1:
+      hosts:
+        xxx_children_host_1:
+        # xxx_other_host...
+      vars:
+        ansible_user: xxx
+      children:
+        # Can define inner group.
+        xxx_inner_group_1:
+          hosts:
+          # xxx_host...
+          children:
+          # xxx_children_group...
+        xxx_inner_group_2:
+        # xxx_other_group...
+    xxx_group_2:
+    # xxx_other_group...

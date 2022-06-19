@@ -25,8 +25,8 @@
   # Set up boot options.
   boot = {
     # Set the custom linux kernel.
-    # kernelPackages = pkgs.linuxPackages_zen;
-    kernelPackages = pkgs.linuxPackages_latest;
+    kernelPackages = pkgs.linuxPackages_zen; # Zen Kernel.
+    # kernelPackages = pkgs.linuxPackages_latest; # Offical Kernel.
     # Set boot loader.
     loader = {
       timeout = 999999;
@@ -59,10 +59,9 @@
 
   # Container and VM.
   virtualisation = {
-    podman = {
-      enable = true;
-      dockerCompat = true; # Create a `docker` alias for podman.
-    };
+    lxc.lxcfs.enable = true;
+    lxd.enable = true;
+    docker.enable = true;
   };
 
   # Set up some programs' feature.
@@ -79,15 +78,16 @@
   environment.systemPackages = with pkgs; [
     # In NixOS, pip can't install package, set up pip package in configuration.
     (python3.withPackages (p: [p.black p.jupyter p.ansible-core]))
-    # Developer tools
+    # Developer tools.
     binutils gcc gdb clang lldb rustup cmake gnumake # C/C++/Rust compiler and build tools
-    jdk scala visualvm dotnet-sdk # Java and .Net SDK
-    git stack nodejs kubectl # Other develop tools
-    vscode jetbrains.idea-ultimate # IDE/Editor
+    jdk scala visualvm dotnet-sdk # Java and .Net SDK.
+    mycli pgcli # Database CLI tools, if need MySQL client tools, install "mariadb-client" manually.
+    git stack nodejs kubectl # Other SDK and develop tools.
+    vscode jetbrains.idea-ultimate # IDE/Editor.
     # Android Tools
     android-tools android-file-transfer
     # Normal tools
-    file tree usbutils pciutils btop # Base CLI tools
+    file tree screen usbutils pciutils btop # Base CLI tools
     nmap openssh neofetch p7zip qemu opencc syncthing # Service and command line tools
     vlc gparted gimp google-chrome thunderbird goldendict blender bottles # GUI tools
     # Man pages (POSIX API and C++ dev doc)
@@ -99,21 +99,12 @@
   ] ++ config.custom.extraPackages;
 
   # Config services.
-  services = {
-    redis.servers."".enable = true; # Use new options for redis service instead of 'redis-enable'.
-    nginx.enable = true;
-    postgresql.enable = true;
-    mysql = {
-      enable = true;
-      package = pkgs.mysql80;
-    };
+  services.xserver = {
     # Enable GUI, config the X11 windowing system.
-    xserver = {
-      enable = true; # Must enable xserver for desktop environments.
-      libinput = {
-        enable = true; # Enable touchpad support.
-        touchpad.naturalScrolling = true;
-      };
+    enable = true; # Must enable xserver for desktop environments.
+    libinput = {
+      enable = true; # Enable touchpad support.
+      touchpad.naturalScrolling = true;
     };
   };
   systemd = {
@@ -121,10 +112,9 @@
     extraConfig = "DefaultTimeoutStopSec=5s";
     # Disable autostart of some service.
     services = {
-      nginx.wantedBy = lib.mkForce [];
-      redis.wantedBy = lib.mkForce [];
-      mysql.wantedBy = lib.mkForce [];
-      postgresql.wantedBy = lib.mkForce [];
+      lxd.wantedBy = lib.mkForce [];
+      lxcfs.wantedBy = lib.mkForce [];
+      docker.wantedBy = lib.mkForce [];
     };
     # Setup user service.
     user.services.clash = {
@@ -160,8 +150,8 @@
     defaultUserShell = pkgs.fish;
     users.dainslef = {
       isNormalUser = true;
-      # Enable sudo/network/wireshark permission for normal user.
-      extraGroups = ["wheel" "networkmanager" "wireshark"];
+      # Enable sudo/network/wireshark/lxd/docker permission for normal user.
+      extraGroups = ["wheel" "networkmanager" "wireshark" "lxd" "docker"];
     };
   };
 

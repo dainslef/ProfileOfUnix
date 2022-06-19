@@ -113,9 +113,9 @@ with lib; {
       };
       # Custom packages for GNOME.
       custom.extraPackages = with pkgs;
-        (with gnome; [nautilus file-roller eog gnome-system-monitor gnome-tweaks]) ++
+        [btop kitty] ++ # Use btop and kitty instead of gnome-system-monitor and gnome-terminal.
+        (with gnome; [nautilus file-roller eog gnome-tweaks]) ++
         (with gnomeExtensions; [blur-my-shell ddterm net-speed-simplified]);
-      programs.gnome-terminal.enable = true;
       services = {
         gnome.core-utilities.enable = false; # Disable useless default Gnome apps.
         xserver = {

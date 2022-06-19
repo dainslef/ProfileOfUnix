@@ -1,9 +1,10 @@
-# COPY this file to /etc/nixos/custom-configuration.nix
+# COPY this file to /etc/nixos/user-configuration.nix
 # This file is just a sample.
 # Change options in this file by need.
 
 {
   networking.hostName = "YOUR-PC-NAME"; # Define your hostname.
+  boot.loader.systemd-boot.consoleMode = "keep"; # Default is "keep", set value to "max" when device is HDPI.
   services = {
     fprintd.enable = true; # Enable if the device has finger print support.
     xserver.dpi = null; # Set the DPI, the default value is 96.

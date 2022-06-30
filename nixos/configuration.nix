@@ -79,10 +79,11 @@
     # In NixOS, pip can't install package, set up pip package in configuration.
     (python3.withPackages (p: [p.black p.jupyter p.ansible-core]))
     # Developer tools.
-    binutils gcc gdb clang lldb rustup cmake gnumake # C/C++/Rust compiler and build tools
+    binutils gcc clang rustup cmake gnumake # C/C++/Rust compiler and build tools.
+    gdb lldb radare2 # Debugger and Reverse Engineering tools.
     jdk scala visualvm dotnet-sdk # Java and .Net SDK.
-    mycli pgcli # Database CLI tools, if need MySQL client tools, install "mariadb-client" manually.
-    git stack nodejs kubectl # Other SDK and develop tools.
+    mycli pgcli # Database CLI tools, if need MySQL standard client tools, install "mariadb-client" manually.
+    git stack nodejs kubectl kubernetes-helm # Other SDK and develop tools.
     vscode jetbrains.idea-ultimate # IDE/Editor.
     # Android Tools
     android-tools android-file-transfer
@@ -166,14 +167,14 @@
     ";
   };
 
-  nixpkgs.config.allowUnfree = true; # Allow some unfree software (like vscode and chrome).
-  nix = {
-    autoOptimiseStore = true; # Enable nix store auto optimise.
+  nixpkgs.config.allowUnfree = true; # Allow some unfree software (like VSCode and Chrome).
+  nix.settings = {
+    auto-optimise-store = true; # Enable nix store auto optimise.
     # Replace custom nixos channel with TUNA mirror:
     # sudo nix-channel --add https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-unstable
     # or use USTC Mirror:
     # https://mirrors.ustc.edu.cn/nix-channels/nixos-unstable
-    settings.substituters = [ # Binary Cache Mirror
+    substituters = [ # Binary Cache Mirror
       "https://mirrors.ustc.edu.cn/nix-channels/store"
       "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
     ];

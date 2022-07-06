@@ -29,16 +29,20 @@ with lib; {
   # Custom releation configurations.
   config = mkMerge [
     (mkIf config.custom.platform.intel {
-      services.xserver = {
-        # Intel driver haven't been updated in years.
-        videoDrivers = ["modesetting"];
-        useGlamor = true;
-      };
+      boot.kernelModules = ["kvm-intel"];
+      # Intel driver haven't been updated in years, use default "modesetting" currently.
+      services.xserver.videoDrivers = ["modesetting"];
+      hardware.cpu.intel.updateMicrocode = true;
     })
     (mkIf config.custom.platform.amd {
-      # Newer AMD CPU require "amdgpu" kernel module.
-      boot.initrd.kernelModules = ["amdgpu"];
+      boot = {
+        # Use KVM kernel module.
+        kernelModules = ["kvm-amd"];
+        # Newer AMD CPU require "amdgpu" kernel module.
+        initrd.kernelModules = ["amdgpu"];
+      };
       services.xserver.videoDrivers = ["amdgpu"];
+      hardware.cpu.amd.updateMicrocode = true;
     })
     (mkIf (config.custom.desktop.gnome || config.custom.desktop.pantheon) {
       # Set up the input method.

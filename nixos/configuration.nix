@@ -4,29 +4,23 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, lib, ... }:
+{ lib, pkgs, config, modulesPath, ... }:
 
 {
-  imports =
-    [ # Include other configurations.
-      ./custom-configuration.nix
-      /etc/nixos/user-configuration.nix
-      # Include system generate hardware configurations.
-      /etc/nixos/hardware-configuration.nix
-    ];
-
-  nixpkgs.config.packageOverrides = pkgs: {
-    # Add NUR repo.
-    nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
-      inherit pkgs;
-    };
-  };
+  imports = [
+    # Include config detection.
+    (modulesPath + "/installer/scan/not-detected.nix")
+    # Include other user configurations.
+    /etc/nixos/user-configuration.nix
+    ./custom-configuration.nix
+  ];
 
   # Set up boot options.
   boot = {
     # Set the custom linux kernel.
     kernelPackages = pkgs.linuxPackages_zen; # Zen Kernel.
     # kernelPackages = pkgs.linuxPackages_latest; # Offical Kernel.
+    initrd.availableKernelModules = ["xhci_pci" "thunderbolt" "nvme"]; # Necessary Kernel Module.
     # Set boot loader.
     loader = {
       timeout = 999999;
@@ -85,17 +79,17 @@
     mycli pgcli # Database CLI tools, if need MySQL standard client tools, install "mariadb-client" manually.
     git stack nodejs kubectl kubernetes-helm # Other SDK and develop tools.
     vscode jetbrains.idea-ultimate # IDE/Editor.
-    # Android Tools
+    # Android Tools.
     android-tools android-file-transfer
-    # Normal tools
+    # Normal tools.
     file tree screen usbutils pciutils btop # Base CLI tools
     nmap openssh neofetch p7zip qemu opencc syncthing # Service and command line tools
     vlc gparted gimp google-chrome thunderbird goldendict blender bottles # GUI tools
-    # Man pages (POSIX API and C++ dev doc)
+    # Man pages (POSIX API and C++ dev doc).
     man-pages-posix stdmanpages
-    # Clash
+    # Clash.
     nur.repos.linyinfeng.clash-premium # nur.repos.linyinfeng.clash-for-windows
-    # Wechat
+    # Wechat.
     nur.repos.xddxdd.wechat-uos
   ] ++ config.custom.extraPackages;
 
@@ -146,6 +140,9 @@
   # Enable sound.
   hardware.pulseaudio.enable = true;
 
+  # Power Management Policy.
+  powerManagement.cpuFreqGovernor = "ondemand";
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users = {
     defaultUserShell = pkgs.fish;
@@ -167,7 +164,15 @@
     ";
   };
 
-  nixpkgs.config.allowUnfree = true; # Allow some unfree software (like VSCode and Chrome).
+  nixpkgs.config = {
+    allowUnfree = true; # Allow some unfree software (like VSCode and Chrome).
+    packageOverrides = pkgs: {
+      # Add NUR repo.
+      nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
+        inherit pkgs;
+      };
+    };
+  };
   nix.settings = {
     auto-optimise-store = true; # Enable nix store auto optimise.
     # Replace custom nixos channel with TUNA mirror:

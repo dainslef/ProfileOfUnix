@@ -31,7 +31,6 @@ obj
 !.bashrc
 !.zshrc
 !.vimrc
-!.xprofile
 !.gtkrc-2.0
 
 // sync Syncthing rules

@@ -1,6 +1,6 @@
 " Place this file at the place: ~/.vimrc
 " This vim config need to set up Vundle:
-" $ git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+" $ git clone https://github.com/VundleVim/Vundle.vim ~/.vim/bundle/Vundle.vim
 
 
 
@@ -97,7 +97,7 @@ set rtp+=~/.vim/bundle/Vundle.vim " 設置Vundle插件的路徑
 call vundle#begin()
 
 " 插件列表
-Plugin 'gmarik/Vundle.vim' " let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim' " let Vundle manage Vundle, required
 Plugin 'vim-airline/vim-airline' " 相比vim-powerline而言功能更加強大
 Plugin 'vim-airline/vim-airline-themes' " vim-airline的主題插件
 Plugin 'vim-syntastic/syntastic' " 語法檢測插件
@@ -111,6 +111,7 @@ Plugin 'vim-ruby/vim-ruby' " ruby插件
 Plugin 'plasticboy/vim-markdown' " markdown語法高亮插件
 Plugin 'Raimondi/delimitMate' " 符號智能補全插件
 Plugin 'udalov/kotlin-vim' " Kotlin語法高亮
+Plugin 'dag/vim-fish' " Fish shell plugin for VIM.
 " Plugin 'taglist.vim' " 來自github中vim-scripts收集的插件直接寫名字,不過很可能獲得的是舊版本
 " Plugin 'fatih/vim-go' " golang插件，使用指令:GoInstallBinaries安裝補全工具
 " Plugin 'klen/python-mode' " python插件
@@ -131,7 +132,8 @@ filetype plugin indent on " 開啓插件
 
 
 " --- WinManager配置 ---
-let g:winManagerWindowLayout = "TagList|FileExplorer" " 設置WinManager管理的插件
+" let g:winManagerWindowLayout = "TagList|FileExplorer" " 設置WinManager管理的插件
+let g:winManagerWindowLayout = "FileExplorer" " 設置WinManager管理的插件
 let g:winManagerWidth = 35 " 設置WinManager側邊欄的大小
 let g:persistentBehaviour = 0 " 設置關閉所有文件時自動關閉WinManager
 nmap wm :WMToggle<cr> " 定義打開關閉WinManager快捷鍵爲wm

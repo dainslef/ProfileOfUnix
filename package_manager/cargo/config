@@ -1,8 +1,12 @@
-# Place this file at the path: ~/.cargo/config
+# Link this file to the path: ~/.cargo/config
 # See details: https://mirrors.tuna.tsinghua.edu.cn/help/crates.io-index.git/
 
 [source.crates-io]
-replace-with = 'tuna'
+replace-with = 'ustc'
+# replace-with = 'tuna'
+
+[source.ustc]
+registry = "git://mirrors.ustc.edu.cn/crates.io-index"
 
 [source.tuna]
 registry = "https://mirrors.tuna.tsinghua.edu.cn/git/crates.io-index.git"

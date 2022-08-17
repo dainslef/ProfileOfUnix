@@ -66,9 +66,15 @@ function env_config
             set -gx XMODIFIERS "@im=$input_method"
             set -gx CLASSPATH $CLASSPATH:.
 
+            # Disable Qt auto scaling, to fix VLC UI scaling problem.
+            set -gx QT_AUTO_SCREEN_SCALE_FACTOR 0
+
             # Set language environment variables.
             set -gx LANG en_US.UTF-8
             set -gx LC_ALL en_US.UTF-8
+
+            # Set terminfo for Kitty.
+            set -gx TERM xterm-256color
 
             # Set Qt style
             if [ "$XDG_SESSION_DESKTOP" = xfce ]
@@ -80,19 +86,24 @@ function env_config
 
         end
 
-        # Set python pip package binary path
-        if [ -e "$pip_bin" ]
-            set PATH $PATH $pip_bin
-        end
-
         # Set the local binary path
         if [ -e ~/.local/bin ]
             set PATH $PATH ~/.local/bin
         end
 
+        # Set python pip package binary path
+        if [ -e "$pip_bin" ]
+            set PATH $PATH $pip_bin
+        end
+
+        # Set Haskell GHCup path
+        if [ -e ~/.ghcup/bin ]
+            set PATH $PATH ~/.ghcup/bin
+        end
+
         # Set the environment variable for rustup mirror (no longer need when use clash tun)
-        # set -xg RUSTUP_DIST_SERVER https://mirrors.tuna.tsinghua.edu.cn/rustup
-        # set -xg RUSTUP_DIST_SERVER https://mirrors.ustc.edu.cn/rust-static
+        # Install rust stable toolchain: $ rustup toolchain install stable
+        set -xg RUSTUP_DIST_SERVER https://mirrors.ustc.edu.cn/rust-static
 
         # Set cargo binary path
         if [ -e ~/.cargo/bin ]

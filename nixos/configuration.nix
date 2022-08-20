@@ -70,21 +70,29 @@
 
   # List packages installed in system profile.
   environment.systemPackages = with pkgs; [
-    # In NixOS, pip can't install package, set up pip package in configuration.
-    (python3.withPackages (p: [p.black p.jupyter p.ansible-core]))
-    # Developer tools.
-    binutils gcc clang rustup cmake gnumake # C/C++/Rust compiler and build tools.
-    gdb lldb radare2 # Debugger and Reverse Engineering tools.
-    jdk scala visualvm dotnet-sdk # Java and .Net SDK.
-    mycli pgcli # Database CLI tools, if need MySQL standard client tools, install "mariadb-client" manually.
-    git stack nodejs kubectl kubernetes-helm # Other SDK and develop tools.
-    vscode jetbrains.idea-ultimate # IDE/Editor.
+    # Nix Language Server.
+    rnix-lsp
+    # C/C++/Rust/Haskell compiler and build tools.
+    binutils gcc clang rustup stack cmake gnumake
+    # Debugger and Reverse Engineering tools.
+    gdb lldb radare2
+    # Java and .Net SDK.
+    jdk scala visualvm dotnet-sdk
+    # Python SDK, in NixOS, system pip can't install module, set up pip module in configuration or use venv.
+    # Use "python -m venv xxx_dir" to create virtual environments.
+    python3 # (python3.withPackages (p: [p.black p.jupyter p.ansible-core]))
+    # Other SDK and develop tools.
+    git nodejs kubectl kubernetes-helm
+    # IDE/Editor.
+    vscode jetbrains.idea-ultimate
     # Android Tools.
     android-tools android-file-transfer
-    # Normal tools.
-    file tree screen usbutils pciutils btop # Base CLI tools
-    nmap openssh neofetch p7zip qemu opencc syncthing # Service and command line tools
-    vlc gparted gimp google-chrome thunderbird goldendict blender bottles # GUI tools
+    # Base CLI tools.
+    file tree screen usbutils pciutils btop
+    # Service and command line tools.
+    nmap openssh neofetch p7zip qemu opencc syncthing
+    # GUI tools
+    vlc gparted gimp google-chrome thunderbird goldendict blender bottles
     # Man pages (POSIX API and C++ dev doc).
     man-pages-posix stdmanpages
     # Clash.
@@ -116,10 +124,9 @@
       # Define a custom clash service.
       wantedBy = ["default.target"];
       after = ["network.target"];
-      description = "Start clash service";
+      description = "A rule-based tunnel in Go.";
       serviceConfig = {
         ExecStart = "/run/current-system/sw/bin/clash-premium &";
-        ExecStop = "/run/current-system/sw/bin/kill -9 clash-premium";
       };
     };
   };
@@ -178,7 +185,7 @@
     # Replace custom nixos channel with TUNA mirror:
     # sudo nix-channel --add https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-unstable
     # or use USTC Mirror:
-    # https://mirrors.ustc.edu.cn/nix-channels/nixos-unstable
+    # sudo nix-channel --add https://mirrors.ustc.edu.cn/nix-channels/nixos-unstable
     substituters = [ # Binary Cache Mirror
       "https://mirrors.ustc.edu.cn/nix-channels/store"
       "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"

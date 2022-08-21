@@ -21,7 +21,7 @@ with lib; {
       };
       extraPackages = with types; mkOption {
         type = listOf package;
-        default = [];
+        default = [ ];
       };
     };
   };
@@ -29,19 +29,19 @@ with lib; {
   # Custom releation configurations.
   config = mkMerge [
     (mkIf config.custom.platform.intel {
-      boot.kernelModules = ["kvm-intel"];
+      boot.kernelModules = [ "kvm-intel" ];
       # Intel driver haven't been updated in years, use default "modesetting" currently.
-      services.xserver.videoDrivers = ["modesetting"];
+      services.xserver.videoDrivers = [ "modesetting" ];
       hardware.cpu.intel.updateMicrocode = true;
     })
     (mkIf config.custom.platform.amd {
       boot = {
         # Use KVM kernel module.
-        kernelModules = ["kvm-amd"];
+        kernelModules = [ "kvm-amd" ];
         # Newer AMD CPU require "amdgpu" kernel module.
-        initrd.kernelModules = ["amdgpu"];
+        initrd.kernelModules = [ "amdgpu" ];
       };
-      services.xserver.videoDrivers = ["amdgpu"];
+      services.xserver.videoDrivers = [ "amdgpu" ];
       hardware.cpu.amd.updateMicrocode = true;
     })
     (mkIf (config.custom.desktop.gnome || config.custom.desktop.pantheon) {
@@ -49,7 +49,7 @@ with lib; {
       i18n.inputMethod = {
         # Use ibus for Gnome and Pantheon.
         enabled = "ibus";
-        ibus.engines = with pkgs.ibus-engines; [libpinyin mozc];
+        ibus.engines = with pkgs.ibus-engines; [ libpinyin mozc ];
       };
     })
     (mkIf (!(config.custom.desktop.gnome || config.custom.desktop.pantheon)) {
@@ -57,13 +57,18 @@ with lib; {
       i18n.inputMethod = {
         # Use fcitx5 for most desktop/wm.
         enabled = "fcitx5";
-        fcitx5.addons = with pkgs; [fcitx5-chinese-addons fcitx5-mozc];
+        fcitx5.addons = with pkgs; [ fcitx5-chinese-addons fcitx5-mozc ];
       };
     })
     (mkIf config.custom.desktop.wm {
       # Csutom packages for window manager.
       custom.extraPackages = with pkgs; [
-        xdg-user-dirs networkmanagerapplet kitty ranger ueberzug flameshot
+        xdg-user-dirs
+        networkmanagerapplet
+        kitty
+        ranger
+        ueberzug
+        flameshot
         brightnessctl # For brightness control.
         dunst # Provide notification (some WM like Qtile and XMonad don't have a built-in notification service).
       ];
@@ -75,7 +80,7 @@ with lib; {
           shadow = true; # Enable window shadow.
           backend = "glx";
           inactiveOpacity = 0.9;
-          shadowExclude = ["!focused"]; # Only shadow the current focus window.
+          shadowExclude = [ "!focused" ]; # Only shadow the current focus window.
         };
         # Set up the XServer.
         xserver = {
@@ -89,7 +94,7 @@ with lib; {
             # Enable AwesomeWM.
             awesome = {
               enable = true;
-              luaModules = [pkgs.luaPackages.vicious];
+              luaModules = [ pkgs.luaPackages.vicious ];
             };
           };
         };
@@ -98,7 +103,8 @@ with lib; {
     (mkIf config.custom.desktop.kde {
       # Custom packages for KDE.
       custom.extraPackages = with pkgs; [
-        libsForQt5.yakuake libsForQt5.sddm-kcm
+        libsForQt5.yakuake
+        libsForQt5.sddm-kcm
       ];
       services.xserver = {
         displayManager.sddm.enable = true; # Plasma use SDDM as display manager.
@@ -117,9 +123,9 @@ with lib; {
       };
       # Custom packages for GNOME.
       custom.extraPackages = with pkgs;
-        [btop kitty] ++ # Use btop and kitty instead of gnome-system-monitor and gnome-terminal.
-        (with gnome; [nautilus file-roller eog gnome-tweaks]) ++
-        (with gnomeExtensions; [blur-my-shell ddterm net-speed-simplified]);
+        [ btop kitty ] ++ # Use btop and kitty instead of gnome-system-monitor and gnome-terminal.
+        (with gnome; [ nautilus file-roller eog gnome-tweaks ]) ++
+        (with gnomeExtensions; [ blur-my-shell ddterm net-speed-simplified ]);
       services = {
         gnome.core-utilities.enable = false; # Disable useless default Gnome apps.
         xserver = {
@@ -130,7 +136,7 @@ with lib; {
     })
     (mkIf config.custom.desktop.pantheon {
       # Custom packages for Pantheon.
-      custom.extraPackages = with pkgs.pantheon; [elementary-terminal elementary-files];
+      custom.extraPackages = with pkgs.pantheon; [ elementary-terminal elementary-files ];
       services = {
         pantheon.apps.enable = false;
         xserver = {
@@ -149,7 +155,7 @@ with lib; {
       };
       # Set the Xfce GTK themes.
       # Other good GTK themes: arc-theme whitesur-gtk-theme
-      custom.extraPackages = with pkgs; [ant-theme mojave-gtk-theme];
+      custom.extraPackages = with pkgs; [ ant-theme mojave-gtk-theme ];
       services.xserver = {
         desktopManager.xfce.enable = true;
         displayManager.lightdm.greeters.gtk.enable = true;

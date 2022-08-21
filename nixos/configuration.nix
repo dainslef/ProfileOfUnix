@@ -20,7 +20,7 @@
     # Set the custom linux kernel.
     kernelPackages = pkgs.linuxPackages_zen; # Zen Kernel.
     # kernelPackages = pkgs.linuxPackages_latest; # Offical Kernel.
-    initrd.availableKernelModules = ["xhci_pci" "thunderbolt" "nvme"]; # Necessary Kernel Module.
+    initrd.availableKernelModules = [ "xhci_pci" "thunderbolt" "nvme" ]; # Necessary Kernel Module.
     # Set boot loader.
     loader = {
       timeout = 999999;
@@ -32,7 +32,8 @@
   # Set up networking.
   networking = {
     networkmanager.enable = true;
-    proxy = { # Set up proxy (for Clash).
+    proxy = {
+      # Set up proxy (for Clash).
       allProxy = "127.0.0.1:9999";
       httpProxy = "http://127.0.0.1:9999";
       httpsProxy = "http://127.0.0.1:9999";
@@ -73,28 +74,63 @@
     # Nix Language Server.
     rnix-lsp
     # C/C++/Rust/Haskell compiler and build tools.
-    binutils gcc clang rustup stack cmake gnumake
+    binutils
+    gcc
+    clang
+    rustup
+    stack
+    cmake
+    gnumake
     # Debugger and Reverse Engineering tools.
-    gdb lldb radare2
+    gdb
+    lldb
+    radare2
     # Java and .Net SDK.
-    jdk scala visualvm dotnet-sdk
+    jdk
+    scala
+    visualvm
+    dotnet-sdk
     # Python SDK, in NixOS, system pip can't install module, set up pip module in configuration or use venv.
     # Use "python -m venv xxx_dir" to create virtual environments.
     python3 # (python3.withPackages (p: [p.black p.jupyter p.ansible-core]))
     # Other SDK and develop tools.
-    git nodejs kubectl kubernetes-helm
+    git
+    nodejs
+    kubectl
+    kubernetes-helm
     # IDE/Editor.
-    vscode jetbrains.idea-ultimate
+    vscode
+    jetbrains.idea-ultimate
     # Android Tools.
-    android-tools android-file-transfer
+    android-tools
+    android-file-transfer
     # Base CLI tools.
-    file tree screen usbutils pciutils btop
+    file
+    tree
+    screen
+    usbutils
+    pciutils
+    btop
     # Service and command line tools.
-    nmap openssh neofetch p7zip qemu opencc syncthing
+    nmap
+    openssh
+    neofetch
+    p7zip
+    qemu
+    opencc
+    syncthing
     # GUI tools
-    vlc gparted gimp google-chrome thunderbird goldendict blender bottles
+    vlc
+    gparted
+    gimp
+    google-chrome
+    thunderbird
+    goldendict
+    blender
+    bottles
     # Man pages (POSIX API and C++ dev doc).
-    man-pages-posix stdmanpages
+    man-pages-posix
+    stdmanpages
     # Clash.
     nur.repos.linyinfeng.clash-premium # nur.repos.linyinfeng.clash-for-windows
     # Wechat.
@@ -115,15 +151,15 @@
     extraConfig = "DefaultTimeoutStopSec=5s";
     # Disable autostart of some service.
     services = {
-      lxd.wantedBy = lib.mkForce [];
-      lxcfs.wantedBy = lib.mkForce [];
-      docker.wantedBy = lib.mkForce [];
+      lxd.wantedBy = lib.mkForce [ ];
+      lxcfs.wantedBy = lib.mkForce [ ];
+      docker.wantedBy = lib.mkForce [ ];
     };
     # Setup user service.
     user.services.clash = {
       # Define a custom clash service.
-      wantedBy = ["default.target"];
-      after = ["network.target"];
+      wantedBy = [ "default.target" ];
+      after = [ "network.target" ];
       description = "A rule-based tunnel in Go.";
       serviceConfig = {
         ExecStart = "/run/current-system/sw/bin/clash-premium &";
@@ -134,12 +170,12 @@
   # Config fonts.
   fonts = {
     enableDefaultFonts = true;
-    fonts = with pkgs; [cascadia-code noto-fonts noto-fonts-cjk-sans];
+    fonts = with pkgs; [ cascadia-code noto-fonts noto-fonts-cjk-sans ];
     fontconfig = {
       defaultFonts = {
-        serif = ["Noto Sans"];
-        sansSerif = ["Noto Sans"];
-        monospace = ["Cascadia Code PL"];
+        serif = [ "Noto Sans" ];
+        sansSerif = [ "Noto Sans" ];
+        monospace = [ "Cascadia Code PL" ];
       };
     };
   };
@@ -156,7 +192,7 @@
     users.dainslef = {
       isNormalUser = true;
       # Enable sudo/network/wireshark/lxd/docker permission for normal user.
-      extraGroups = ["wheel" "networkmanager" "wireshark" "lxd" "docker"];
+      extraGroups = [ "wheel" "networkmanager" "wireshark" "lxd" "docker" ];
     };
   };
 
@@ -186,7 +222,8 @@
     # sudo nix-channel --add https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-unstable
     # or use USTC Mirror:
     # sudo nix-channel --add https://mirrors.ustc.edu.cn/nix-channels/nixos-unstable
-    substituters = [ # Binary Cache Mirror
+    substituters = [
+      # Binary Cache Mirrors.
       "https://mirrors.ustc.edu.cn/nix-channels/store"
       "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
     ];

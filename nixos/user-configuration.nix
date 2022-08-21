@@ -28,7 +28,7 @@
   };
 
   # System partitons.
-  swapDevices =[{ device = "/dev/xxx"; }];
+  swapDevices = [{ device = "/dev/xxx"; }];
   fileSystems = {
     # Device path can use deivce block file or uuid.
     "/" = { device = "/dev/disk/by-uuid/xxx"; fsType = "btrfs"; };
@@ -38,6 +38,6 @@
   # For company environment.
   networking.extraHosts = "x.x.x.x xxx-hostname";
   virtualisation.docker.daemon.settings = {
-    insecure-registries = ["x.x.x.x1" "x.x.x.x2"];
+    insecure-registries = [ "x.x.x.x1" "x.x.x.x2" ];
   };
 }

@@ -1,0 +1,9 @@
+# Link this file to ~/.ssh/config.
+Host *
+	# Skip SSH key check.
+	StrictHostKeyChecking no
+	# Allow the old version ssh-rsa algorithm.
+	HostkeyAlgorithms=+ssh-rsa
+	PubkeyAcceptedAlgorithms=+ssh-rsa
+	# Disable fingerprint to known_hosts.
+	UserKnownHostsFile=/dev/null

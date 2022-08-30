@@ -1,42 +1,43 @@
 // Notice: Syncthing rules can't add comment at line end, that may make the rule break down.
 
-// for macOS filesystem
+// For macOS filesystem.
 .DS_Store
 
-// for C/C++ develop and CMake
+// For C/C++ develop and CMake.
 *.o
 *.a
 *.so
 CMakeFiles
 
-// for Node.js
+// For Node.js.
 node_modules
 dist
 
-// for most IDEs
+// For most IDEs.
 build
 target
 log
 bin
 out
 obj
+.idea
 *.lock
 
-// need to sync git-releated files
+// Need to sync git-releated files.
 !.git
 !.gitignore
 !.gitconfig
 
-// need to sync some unix configurations
+// Need to sync some unix configurations.
 !.bashrc
 !.zshrc
 !.vimrc
 !.gtkrc-2.0
 
-// sync Syncthing rules
+// Sync this Syncthing rule.
 !.stignore_synced
 
-// ignore the other hidden files
-// file ".stignore" can't be synced
-// use "#include .stignore_synced" to include this pattern in each device's ".stignore" file
+// Ignore the other hidden files.
+// File ".stignore" can't be synced.
+// Use "#include .stignore_synced" to include this pattern in each device's ".stignore" file.
 .*

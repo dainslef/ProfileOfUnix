@@ -30,18 +30,22 @@ function env_config
         # Check OS type and set the different environment variables
         if [ (uname) = Darwin ] # Darwin kernel means in macOS
 
+            # Set Python PIP binary path.
+            set python_version (python3 -V | awk -F' ' '{ print $2 }' | awk -F'.' '{ print $1 "." $2 }')
+            set pip_bin ~/Library/Python/$python_version/bin
+
             # From macOS 12 (Monterey), command 'ls' don't print with color,
             # need to set the 'CLICOLOR' for color output.
             set -gx CLICOLOR 1 # Use ANSI color sequences to distinguish file types
-
-            set python_version (python3 -V | awk -F' ' '{ print $2 }' | awk -F'.' '{ print $1 "." $2 }')
-            set pip_bin ~/Library/Python/$python_version/bin
 
             # Set the environment variable for Homebrew Bottles mirror (no longer need when use clash tun)
             # set -xg HOMEBREW_BOTTLE_DOMAIN https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/bottles
             # set -xg HOMEBREW_BOTTLE_DOMAIN https://mirrors.ustc.edu.cn/homebrew-bottles
 
         else if [ (uname) = Linux ]
+
+            # Set Python Pip binary path.
+            set pip_bin ~/Public/Python/bin
 
             # Remember "alias" is synatx candy for "function" in fish shell,
             # alias command can not run at background like "xxx &".

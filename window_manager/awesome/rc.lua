@@ -143,7 +143,8 @@ local dictionary = "goldendict"
 local file_manager = "ranger"
 local screen_locker = "dm-tool lock"
 
--- Use 10% transparency in light mode, 20% in dark mode.
+-- Kitty terminal is implemented by GLFW, so use GLFW_IM_MODULE to set the IME.
+-- Fcitx input method also need to set GLFW_IM_MODULE to ibus.
 local terminal = "env GLFW_IM_MODULE=ibus kitty"
 -- Set the instance name of Terminal App, use xprop WM_CLASS.
 local terminal_instance = "kitty"
@@ -157,19 +158,23 @@ end
 local mod_key = "Mod4"
 -- Table of layouts to cover with awful.layout.inc, order matters.
 local layouts = {
+	awful.layout.suit.fair, -- equal division
+	awful.layout.suit.corner.sw,
+	awful.layout.suit.max,
+
 	-- awful.layout.suit.floating,
-	awful.layout.suit.spiral, -- master in left
 	-- awful.layout.suit.magnifier, -- focus in center
 	-- awful.layout.suit.corner.nw,
 	-- awful.layout.suit.corner.ne,
-	awful.layout.suit.corner.sw,
+	-- awful.layout.suit.corner.sw,
 	-- awful.layout.suit.corner.se,
+	-- awful.layout.suit.spiral, -- master in left
 	-- awful.layout.suit.spiral.dwindle,
 	-- awful.layout.suit.fair, -- equal division
 	-- awful.layout.suit.fair.horizontal,
 	-- awful.layout.suit.tile,
 	-- awful.layout.suit.tile.left,
-	awful.layout.suit.tile.bottom, -- master in top
+	-- awful.layout.suit.tile.bottom, -- master in top
 	-- awful.layout.suit.tile.top,
 	-- awful.layout.suit.max,
 	-- awful.layout.suit.max.fullscreen,
@@ -568,8 +573,10 @@ local global_keys = awful.util.table.join(
 	-- Custom application key bindings.
 	awful.key({ mod_key }, "l", function() awful.spawn(screen_locker) end), -- Lock screen
 	awful.key({ mod_key }, "b", function() awful.spawn(browser) end),
+	awful.key({ mod_key }, "m", function() awful.spawn(mail) end),
 	awful.key({ mod_key }, "d", function() awful.spawn(dictionary) end),
 	awful.key({ mod_key }, "f", function() awful.spawn(terminal_open(file_manager)) end),
+	awful.key({ mod_key }, "t", function() awful.spawn(terminal_open("btop")) end),
 	-- Screen shot key bindings.
 	awful.key({}, "Print", function() awful.spawn("flameshot screen") end),
 	awful.key({ mod_key }, "Print", function() awful.spawn("flameshot gui") end),
@@ -646,9 +653,9 @@ awful.rules.rules = {
 			-- Client key bindings.
 			keys = awful.util.table.join(
 				awful.key({ mod_key }, "w", function(c) c:kill() end),
-				awful.key({ mod_key }, "m", function(c) awful.client.setmaster(c) end),
 				-- Window state key bindings, window title will add some charator for specific window state:
 				-- '+' maxmized, '^' ontop
+				-- awful.key({ mod_key, "Alt_L" }, "m", function(c) awful.client.setmaster(c) end),
 				awful.key({ mod_key, "Shift" }, "m", function(c) c.maximized = not c.maximized end),
 				awful.key({ mod_key, "Control" }, "m", function(c) c.fullscreen = not c.fullscreen end),
 				awful.key({ mod_key, "Control" }, "n", function(c) c.minimized = not c.minimized end),

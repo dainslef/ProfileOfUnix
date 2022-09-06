@@ -61,8 +61,8 @@ once_cmds = [
 normal_cmds = [
     "systemctl --user start pulseaudio",  # In NixOS PulseAudio should restart during window manager startup, otherwise command can't get PulseAudio volume correctly.
     "xset +dpms",
-    "xset dpms 0 0 1800",
-    "xset s 1800",
+    "xset dpms 600 900 1800",
+    "xset s 600",
 ]
 run_once = lambda cmd: os.system(f"fish -c 'pgrep -u $USER -x {cmd}; or {cmd} &'")
 [run_once(cmd) for cmd in once_cmds]
@@ -135,7 +135,7 @@ class Application:
 
     class Terminal:
         MATCH_RULE = Match(wm_class="kitty")
-        GROUP_NAME, COMMAND = "", "kitty"
+        GROUP_NAME, COMMAND = "", "env GLFW_IM_MODULE=ibus kitty"
 
         # Add method to Window class.
         Window.is_terminal = lambda c: c and c.match(Application.Terminal.MATCH_RULE)
@@ -440,6 +440,12 @@ keys = [
     Key([mod], "b", lazy.spawn(Application.BROWSER), desc="Google Chrome Browser"),
     Key([mod], "d", lazy.spawn(Application.DICTIONARY), desc="Golden Dict"),
     Key([mod], "l", lazy.spawn(Application.LOCK_SCREEN), desc="Lock Screen"),
+    Key(
+        [mod],
+        "t",
+        lazy.spawn(Application.Terminal.generate_command(run_other_command="btop")),
+        desc="Top",
+    ),
     Key(
         [mod],
         "f",

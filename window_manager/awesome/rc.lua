@@ -33,11 +33,11 @@ end
 
 -- Init
 do
-	function run_once(cmd)
-		awful.spawn.with_shell("pgrep -u $USER -x " .. cmd .. "; or " .. cmd)
-	end
-
 	function auto_run(tasks, once)
+		function run_once(cmd)
+			awful.spawn.with_shell("pgrep -u $USER -x " .. cmd .. "; or " .. cmd)
+		end
+
 		local once = once or true
 		for i = 1, #tasks do
 			if once then run_once(tasks[i]) else awful.spawn.with_shell(tasks[i]) end
@@ -457,8 +457,8 @@ function brightness_change(change)
 		brightness_notify = naughty.notify {
 			title = "💡 Brightness Change",
 			text = "Background brightness "
-					.. (is_brightness_up and "up ⬆️" or "down ⬇️")
-					.. build_progress(brightness)
+				.. (is_brightness_up and "up ⬆️" or "down ⬇️")
+				.. build_progress(brightness)
 		}
 	end)
 end
@@ -471,8 +471,8 @@ function volume_change(change)
 	volume_notify = naughty.notify {
 		title = "🔈 Volume Change",
 		text = "Volume "
-				.. (change > 0 and "rise up ⬆️" or "lower ⬇️")
-				.. build_progress(volume)
+			.. (change > 0 and "rise up ⬆️" or "lower ⬇️")
+			.. build_progress(volume)
 	}
 end
 
@@ -485,6 +485,18 @@ function layout_change(change)
 			.. "The current layout is [" .. awful.layout.getname() .. "]!",
 		replaces_id = layout_notify_id
 	}.id
+end
+
+-- Change current focus window except in fullscreen mode.
+function focus_change(change)
+	if not client.focus.fullscreen then
+		awful.client.focus.byidx(change)
+	else
+		naughty.notify {
+			title = "🔁 Can't change window",
+			text = "Can't change focus window in fullscreen mode!"
+		}
+	end
 end
 
 local global_keys = awful.util.table.join(
@@ -501,8 +513,8 @@ local global_keys = awful.util.table.join(
 
 	-- Layout manipulation.
 	awful.key({ mod_key }, "j", awful.client.urgent.jumpto),
-	awful.key({ mod_key }, "Tab", function() awful.client.focus.byidx(1) end),
-	awful.key({ mod_key }, "`", function() awful.client.focus.byidx(-1) end),
+	awful.key({ mod_key }, "Tab", function() focus_change(1) end),
+	awful.key({ mod_key }, "`", function() focus_change(-1) end),
 
 	-- Change layout.
 	awful.key({ mod_key }, "space", function() layout_change(1) end),
@@ -632,7 +644,7 @@ for i = 1, #tags do
 	)
 end
 
--- Set global keys
+-- Set global keys.
 root.keys(global_keys)
 
 

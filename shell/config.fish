@@ -1,4 +1,4 @@
-# Link this file to the path '~/.config/fish/config.fish'
+# Link this file to the path '~/.config/fish/config.fish'.
 
 # This fish config need to install "Oh-My-Fish" and "bobthefish" theme:
 # $ curl -L https://get.oh-my.fish | fish
@@ -14,9 +14,9 @@
 
 # --- Define custom functions---
 
-# Set the default user
+# Set the default user.
 function set_default_user
-    # Use "set" to create a variable, use "-g" to create a global variable
+    # Use "set" to create a variable, use "-g" to create a global variable.
     set -g default_user $argv[1]
 end
 
@@ -73,14 +73,10 @@ function env_config
             # Disable Qt auto scaling, to fix VLC UI scaling problem.
             set -gx QT_AUTO_SCREEN_SCALE_FACTOR 0
 
-            # Set language environment variables.
-            set -gx LANG en_US.UTF-8
-            set -gx LC_ALL en_US.UTF-8
-
             # Set terminfo for Kitty.
             set -gx TERM xterm-256color
 
-            # Set Qt style
+            # Set Qt style.
             if [ "$XDG_SESSION_DESKTOP" = xfce ]
                 # Need to set both environment variables,
                 # only set QT_STYLE_OVERRIDE=gtk2 will cause application crash.
@@ -90,64 +86,67 @@ function env_config
 
         end
 
-        # Set the local binary path
+        # Set language environment.
+        # Use "set -x" to create a environment variable.
+        # Use "-xg" to set this environment variable as a global environment variable.
+        set -xg LANG en_US.UTF-8
+        set -xg LC_ALL en_US.UTF-8
+
+        # Set the local binary path.
         if [ -e ~/.local/bin ]
             set PATH $PATH ~/.local/bin
         end
 
-        # Set python pip package binary path
+        # Set Python pip package binary path.
         if [ -e "$pip_bin" ]
             set PATH $PATH $pip_bin
         end
 
-        # Set Haskell GHCup path
+        # Set Haskell GHCup path.
         if [ -e ~/.ghcup/bin ]
             set PATH $PATH ~/.ghcup/bin
         end
 
-        # Set the environment variable for rustup mirror (no longer need when use clash tun)
-        # Install rust stable toolchain: $ rustup toolchain install stable
+        # Set the environment variable for rustup mirror (no longer need when use clash tun).
+        # Install rust stable toolchain: $ rustup toolchain install stable.
         set -xg RUSTUP_DIST_SERVER https://mirrors.ustc.edu.cn/rust-static
 
-        # Set cargo binary path
+        # Set Rust Cargo binary path.
         if [ -e ~/.cargo/bin ]
             set PATH $PATH ~/.cargo/bin
         end
 
-        # Set language environment
-        # Use "set -x" to create a environment variable
-        # Use "-xg" to set this environment variable as a global environment variable
-        set -xg LANG en_US.UTF-8
-        set -xg LC_ALL en_US.UTF-8
-
-        # Preferred editor for local and remote sessions
+        # Preferred editor for local and remote sessions.
         if [ -n "$SSH_CONNECTION" ]
             set -xg EDITOR nano
         else
             set -xg EDITOR vim
         end
 
+        # For VSCode shell integration support.
+        string match -q "$TERM_PROGRAM" vscode and . (code --locate-shell-integration-path fish)
+
     end
 
 end
 
-# Set the theme config
+# Set the theme configuration.
 function theme_config
 
-    # Set the theme, only in Linux GUI and macOS
+    # Set the theme, only in Linux GUI and macOS.
     if [ -n "$DISPLAY" -o (uname) = Darwin ]
         omf theme bobthefish
-        # Set theme color for bobthefish
-        # Override the default greeting at ~/.config/fish/functions/fish_greeting.fish or refine function
+        # Set theme color for bobthefish.
+        # Override the default greeting at ~/.config/fish/functions/fish_greeting.fish or refine function.
         set -g theme_color_scheme dark
         set -g theme_date_format "+%b/%d/%Y [%a] %R:%S"
-    else # Use default in Non-GUI environment
+    else # Use default in Non-GUI environment.
         omf theme default
     end
 
 end
 
-# Call function if oh-my-fish is installed
+# Call function if oh-my-fish is installed.
 if [ -n "$OMF_PATH" ]
     set_default_user dainslef
     env_config
@@ -158,7 +157,7 @@ end
 
 # --- Override functions  ---
 
-# In fish shell, function which named with "fish_greeting" will override default greeting
+# In fish shell, function which named with "fish_greeting" will override default greeting.
 function fish_greeting
 
     if [ (whoami) = "$default_user" ]
@@ -169,9 +168,9 @@ function fish_greeting
         end
     end
 
-    # Print welcome message in macOS or Linux GUI
+    # Print welcome message in macOS or Linux GUI.
     if [ -n "$show_os_version" ]
-        set_color $fish_color_autosuggestion # Set greet color
+        set_color $fish_color_autosuggestion # Set greet color.
         echo (uptime)
         echo " $show_os_version"
         echo --- Welcome, (whoami)! Today is (date +"%B %d %Y, %A"). ---
@@ -191,8 +190,8 @@ function fish_greeting
             case 7
                 echo "--- 周りの人や時代に流されず、自分らしく生きるだけでいい。 ---"
         end
-        echo "" # Add a empty new line
-        set_color $fish_color_normal # Reset color
+        echo "" # Add a empty new line.
+        set_color $fish_color_normal # Reset the color.
     end
 
 end
@@ -201,8 +200,8 @@ end
 
 # --- Clean the environment  ---
 
-# Delete defined functions and variables
-# Use "-e" means to erase a function/variable
+# Delete defined functions and variables.
+# Use "-e" means to erase a function/variable.
 functions -e set_default_user
 functions -e env_config
 functions -e theme_config

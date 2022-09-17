@@ -1,8 +1,8 @@
-# Qtile configuration
+# The Qtile window manager configuration.
 # Link this file to the path ~/.config/qtile/config.py.
 # Qtile will log in the path ~/.local/share/qtile/qtile.log.
 
-# Import library
+# Import librarys.
 from libqtile import bar, layout, widget, hook
 from libqtile.config import Click, Drag, Group, Key, Match, Screen, ScratchPad, DropDown
 from libqtile.backend.base import Window
@@ -69,7 +69,7 @@ run_once = lambda cmd: os.system(f"fish -c 'pgrep -u $USER -x {cmd}; or {cmd} &'
 [os.system(cmd) for cmd in normal_cmds]
 
 
-# Notification Types
+# Define the Notification Types.
 class NotificationType(Enum):
     CHANGE_VOLUME = 1000
     CHANGE_BRIGHTNESS = auto()
@@ -77,7 +77,7 @@ class NotificationType(Enum):
     TAKE_SCREENSHOT = auto()
 
 
-# Send the notification
+# Send the notification.
 def send_notification(
     title: str,
     content: str,
@@ -89,16 +89,16 @@ def send_notification(
     os.system(f"dunstify '{title}' '{content}' {replace} {percent}")
 
 
-# Get command ouput
+# Get command ouput.
 def get_command_output(command: str) -> str:
     return subprocess.check_output(
         command,
         shell=True,
         text=True,
-    ).strip()  # Some reponse content contains '\n', clear special charactor
+    ).strip()  # Some reponse content contains '\n', clear special charactor.
 
 
-# Color settings
+# Color settings.
 class Color:
     CLOCK = "#00FFFF"
     BAR = "#001122"
@@ -109,7 +109,7 @@ class Color:
         FLOATING_FOCUS = "#667788"
 
 
-# Application settings
+# Application settings.
 class Application:
     MAIL = "thunderbird"
     BROWSER = "google-chrome-stable"
@@ -149,21 +149,21 @@ class Application:
             return f"{Application.Terminal.COMMAND} {backgroud} {other_command}"
 
 
-# Sound control settings
+# Sound control settings.
 class VolumeControl:
     # Check if system enabled PulseAudio.
     IS_PULSE_AUDIO_ENABLED = os.system("pacmd stat") == 0
     logger.warning(f"IS_PULSE_AUDIO_ENABLED: {IS_PULSE_AUDIO_ENABLED}")
 
-    # Set up the commands
+    # Set up the commands.
     if IS_PULSE_AUDIO_ENABLED:
-        # PulseAudio commands
+        # PulseAudio commands.
         SINK = int(
             # Get SINK device index, the current used sound device will have '*' mark.
             get_command_output("pacmd list-sinks | grep -Po '(?<=\\* index:) \\d+'")
         )
         GET_VOLUME = (
-            # Get volume (when a computer has multi sinks, get the output from the device which has '*' mark)
+            # Get volume (when a computer has multi sinks, get the output from the device which has '*' mark).
             f"pacmd list-sinks | grep -Po '(?<=volume: front-left: \\d{{5}} /) +\\d+(?=% /)' | sed -n {SINK + 1}p"
         )
         CHECK_MUTE = (
@@ -173,7 +173,7 @@ class VolumeControl:
         # "pacmd" doesn't have "toggle" subcommand, so need use "pactl" to toggle mute.
         MUTE_TOGGLE = f"pactl set-sink-mute {SINK} toggle"
     else:
-        # ALSA commands
+        # ALSA commands.
         GET_VOLUME = "amixer get Master | grep -Po '\d+(?=%)'"
         CHECK_MUTE = "amixer get Master | grep -Po '\[(o|n|f)+\]'"
         MUTE_STATUS = "[off]"
@@ -223,7 +223,7 @@ class VolumeControl:
                     "100"
                     if VolumeControl.__get_volume() + volume > 100
                     else f"{op}{volume}"
-                )  # Prevent the volume break 100% limit
+                )  # Prevent the volume break 100% limit.
             else:
                 change = volume
                 op = ""
@@ -276,21 +276,21 @@ def change_layout(qtile: Qtile, prev: bool = False):
     )
 
 
-# Custom functions for key bindings
-# Don't use lazy api in lazy function
+# Custom functions for key bindings.
+# Don't use lazy api in lazy function.
 @lazy.function
 def open_terminal_by_need(qtile: Qtile):
     next_terminal = None
-    # First try to get terminal window from terminal group
+    # First try to get terminal window from terminal group.
     for w in qtile.groups_map.get(Application.Terminal.GROUP_NAME).windows:
         if w.is_terminal():
             next_terminal = w
     if next_terminal:
-        # Move terminal window from terminal group to current group
+        # Move terminal window from terminal group to current group.
         next_terminal.togroup(qtile.current_group.name, switch_group=True)
     else:
         first_other_terminal, after_current = None, False
-        # If no terminal window in terminal group, then try to find window in current group
+        # If no terminal window in terminal group, then try to find window in current group.
         for w in qtile.current_group.windows:
             if w.is_terminal():
                 if after_current:
@@ -298,14 +298,14 @@ def open_terminal_by_need(qtile: Qtile):
                     break
                 if w != qtile.current_window:
                     if not first_other_terminal:
-                        # Backup the first other terminal window
+                        # Backup the first other terminal window.
                         first_other_terminal = w
                 else:
-                    # Mark if the index is after current terminal window
+                    # Mark if the index is after current terminal window.
                     after_current = True
         if next_terminal or first_other_terminal:
             # Should use Group API to change the window focus,
-            # change focus with Window API won't change window border color
+            # change focus with Window API won't change window border color.
             qtile.current_group.focus(next_terminal or first_other_terminal, True)
         elif not qtile.current_window or not qtile.current_window.is_terminal():
             os.system(Application.Terminal.generate_command(run_background=True))
@@ -344,7 +344,7 @@ def hide_floating_terminals(qtile: Qtile):
 def next_window(qtile: Qtile):
     w = qtile.current_window
     if w and not w.fullscreen:
-        # Only switch window when the current window isn't fullscreen
+        # Only switch window when the current window isn't fullscreen.
         qtile.current_group.cmd_next_window()
         # Skip minimized windows when switch windows.
         qtile.next_normal_window()  # Custom method.
@@ -369,7 +369,7 @@ def restore_minimized_window(qtile: Qtile):
 
 
 keys = [
-    # Move focus by arrow keys
+    # Move focus by arrow keys.
     Key([mod], "Left", lazy.layout.left(), desc="Move focus to left"),
     Key([mod], "Right", lazy.layout.right(), desc="Move focus to right"),
     Key([mod], "Up", lazy.layout.up(), desc="Move focus up"),
@@ -391,7 +391,7 @@ keys = [
     Key(
         [mod, "control"], "Down", lazy.layout.shuffle_down(), desc="Move window to down"
     ),
-    # Layout operation
+    # Layout operations.
     Key([mod], "n", lazy.layout.normalize(), desc="Reset all window sizes"),
     Key([mod], "space", change_layout, desc="Toggle between layouts"),
     Key(
@@ -400,7 +400,7 @@ keys = [
         change_layout(True),
         desc="Toggle between layouts",
     ),
-    # Window operation
+    # Window operations.
     Key([mod], "w", lazy.window.kill(), desc="Kill focused window"),
     Key(
         [mod, "control"], "b", restore_minimized_window, desc="Restore minimized window"
@@ -420,8 +420,8 @@ keys = [
     Key(
         [mod, "control"],
         "f",
-        # Qtile built-in floating toggle function with xcompmgr will cause window freeze
-        # Use 'picom' instead
+        # Qtile built-in floating toggle function with xcompmgr will cause window freeze,
+        # use 'picom' instead.
         lazy.window.toggle_floating(),
         desc="Floating the focused window",
     ),
@@ -431,11 +431,11 @@ keys = [
         hide_floating_terminals,
         desc="Hide all floating windows",
     ),
-    # System operation
+    # System operation.
     Key([mod, "control"], "r", lazy.reload_config(), desc="Reload the config"),
     Key([mod, "control"], "q", lazy.shutdown(), desc="Shutdown Qtile"),
     Key([mod], "r", lazy.spawncmd(), desc="Spawn a command using a procodmpt widget"),
-    # Open custom apps
+    # Open custom applications.
     Key([mod], "m", lazy.spawn(Application.MAIL), desc="Mail"),
     Key([mod], "b", lazy.spawn(Application.BROWSER), desc="Google Chrome Browser"),
     Key([mod], "d", lazy.spawn(Application.DICTIONARY), desc="Golden Dict"),
@@ -457,24 +457,24 @@ keys = [
         desc="Ranger file manager",
     ),
     Key(
-        [mod],  # Open a existed terminal or create a new terminal
+        [mod],  # Open a existed terminal or create a new terminal.
         "Return",
         open_terminal_by_need,
         desc="Launch terminal",
     ),
     Key(
-        [mod, "control"],  # Launch a new terminal
+        [mod, "control"],  # Launch a new terminal.
         "Return",
         lazy.spawn(Application.Terminal.generate_command()),
         desc="Launch terminal",
     ),
     Key(
-        [mod],  # Clear all notifications
+        [mod],  # Clear all notifications.
         "BackSpace",
         lazy.spawn("dunstctl close-all"),
         desc="Close all notifications",
     ),
-    # Screenshot
+    # Screenshot.
     Key(
         [],
         "Print",
@@ -487,7 +487,7 @@ keys = [
         lazy.spawn("flameshot gui"),
         desc="Take screenshot for current window",
     ),
-    # Volume keybings
+    # Volume keybings.
     Key(
         [],
         "XF86AudioMute",
@@ -508,7 +508,7 @@ keys = [
             ([mod], "Lower", -1),
         ]
     ],
-    # Brightness key bindings
+    # Brightness key bindings.
     *[
         Key(
             m,
@@ -527,7 +527,7 @@ keys = [
 
 # Add groups.
 groups = [Group(i) for i in f"➊➋➌➍"]
-# Set up group keys
+# Set up group keys.
 for i in range(len(groups)):
     group_key, group_name = str(i + 1), groups[i].name
     keys.extend(
@@ -553,8 +553,8 @@ groups.extend(
         Group(Application.Terminal.GROUP_NAME),
         ScratchPad(
             "Scratchpad",
-            # define a drop down terminal.
-            # it is placed in the upper third of screen by default.
+            # Define a drop down terminal.
+            # It placed in the upper third of screen by default.
             [DropDown("DropDown", Application.Terminal.generate_command(), height=0.5)],
         ),
     ]
@@ -563,17 +563,21 @@ keys.extend([Key([mod], "s", lazy.group["Scratchpad"].dropdown_toggle("DropDown"
 
 
 # Get system current DPI, than caculate the scaling factor.
-standard_dpi, current_dpi = 96, int(
+current_dpi = int(
     get_command_output("grep -Po '(?<=DPI set to \\()\\d+' /var/log/X*.0.log")
 )
 logger.warn(f"Current DPI is {current_dpi}")
 
 # Caculate the border and font size with scaling factor.
-scaling_factor = current_dpi / standard_dpi
-icon_size, icon_padding = int(20 * scaling_factor), int(5 * scaling_factor)
-font_size, font_padding = int(12 * scaling_factor), int(2 * scaling_factor)
-bar_height = int(25 * scaling_factor)
-margin, border_width = int(5 * scaling_factor), int(4 * scaling_factor)
+def scaling_size(origin_size: int) -> int:
+    standard_dpi = 96
+    scaling_factor = current_dpi / standard_dpi
+    return int(origin_size * scaling_factor)
+
+
+icon_size, icon_padding = scaling_size(20), scaling_size(5)
+font_size, font_padding = scaling_size(12), scaling_size(2)
+bar_height, margin, border_width = scaling_size(25), scaling_size(5), scaling_size(4)
 
 # Set widget default config and screen widgets.
 widget_defaults = dict(
@@ -595,7 +599,7 @@ screens = [
                 widget.Battery(
                     format="🔋 {percent:2.0%}({char})",
                     update_interval=10,
-                    show_short_text=False,  # Make battery plugin show full format text in Full/Empty status
+                    show_short_text=False,  # Make battery plugin show full format text in Full/Empty status.
                 ),
                 widget.GenPollText(
                     func=VolumeControl.get_volume_text, update_interval=1
@@ -609,7 +613,7 @@ screens = [
             margin=[0, 0, margin, 0],
             border_color=Color.BAR,
             background=Color.BAR,
-            # Set up bar inner content gap
+            # Set up bar inner content gap.
             border_width=[margin, margin, margin, margin],
         ),
         bottom=bar.Gap(margin),
@@ -634,7 +638,7 @@ floating_layout = layout.Floating(
     float_rules=[
         # Run the utility of `xprop` to see the wm class and name of an X client.
         *layout.Floating.default_float_rules,
-        # Custom rules
+        # Custom rules.
         Application.Terminal.MATCH_RULE,
     ],
 )
@@ -656,11 +660,11 @@ mouse = [
     Click([mod], "Button3", lazy.window.bring_to_front()),
 ]
 
-# Hooks
+# Hooks.
 @hook.subscribe.client_focus
 def client_focus(c: Window):
     if c.floating:
-        c.cmd_bring_to_front()  # Bring the floating focus window to front
+        c.cmd_bring_to_front()  # Bring the floating focus window to front.
     else:
         terminals = [w for w in c.group.windows if w.floating and w.is_terminal()]
         terminals.reverse()  # Reverse terminal windows' order, then move to terminal group.

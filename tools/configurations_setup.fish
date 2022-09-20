@@ -1,17 +1,23 @@
-# Get base repo path by plantform
+# Get base repo path by plantform.
 if [ (uname) = Linux ]
     set HOME_PATH /home/dainslef
 else if [ (uname) = Darwin ]
     set HOME_PATH /Users/dainslef
 end
 
-# Set repo path
+# Set the repo base path.
 set REPO_PATH $HOME_PATH/Public/Syncthing/Work/Codes/GitRepo/ProfileOfUnix
 
 # Git configurations
 echo -n "Set up git config ... "
 ln -sf $REPO_PATH/.gitconfig ~/.gitconfig
 ln -sf $REPO_PATH/.gitignore ~/.gitignore
+echo OK
+
+# SSH configurations.
+echo -n "Set up SSH config ... "
+mkdir ~/.ssh
+ln -sf $REPO_PATH/ssh_config ~/.ssh/config
 echo OK
 
 # VIM
@@ -97,9 +103,10 @@ end
 # Oh ny fish
 echo -ne "Set up Fish shell ... "
 if ! [ -e ~/.config/omf ] # Check if OMF has areadly downloaded.
-    curl -L https://get.oh-my.fish | fish
+    curl -L https://get.oh-my.fish | nohup fish >/dev/null
+    source .local/share/omf/init.fish
+    omf install bobthefish
 end
-omf install bobthefish
 ln -sf $REPO_PATH/shell/config.fish ~/.config/fish/config.fish
 echo OK
 
@@ -109,7 +116,8 @@ if [ (uname) = Linux ]
     set os_name (grep -Po '(?<=NAME=\\")\\w+ \\w+' /etc/os-release | tail -n 1)
     if [ $os_name = "Arch Linux" ]
         echo "Current OS is Arch Linux, set up addition configuration ..."
-        ln -sf $REPO_PATH/xorg/fonts.xml ~/.fonts.conf # Fonts configurations.
+        mkdir -p ~/.config/fontconfig
+        ln -sf $REPO_PATH/xorg/fonts.xml ~/.config/fontconfig/fonts.conf # Fonts configurations.
 
         # Create systemd user service dir if not exist.
         mkdir -p ~/.config/systemd/user/

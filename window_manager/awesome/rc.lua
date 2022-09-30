@@ -294,7 +294,7 @@ local net_widget, battery_widget, volume_widget =
 -- These variables need to place at global scope, some other function need these variables.
 local widget_refresh_span = 1 -- Time span for refresh widget (seconds).
 -- Get SINK device index, the current used sound device will have '*'' mark.
-local volume_device_number = 1 + tonumber(get_command_output("pacmd list-sinks | grep -Po '(?<=\\* index:) \\d+'"))
+local volume_device_index
 
 do
 	-- Net state
@@ -319,12 +319,18 @@ do
 	end, widget_refresh_span, battery_name)
 
 	-- Volume state
-	-- Register volume widget.
-	vicious.register(volume_widget, vicious.contrib.pulse, function(_, args)
-		local percent, status = args[1], args[2]
-		local emoji = percent >= 60 and "🔊" or percent >= 20 and "🔉" or percent > 0 and "🔈" or "🔇"
-		return emoji ..percent .. "%(" .. status .. ") "
-	end, widget_refresh_span, volume_device_number)
+	-- Use async function to find sound device which is currently in use.
+	awful.spawn.easy_async_with_shell("pacmd list-sinks | grep -Po '(?<=\\* index:) \\d+'", function(volume_device, _, _, _)
+		-- Set up volum device index.
+		volume_device_index = 1 + tonumber(volume_device)
+		-- Register volume widget.
+		vicious.register(volume_widget, vicious.contrib.pulse, function(_, args)
+			local percent, status = args[1], args[2]
+			local emoji = percent >= 60 and "🔊" or percent >= 20 and "🔉" or percent > 0 and "🔈" or "🔇"
+			return emoji ..percent .. "%(" .. status .. ") "
+		end, widget_refresh_span, volume_device_index)
+	end)
+
 end
 
 
@@ -442,11 +448,11 @@ function brightness_change(change)
 	local is_brightness_up = change > 0
 	local prefix = is_brightness_up and "+" or ""
 	local suffix = is_brightness_up and "" or "-"
-	local output = os.execute("brightnessctl set " .. prefix .. math.abs(change) .. "%" .. suffix)
-	if output == nil then
+	local output = awful.spawn("brightnessctl set " .. prefix .. math.abs(change) .. "%" .. suffix)
+	if string.match(output, "Failed") then
 		naughty.notify {
 			title = "Tool not found!",
-			text = 'Change brightness need tool "brightnessctl".\nPlease install this tool.'
+			text = output
 		}
 	end
 	-- Execute async brightness config (need run command with shell).
@@ -465,8 +471,8 @@ end
 
 -- Volume change function
 function volume_change(change)
-	vicious.contrib.pulse.add(change, volume_device_number)
-	local volume = vicious.contrib.pulse(widget_refresh_span, volume_device_number)[1]
+	vicious.contrib.pulse.add(change, volume_device_index)
+	local volume = vicious.contrib.pulse(widget_refresh_span, volume_device_index)[1]
 	naughty.destroy(volume_notify)
 	volume_notify = naughty.notify {
 		title = "🔈 Volume Change",
@@ -539,8 +545,8 @@ local global_keys = awful.util.table.join(
 
 	-- Volume key bindings.
 	awful.key({}, "XF86AudioMute", function()
-		vicious.contrib.pulse.toggle(volume_device_number)
-		local volume = vicious.contrib.pulse(widget_refresh_span, volume_device_number)[1]
+		vicious.contrib.pulse.toggle(volume_device_index)
+		local volume = vicious.contrib.pulse(widget_refresh_span, volume_device_index)[1]
 		naughty.destroy(volume_notify_id)
 		volume_notify_id = naughty.notify {
 			title = "🔈 Volume changed",

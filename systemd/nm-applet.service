@@ -2,6 +2,7 @@
 
 [Unit]
 Description=Network Manager Applet
+After=graphical-session.target
 
 [Service]
 ExecStart=/usr/bin/nm-applet

@@ -2,13 +2,16 @@
 
 [Unit]
 Description=Fcitx5
+After=graphical-session.target
 
 [Service]
+ExecStartPre=/bin/sleep 5
 Type=exec
-ExecStartPre=/bin/sleep 2
 ExecStart=/usr/bin/fcitx5
 Restart=always
-RestartSec=2
+RestartSec=3
+KillSignal=SIGKILL
+KillMode=process
 
 [Install]
 WantedBy=session.slice

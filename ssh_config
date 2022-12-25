@@ -2,9 +2,9 @@
 Host *
 	# Skip SSH key check.
 	StrictHostKeyChecking no
-	# Allow the old version ssh-rsa algorithm.
-	HostkeyAlgorithms=+ssh-rsa
-	PubkeyAcceptedAlgorithms=+ssh-rsa
-	KexAlgorithms=+diffie-hellman-group1-sha1
 	# Disable fingerprint to known_hosts.
-	UserKnownHostsFile=/dev/null
+	UserKnownHostsFile /dev/null
+	# Allow the old version ssh-rsa algorithm.
+	HostkeyAlgorithms +ssh-rsa
+	PubkeyAcceptedAlgorithms +ssh-rsa
+	KexAlgorithms +diffie-hellman-group1-sha1

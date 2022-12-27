@@ -256,10 +256,14 @@ else
 	let g:syntastic_warning_symbol = "⚠" " 設置語法警告的提示
 
 	" vim-arline配置
-	let g:airline_theme = 'sol' " 設置主題
+	let g:airline_theme = 'powerlineish' " 設置主題
 	let g:airline_powerline_fonts = 1 " 使用powerline字體
 
 	" 主題設置
-	colorscheme hybrid_reverse
+	colorschem molokai
 	highlight Normal ctermbg=None " 強制設置主題背景透明
+
+	" 白色主題
+	" let g:airline_theme = 'sol'
+	" colorscheme hybrid_reverse
 endif

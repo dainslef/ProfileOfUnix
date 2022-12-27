@@ -136,9 +136,9 @@ function theme_config
     # Set the theme, only in Linux GUI and macOS.
     if [ -n "$DISPLAY" -o (uname) = Darwin ]
         omf theme bobthefish
-        # Set theme color for bobthefish.
+        # Set theme color for bobthefish, more theme configs see https://github.com/oh-my-fish/theme-bobthefish.
         # Override the default greeting at ~/.config/fish/functions/fish_greeting.fish or refine function.
-        set -g theme_color_scheme dark
+        set -g theme_color_scheme nord # light
         set -g theme_date_format "+%b/%d/%Y [%a] %R:%S"
     else # Use default in Non-GUI environment.
         omf theme default

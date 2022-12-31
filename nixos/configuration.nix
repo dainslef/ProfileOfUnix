@@ -39,7 +39,11 @@
       httpsProxy = "http://127.0.0.1:9999";
     };
     # NixOS enabled firewall by default, so need to allow some ports.
+    firewall.allowedUDPPorts = [
+      8964 # For custom use.
+    ];
     firewall.allowedTCPPorts = [
+      8964 # For custom use.
       9999 # For Clash service.
       8384 # For Syncthing WEB UI.
       22000 # For Syncthing data transmission.
@@ -107,10 +111,11 @@
     # Base CLI tools.
     file
     tree
+    btop
     screen
     usbutils
     pciutils
-    btop
+    exfatprogs
     # Service and command line tools.
     nmap
     openssh
@@ -209,6 +214,7 @@
 
   nixpkgs.config = {
     allowUnfree = true; # Allow some unfree software (like VSCode and Chrome).
+    allowInsecurePredicate = pkg: true; # Allow all insecure packages (Who care insecure?).
     packageOverrides = pkgs: {
       # Add NUR repo.
       nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
@@ -224,8 +230,8 @@
     # sudo nix-channel --add https://mirrors.ustc.edu.cn/nix-channels/nixos-unstable
     substituters = [
       # Binary Cache Mirrors.
-      "https://mirrors.ustc.edu.cn/nix-channels/store"
       "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
+      "https://mirrors.ustc.edu.cn/nix-channels/store"
     ];
   };
 }

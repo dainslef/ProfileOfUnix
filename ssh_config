@@ -1,5 +1,7 @@
 # Link this file to ~/.ssh/config.
 Host *
+	# Setup the default login username.
+	User root
 	# Skip SSH key check.
 	StrictHostKeyChecking no
 	# Disable fingerprint to known_hosts.

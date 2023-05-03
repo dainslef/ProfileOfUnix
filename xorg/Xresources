@@ -1,0 +1,8 @@
+! Link this file to /etc/X11/Xresources or ~/.Xresources
+
+! This DPI configuration need xorg-xrdb.
+! Default DPI is 96, change DPI value like 120(25%), 144(50%), etc.
+Xft.dpi: 120
+
+! Default cursor size is 16, change cursor size when DPI is lagger than default value (96).
+Xcursor.size: 32

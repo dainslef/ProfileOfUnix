@@ -45,7 +45,7 @@ do
 	end
 
 	auto_run({
-		"systemctl --user start pulseaudio", -- In NixOS PulseAudio should restart during window manager startup, otherwise the PulseAudio plugin won't work.
+		"systemctl --user restart fcitx5", -- Restart fcitx service to avoid some fcitx crash.
 		"xset +dpms", -- Use the power manager.
 		"xset dpms 600 900 1800", -- Set the power manager suspend timeout(15min), screen off timeout(30min).
 		"xset s 600" -- Set screensaver timeout to 10 mintues.
@@ -318,19 +318,8 @@ do
 		return "🔋" .. percent .. "%(" .. status .. ") "
 	end, widget_refresh_span, battery_name)
 
-	-- Volume state
-	-- Use async function to find sound device which is currently in use.
-	awful.spawn.easy_async_with_shell("pacmd list-sinks | grep -Po '(?<=\\* index:) \\d+'", function(volume_device, _, _, _)
-		-- Set up volum device index.
-		volume_device_index = 1 + tonumber(volume_device)
-		-- Register volume widget.
-		vicious.register(volume_widget, vicious.contrib.pulse, function(_, args)
-			local percent, status = args[1], args[2]
-			local emoji = percent >= 60 and "🔊" or percent >= 20 and "🔉" or percent > 0 and "🔈" or "🔇"
-			return emoji ..percent .. "%(" .. status .. ") "
-		end, widget_refresh_span, volume_device_index)
-	end)
-
+	-- Volume with ALSA
+	vicious.register(volume_widget, vicious.widgets.volume, "$2$1% ", 1, "Master")
 end
 
 
@@ -448,16 +437,20 @@ function brightness_change(change)
 	local is_brightness_up = change > 0
 	local prefix = is_brightness_up and "+" or ""
 	local suffix = is_brightness_up and "" or "-"
-	local output = awful.spawn("brightnessctl set " .. prefix .. math.abs(change) .. "%" .. suffix)
+	local change_brightness_command = "brightnessctl set " .. prefix .. math.abs(change) .. "%" .. suffix
+	local output = awful.spawn(change_brightness_command)
+
+	-- Check if brightnessctl has been installed.
 	if string.match(output, "Failed") then
 		naughty.notify {
 			title = "Tool not found!",
 			text = output
 		}
 	end
+
 	-- Execute async brightness config (need run command with shell).
-	awful.spawn.easy_async_with_shell("brightnessctl | grep -Po '\\d+(?=\\%\\))'",
-	function(brightness, _, _, _)
+	local get_brightness_command = "brightnessctl | grep -Po '\\d+(?=\\%\\))'"
+	awful.spawn.easy_async_with_shell(get_brightness_command, function(brightness, _, _, _)
 		-- Use 'destroy' instead of 'replaces_id' (replaces_id api sometimes doesn't take effects).
 		naughty.destroy(brightness_notify)
 		brightness_notify = naughty.notify {
@@ -471,15 +464,19 @@ end
 
 -- Volume change function
 function volume_change(change)
-	vicious.contrib.pulse.add(change, volume_device_index)
-	local volume = vicious.contrib.pulse(widget_refresh_span, volume_device_index)[1]
-	naughty.destroy(volume_notify)
-	volume_notify = naughty.notify {
-		title = "🔈 Volume Change",
-		text = "Volume "
-			.. (change > 0 and "rise up ⬆️" or "lower ⬇️")
-			.. build_progress(volume)
-	}
+	-- Use amixer to get ALSA volume (use "-M" argument to get natural volume value).
+	local alsa_get_volume_command = "amixer -M get Master | grep -Po '\\d+(?=%\\])'"
+	awful.spawn.easy_async_with_shell(alsa_get_volume_command, function(volume)
+		volume = math.floor(volume + change)
+		awful.spawn("amixer -M set Master " .. volume .. "%")
+		naughty.destroy(volume_notify)
+		volume_notify = naughty.notify {
+			title = "🔈 Volume Change",
+			text = "Volume "
+				.. (change > 0 and "rise up ⬆️" or "lower ⬇️")
+				.. build_progress(volume)
+		}
+	end)
 end
 
 -- Layout change function
@@ -495,18 +492,24 @@ end
 
 -- Change current focus window except in fullscreen mode.
 function focus_change(change)
-	if not client.focus.fullscreen then
-		awful.client.focus.byidx(change)
+	if client.focus then
+		if client.focus.fullscreen then
+			naughty.notify {
+				title = "🔁 Can't change window",
+				text = "Can't change focus window in fullscreen mode!"
+			}
+		else
+			awful.client.focus.byidx(change)
+		end
 	else
 		naughty.notify {
-			title = "🔁 Can't change window",
-			text = "Can't change focus window in fullscreen mode!"
+			title = "🔁 Now active window",
+			text = "No active window currently!"
 		}
 	end
 end
 
 local global_keys = awful.util.table.join(
-
 	-- Window navigation.
 	awful.key({ mod_key }, "Left", function() awful.client.focus.bydirection("left") end),
 	awful.key({ mod_key }, "Right", function() awful.client.focus.bydirection("right") end),
@@ -545,15 +548,17 @@ local global_keys = awful.util.table.join(
 
 	-- Volume key bindings.
 	awful.key({}, "XF86AudioMute", function()
-		vicious.contrib.pulse.toggle(volume_device_index)
-		local volume = vicious.contrib.pulse(widget_refresh_span, volume_device_index)[1]
-		naughty.destroy(volume_notify_id)
-		volume_notify_id = naughty.notify {
-			title = "🔈 Volume changed",
-			text = "Sound state has been changed ...\n"
-					.. "Current sound state is ["
-					.. (volume > 0 and "🔊 ON" or "🔇 OFF") .. "] !"
-		}
+		local alsa_get_volume_command = "amixer set Master toggle"
+		awful.spawn.easy_async_with_shell(alsa_get_volume_command, function(stdout)
+			local volume, state = string.match(stdout, "%[([%d]+)%%%].*%[([%l]*)%]")
+			local state = state == "on" and "🔊ON" or "🔇OFF"
+			naughty.destroy(volume_notify_id)
+			volume_notify_id = naughty.notify {
+				title = "🔈 Volume changed",
+				text = "Sound state has been changed ...\n"
+						.. "Current sound state is [" .. state .. "]!"
+			}
+		end)
 	end),
 	awful.key({}, "XF86AudioRaiseVolume", function() volume_change(5) end),
 	awful.key({}, "XF86AudioLowerVolume", function() volume_change(-5) end),

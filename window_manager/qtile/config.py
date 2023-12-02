@@ -151,33 +151,11 @@ class Application:
 
 # Sound control settings.
 class VolumeControl:
-    # Check if system enabled PulseAudio.
-    IS_PULSE_AUDIO_ENABLED = os.system("pacmd stat") == 0
-    logger.warning(f"IS_PULSE_AUDIO_ENABLED: {IS_PULSE_AUDIO_ENABLED}")
-
-    # Set up the commands.
-    if IS_PULSE_AUDIO_ENABLED:
-        # PulseAudio commands.
-        SINK = int(
-            # Get SINK device index, the current used sound device will have '*' mark.
-            get_command_output("pacmd list-sinks | grep -Po '(?<=\\* index:) \\d+'")
-        )
-        GET_VOLUME = (
-            # Get volume (when a computer has multi sinks, get the output from the device which has '*' mark).
-            f"pacmd list-sinks | grep -Po '(?<=volume: front-left: \\d{{5}} /) +\\d+(?=% /)' | sed -n {SINK + 1}p"
-        )
-        CHECK_MUTE = (
-            f"pacmd list-sinks | grep -Po '(?<=muted: )\\S+' | sed -n {SINK + 1}p"
-        )
-        MUTE_STATUS = "yes"
-        # "pacmd" doesn't have "toggle" subcommand, so need use "pactl" to toggle mute.
-        MUTE_TOGGLE = f"pactl set-sink-mute {SINK} toggle"
-    else:
-        # ALSA commands.
-        GET_VOLUME = "amixer get Master | grep -Po '\d+(?=%)'"
-        CHECK_MUTE = "amixer get Master | grep -Po '\[(o|n|f)+\]'"
-        MUTE_STATUS = "[off]"
-        MUTE_TOGGLE = "amixer set Master toggle"
+    # ALSA commands.
+    GET_VOLUME = "amixer get -M Master | grep -Po '\d+(?=%)'"
+    CHECK_MUTE = "amixer get -M Master | grep -Po '\[(o|n|f)+\]'"
+    MUTE_STATUS = "[off]"
+    MUTE_TOGGLE = "amixer set Master toggle"
 
     def __get_volume() -> int:
         return int(get_command_output(VolumeControl.GET_VOLUME))
@@ -217,19 +195,7 @@ class VolumeControl:
     @lazy.function
     def change_volume(_, volume: int):
         op, volume_change = ("+", "rise up ⬆️") if volume > 0 else ("-", "lower ⬇️")
-        if VolumeControl.IS_PULSE_AUDIO_ENABLED:
-            if volume > 0:
-                change = (
-                    "100"
-                    if VolumeControl.__get_volume() + volume > 100
-                    else f"{op}{volume}"
-                )  # Prevent the volume break 100% limit.
-            else:
-                change = volume
-                op = ""
-            os.system(f"pactl set-sink-volume {VolumeControl.SINK} {change}%")
-        else:
-            os.system(f"amixer set Master {abs(volume)}%{op}")
+        os.system(f"amixer set -M Master {abs(volume)}%{op}")
         new_volume = VolumeControl.__get_volume()
         send_notification(
             "🔈 Volume Changed",
@@ -595,7 +561,7 @@ screens = [
                 widget.Prompt(),
                 widget.WindowCount(text_format="⎛{num}⎠"),
                 widget.WindowTabs(),
-                widget.Net(format="🌐 {down}"),
+                widget.Net(format="🌐 {down:.2f}{down_suffix}"),
                 widget.Battery(
                     format="🔋 {percent:2.0%}({char})",
                     update_interval=10,

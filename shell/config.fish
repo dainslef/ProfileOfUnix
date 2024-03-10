@@ -73,9 +73,6 @@ function env_config
             # Disable Qt auto scaling, to fix VLC UI scaling problem.
             set -gx QT_AUTO_SCREEN_SCALE_FACTOR 0
 
-            # Set terminfo for Kitty.
-            set -gx TERM xterm-256color
-
             # Set Qt style.
             if [ "$XDG_SESSION_DESKTOP" = xfce ]
                 # Need to set both environment variables,
@@ -92,26 +89,31 @@ function env_config
         set -xg LANG en_US.UTF-8
         set -xg LC_ALL en_US.UTF-8
 
-        # Set the local binary path.
+        # Add the local binary path.
         if [ -e ~/.local/bin ]
             set PATH $PATH ~/.local/bin
         end
 
-        # Set Python pip package binary path.
+        # Add Python pip package binary path.
         if [ -e "$pip_bin" ]
             set PATH $PATH $pip_bin
         end
 
-        # Set Haskell GHCup path.
+        # Add Haskell GHCup binary path.
         if [ -e ~/.ghcup/bin ]
             set PATH $PATH ~/.ghcup/bin
+        end
+
+        # Add DotNet Core tools path.
+        if [ -e ~/.dotnet/tools ]
+            set PATH $PATH ~/.dotnet/tools
         end
 
         # Set the environment variable for rustup mirror (no longer need when use clash tun).
         # Install rust stable toolchain: $ rustup toolchain install stable.
         set -xg RUSTUP_DIST_SERVER https://mirrors.ustc.edu.cn/rust-static
 
-        # Set Rust Cargo binary path.
+        # Add Rust Cargo binary path.
         if [ -e ~/.cargo/bin ]
             set PATH $PATH ~/.cargo/bin
         end
@@ -121,6 +123,11 @@ function env_config
             set -xg EDITOR nano
         else
             set -xg EDITOR vim
+        end
+
+        # Set terminfo when using Kitty terminal.
+        if [ "$TERM" = xterm-kitty ]
+            set -gx TERM xterm-256color
         end
 
         # For VSCode shell integration support.

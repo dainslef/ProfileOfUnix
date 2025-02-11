@@ -73,12 +73,16 @@ in
 
   # Set up some programs' feature.
   programs = {
-    vim.defaultEditor = true; # Set up default editor.
     fish.enable = true; # Enable fish feature will set up environment shells (/etc/shells) for Account Service.
     virt-manager.enable = true; # Use virtual machine manager.
     java.enable = true; # Enable Java support.
     git.enable = true;
     screen.enable = true;
+    vim = {
+      # Since NixOS 24.11, "programs.vim.defaultEditor" only take effects when "programs.vim.enable" is ture.
+      enable = true;
+      defaultEditor = true; # Set up default editor.
+    };
     wireshark = {
       enable = true; # Enable wireshark and create wireshark group (Let normal user can use wireshark).
       package = unstablePkgs.wireshark; # Use wireshark-qt as wireshark package (Default package is wireshark-cli).
@@ -127,7 +131,7 @@ in
     usbutils
     pciutils
     exfatprogs
-    clash-meta
+    alsa-utils
     # Service and command line tools.
     nmap
     fastfetch
@@ -144,6 +148,7 @@ in
     blender
     wpsoffice
     bottles
+    clash-verge-rev
     # Wechat.
     wechat-uos
     # Man pages (Linux/POSIX API and C++ API doc).
@@ -154,6 +159,7 @@ in
 
   # Config services.
   services = {
+    pipewire.enable = false;
     dictd = {
       enable = true; # Enable dictionary.
       DBs = with unstablePkgs.dictdDBs; [ wordnet wiktionary eng2jpn ];
@@ -185,10 +191,12 @@ in
     };
   };
 
-  # Enable sound.
-  #hardware.pulseaudio.enable = true;
-  hardware.enableAllFirmware = true;
-  sound.enable = true;
+  # Sound config.
+  hardware = {
+    #pulseaudio.enable = true;
+    enableAllFirmware = true;
+    alsa.enablePersistence = true; # Since NixOS 24.11, the "sound.enable" config has been removed.
+  };
 
   # Power Management Policy.
   powerManagement.cpuFreqGovernor = "ondemand";
@@ -223,7 +231,7 @@ in
     # sudo nix-channel --add https://mirrors.ustc.edu.cn/nix-channels/nixos-*
     substituters = [
       # Binary Cache Mirrors.
-      "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
+      "https://mirror.sjtu.edu.cn/nix-channels/store"
       "https://mirrors.ustc.edu.cn/nix-channels/store"
     ];
   };

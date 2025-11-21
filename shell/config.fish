@@ -87,10 +87,6 @@ function env_config
         set PATH $PATH ~/.dotnet/tools
     end
 
-    # Set the environment variable for rustup mirror (no longer need when use clash tun).
-    # Install rust stable toolchain: $ rustup toolchain install stable.
-    set -gx RUSTUP_DIST_SERVER https://mirrors.tuna.tsinghua.edu.cn/rustup
-
     # Add Rust Cargo binary path.
     if [ -e ~/.cargo/bin ]
         set PATH $PATH ~/.cargo/bin

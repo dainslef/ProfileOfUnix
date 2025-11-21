@@ -137,7 +137,7 @@ end
 
 -- This is used later as the default terminal and editor to run.
 local mail = "thunderbird"
-local browser = "google-chrome-stable"
+local browser = "firefox"
 local file_manager = "yazi"
 local screen_locker = "dm-tool lock"
 local top = "btop"

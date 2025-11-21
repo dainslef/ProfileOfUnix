@@ -110,7 +110,7 @@ class Color:
 # Application settings.
 class Application:
     MAIL = "thunderbird"
-    BROWSER = "google-chrome-stable"
+    BROWSER = "firefox"
     FILE_MANAGER = "yazi"
     LOCK_SCREEN = "dm-tool lock"
 

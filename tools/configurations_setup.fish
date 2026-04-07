@@ -62,7 +62,7 @@ if type -q awesome
 end
 
 # Link the theme configuration manually only if use Window Manager
-if type -q qtile or type -q awesome
+if type -q qtile; or type -q awesome
     # GTK theme
     echo -ne "Set up GTK theme ... "
     mkdir -p ~/.config/gtk-3.0
@@ -94,9 +94,17 @@ if type -q kitty
     echo OK
 end
 
+# Kitty terminal
+if type -q ghostty
+    echo -n "Set up Ghostty ... "
+    mkdir -p ~/.config/ghostty
+    ln -sf $REPO_PATH/shell/ghostty.conf ~/.config/ghostty/config
+    echo OK
+end
+
 # Oh ny fish, need to install OMF and theme at first:
 #
-# curl -L https://get.oh-my.fish | fish
+# curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install | fish
 # omf install bobthefish
 echo -ne "Set up Fish shell ... "
 ln -sf $REPO_PATH/shell/config.fish ~/.config/fish/config.fish

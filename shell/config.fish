@@ -1,15 +1,13 @@
 # Link this file to the path '~/.config/fish/config.fish'.
 
 # This fish config need to install "Oh-My-Fish" and "bobthefish" theme:
-# $ curl -L https://get.oh-my.fish | fish
+# $ curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install | fish
 # $ omf install bobthefish
 
 # Fish shell and Oh-My-Fish file and directory:
 # ~/.config/fish/conf.d/omf.fish
 # ~/.local/share/omf
 # ~/.cache/omf
-
-
 
 # Set the custom environment variables.
 function env_config
@@ -70,11 +68,6 @@ function env_config
             set -gx QT_QPA_PLATFORMTHEME gtk2
         end
 
-    end
-
-    # Add Python pip package binary path (Use Python venv).
-    if [ -e ~/Public/Python/bin ]
-        set PATH $PATH $pip_bin
     end
 
     # Add Haskell GHCup binary path.
@@ -139,8 +132,6 @@ end
 # Delete defined functions and variables.
 # Use "-e" means to erase a function/variable.
 functions -e env_config theme_config
-
-
 
 # --- Override functions  ---
 # In fish shell, function which named with "fish_greeting" will override default greeting.
